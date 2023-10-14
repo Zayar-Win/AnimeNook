@@ -6,9 +6,21 @@
     position: relative;
     overflow: hidden;
 }
-.hover-effect:hover a {
-    color: white;
+.hover-effect span {
+    position: relative;
+    z-index: 10;
 }
+.hover-effect {
+    transition: all 0.3s linear;
+}
+.hover-effect:hover {
+    color: white !important;
+}
+
+.movie-card:hover img {
+    transform: scale(1.1);
+}
+
 .hover-effect::before {
     content: "";
     position: absolute;

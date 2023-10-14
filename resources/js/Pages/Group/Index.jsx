@@ -1,8 +1,12 @@
 import Button from '@/Components/Button'
+import MangaCard from '@/Components/MangaCard'
+import MovieCard from '@/Components/MovieCard'
 import Navbar from '@/Components/Navbar'
+import NewEpisodeCard from '@/Components/NewEpisodeCard'
 import SectionContainer from '@/Components/SectionContainer'
 import Tag from '@/Components/Tag'
 import { Link } from '@inertiajs/react'
+import Logo from '../../../assets/logo.png'
 import React from 'react'
 
 function Index() {
@@ -169,119 +173,232 @@ function Index() {
             <span className='text-lg'>Continue Watching</span>
           </div>
           <div className='grid mt-4 lg:grid-cols-4 gap-4'>
-              <div className='bg-[#0D0D0D] text-white rounded-md p-5'>
-                <div className='w-full relative h-[280px] object-cover'>
-                  <img className='rounded-md w-full h-full object-cover' src="https://www.gameinformer.com/sites/default/files/styles/thumbnail/public/2022/12/15/c5b2b37e/my_hero_fortnite.jpg" alt="" />
-                  <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
-                    <span>18</span>
-                    <div className='border-l-2 h-3 border-white rotate-[15deg] mx-2'></div>
-                    <span>25</span>
-                  </div>
-                  <div className='absolute flex w-full px-3 items-center justify-between bottom-2'>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 8.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5ZM9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0Z"/><path d="M12 3.25c-4.514 0-7.555 2.704-9.32 4.997l-.031.041c-.4.519-.767.996-1.016 1.56c-.267.605-.383 1.264-.383 2.152c0 .888.116 1.547.383 2.152c.25.564.617 1.042 1.016 1.56l.032.041C4.445 18.046 7.486 20.75 12 20.75c4.514 0 7.555-2.704 9.32-4.997l.031-.041c.4-.518.767-.996 1.016-1.56c.267-.605.383-1.264.383-2.152c0-.888-.116-1.547-.383-2.152c-.25-.564-.617-1.041-1.016-1.56l-.032-.041C19.555 5.954 16.514 3.25 12 3.25ZM3.87 9.162C5.498 7.045 8.15 4.75 12 4.75c3.85 0 6.501 2.295 8.13 4.412c.44.57.696.91.865 1.292c.158.358.255.795.255 1.546s-.097 1.188-.255 1.546c-.169.382-.426.722-.864 1.292C18.5 16.955 15.85 19.25 12 19.25c-3.85 0-6.501-2.295-8.13-4.412c-.44-.57-.696-.91-.865-1.292c-.158-.358-.255-.795-.255-1.546s.097-1.188.255-1.546c.169-.382.426-.722.864-1.292Z"/></g></svg>
-                      <span className='text-[12px] font-semibold leading-none'>1000</span>
-                    </div>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'> 
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 4H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.188c1 0 1.812.811 1.812 1.812c0 .808.976 1.212 1.547.641l1.867-1.867A2 2 0 0 1 14.828 18H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
-                      <span className='text-[12px] font-semibold leading-none'>78</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-1 mt-5'>
-                  <Tag text="SUB" className="bg-[#47BE71]" />
-                  <Tag text="HD" className="bg-[#47BE71]" />
-                  <Tag text="ONGOING" className="bg-[#47BE71]" />
-                </div>
-                <h1 className='mt-3 text-xl font-extrabold'>My Hero Academia</h1>
-                <p className='font-medium text-sm pt-1'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis vero recusandae in autem sed dicta doloribus, deserunt error consequatur veritatis.</p>
-                <Button text={'Watch Now'}  className={'inline-block text-black bg-white hover-effect mt-3'} textClassName={'z-10 text-black relative'} />
-              </div>
-              <div className='bg-[#0D0D0D] text-white rounded-md p-5'>
-                <div className='w-full relative h-[280px] object-cover'>
-                  <img className='rounded-md w-full h-full object-cover' src="https://www.gameinformer.com/sites/default/files/styles/thumbnail/public/2022/12/15/c5b2b37e/my_hero_fortnite.jpg" alt="" />
-                  <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
-                    <span>18</span>
-                    <div className='border-l-2 h-3 border-white rotate-[15deg] mx-2'></div>
-                    <span>25</span>
-                  </div>
-                  <div className='absolute flex w-full px-3 items-center justify-between bottom-2'>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 8.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5ZM9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0Z"/><path d="M12 3.25c-4.514 0-7.555 2.704-9.32 4.997l-.031.041c-.4.519-.767.996-1.016 1.56c-.267.605-.383 1.264-.383 2.152c0 .888.116 1.547.383 2.152c.25.564.617 1.042 1.016 1.56l.032.041C4.445 18.046 7.486 20.75 12 20.75c4.514 0 7.555-2.704 9.32-4.997l.031-.041c.4-.518.767-.996 1.016-1.56c.267-.605.383-1.264.383-2.152c0-.888-.116-1.547-.383-2.152c-.25-.564-.617-1.041-1.016-1.56l-.032-.041C19.555 5.954 16.514 3.25 12 3.25ZM3.87 9.162C5.498 7.045 8.15 4.75 12 4.75c3.85 0 6.501 2.295 8.13 4.412c.44.57.696.91.865 1.292c.158.358.255.795.255 1.546s-.097 1.188-.255 1.546c-.169.382-.426.722-.864 1.292C18.5 16.955 15.85 19.25 12 19.25c-3.85 0-6.501-2.295-8.13-4.412c-.44-.57-.696-.91-.865-1.292c-.158-.358-.255-.795-.255-1.546s.097-1.188.255-1.546c.169-.382.426-.722.864-1.292Z"/></g></svg>
-                      <span className='text-[12px] font-semibold leading-none'>1000</span>
-                    </div>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'> 
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 4H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.188c1 0 1.812.811 1.812 1.812c0 .808.976 1.212 1.547.641l1.867-1.867A2 2 0 0 1 14.828 18H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
-                      <span className='text-[12px] font-semibold leading-none'>78</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-1 mt-5'>
-                  <Tag text="SUB" className="bg-[#47BE71]" />
-                  <Tag text="HD" className="bg-[#47BE71]" />
-                  <Tag text="ONGOING" className="bg-[#47BE71]" />
-                </div>
-                <h1 className='mt-3 text-xl font-extrabold'>My Hero Academia</h1>
-                <p className='font-medium text-sm pt-1'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis vero recusandae in autem sed dicta doloribus, deserunt error consequatur veritatis.</p>
-                <Button text={'Watch Now'}  className={'inline-block text-black bg-white hover-effect mt-3'} textClassName={'z-10 text-black relative'} />
-              </div>
-              <div className='bg-[#0D0D0D] text-white rounded-md p-5'>
-                <div className='w-full relative h-[280px] object-cover'>
-                  <img className='rounded-md w-full h-full object-cover' src="https://www.gameinformer.com/sites/default/files/styles/thumbnail/public/2022/12/15/c5b2b37e/my_hero_fortnite.jpg" alt="" />
-                  <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
-                    <span>18</span>
-                    <div className='border-l-2 h-3 border-white rotate-[15deg] mx-2'></div>
-                    <span>25</span>
-                  </div>
-                  <div className='absolute flex w-full px-3 items-center justify-between bottom-2'>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 8.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5ZM9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0Z"/><path d="M12 3.25c-4.514 0-7.555 2.704-9.32 4.997l-.031.041c-.4.519-.767.996-1.016 1.56c-.267.605-.383 1.264-.383 2.152c0 .888.116 1.547.383 2.152c.25.564.617 1.042 1.016 1.56l.032.041C4.445 18.046 7.486 20.75 12 20.75c4.514 0 7.555-2.704 9.32-4.997l.031-.041c.4-.518.767-.996 1.016-1.56c.267-.605.383-1.264.383-2.152c0-.888-.116-1.547-.383-2.152c-.25-.564-.617-1.041-1.016-1.56l-.032-.041C19.555 5.954 16.514 3.25 12 3.25ZM3.87 9.162C5.498 7.045 8.15 4.75 12 4.75c3.85 0 6.501 2.295 8.13 4.412c.44.57.696.91.865 1.292c.158.358.255.795.255 1.546s-.097 1.188-.255 1.546c-.169.382-.426.722-.864 1.292C18.5 16.955 15.85 19.25 12 19.25c-3.85 0-6.501-2.295-8.13-4.412c-.44-.57-.696-.91-.865-1.292c-.158-.358-.255-.795-.255-1.546s.097-1.188.255-1.546c.169-.382.426-.722.864-1.292Z"/></g></svg>
-                      <span className='text-[12px] font-semibold leading-none'>1000</span>
-                    </div>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'> 
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 4H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.188c1 0 1.812.811 1.812 1.812c0 .808.976 1.212 1.547.641l1.867-1.867A2 2 0 0 1 14.828 18H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
-                      <span className='text-[12px] font-semibold leading-none'>78</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-1 mt-5'>
-                  <Tag text="SUB" className="bg-[#47BE71]" />
-                  <Tag text="HD" className="bg-[#47BE71]" />
-                  <Tag text="ONGOING" className="bg-[#47BE71]" />
-                </div>
-                <h1 className='mt-3 text-xl font-extrabold'>My Hero Academia</h1>
-                <p className='font-medium text-sm pt-1'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis vero recusandae in autem sed dicta doloribus, deserunt error consequatur veritatis.</p>
-                <Button text={'Watch Now'}  className={'inline-block text-black bg-white hover-effect mt-3'} textClassName={'z-10 text-black relative'} />
-              </div>
-              <div className='bg-[#0D0D0D] text-white rounded-md p-5'>
-                <div className='w-full relative h-[280px] object-cover'>
-                  <img className='rounded-md w-full h-full object-cover' src="https://www.gameinformer.com/sites/default/files/styles/thumbnail/public/2022/12/15/c5b2b37e/my_hero_fortnite.jpg" alt="" />
-                  <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
-                    <span>18</span>
-                    <div className='border-l-2 h-3 border-white rotate-[15deg] mx-2'></div>
-                    <span>25</span>
-                  </div>
-                  <div className='absolute flex w-full px-3 items-center justify-between bottom-2'>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="currentColor" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 8.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5ZM9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0Z"/><path d="M12 3.25c-4.514 0-7.555 2.704-9.32 4.997l-.031.041c-.4.519-.767.996-1.016 1.56c-.267.605-.383 1.264-.383 2.152c0 .888.116 1.547.383 2.152c.25.564.617 1.042 1.016 1.56l.032.041C4.445 18.046 7.486 20.75 12 20.75c4.514 0 7.555-2.704 9.32-4.997l.031-.041c.4-.518.767-.996 1.016-1.56c.267-.605.383-1.264.383-2.152c0-.888-.116-1.547-.383-2.152c-.25-.564-.617-1.041-1.016-1.56l-.032-.041C19.555 5.954 16.514 3.25 12 3.25ZM3.87 9.162C5.498 7.045 8.15 4.75 12 4.75c3.85 0 6.501 2.295 8.13 4.412c.44.57.696.91.865 1.292c.158.358.255.795.255 1.546s-.097 1.188-.255 1.546c-.169.382-.426.722-.864 1.292C18.5 16.955 15.85 19.25 12 19.25c-3.85 0-6.501-2.295-8.13-4.412c-.44-.57-.696-.91-.865-1.292c-.158-.358-.255-.795-.255-1.546s.097-1.188.255-1.546c.169-.382.426-.722.864-1.292Z"/></g></svg>
-                      <span className='text-[12px] font-semibold leading-none'>1000</span>
-                    </div>
-                    <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'> 
-                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 4H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.188c1 0 1.812.811 1.812 1.812c0 .808.976 1.212 1.547.641l1.867-1.867A2 2 0 0 1 14.828 18H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
-                      <span className='text-[12px] font-semibold leading-none'>78</span>
-                    </div>
-                  </div>
-                </div>
-                <div className='flex items-center gap-1 mt-5'>
-                  <Tag text="SUB" className="bg-[#47BE71]" />
-                  <Tag text="HD" className="bg-[#47BE71]" />
-                  <Tag text="ONGOING" className="bg-[#47BE71]" />
-                </div>
-                <h1 className='mt-3 text-xl font-extrabold'>My Hero Academia</h1>
-                <p className='font-medium text-sm pt-1'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis vero recusandae in autem sed dicta doloribus, deserunt error consequatur veritatis.</p>
-                <Button text={'Watch Now'}  className={'inline-block text-black bg-white hover-effect mt-3'} textClassName={'z-10 text-black relative'} />
-              </div>
+              <MovieCard />
+              <MovieCard />
+              <MovieCard />
+              <MovieCard />
           </div>
+        </div>
+      </SectionContainer>
+
+      <SectionContainer>
+        <div className='flex items-center gap-8 bg-[#0D0D0D] rounded-md mt-8'>
+          <div className='basis-[40%] flex items-center'>
+            <img className='w-[60%] object-cover h-full' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/260x288/catalog/crunchyroll/03e1ca22f70607da7a54313b48971b8b.png" alt="" />
+            <div className='w-[40%] h-full'>
+              <img className='w-full h-full object-cover' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/480x720/catalog/crunchyroll/c73bc7c503920b61c100eab128e70d5e.jpe" alt="" />
+            </div>
+          </div>
+          <div className='basis-[60%] text-white'>
+            <Link href="#" className='hover:underline'>
+            <h1 className='text-2xl font-bold'>The Rising of the Shield Hero</h1>
+            </Link>
+            <div className='flex items-center gap-1 my-3'>
+              <span className='text-[#40ecf8]'>Series</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"/></svg>
+              <span>Subtitled</span>
+            </div>
+            <p className='w-[95%]'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui amet, voluptatem culpa officiis eligendi odio sequi, voluptates, magni soluta quaerat tempore quia! Vero quam nulla beatae reiciendis aliquam, sequi laboriosam, magnam ex fuga similique, consectetur laborum eligendi. Non, hic id? Aliquam dolore voluptatem quo, reiciendis laboriosam quos omnis optio consequatur.</p>
+            <div className='mt-4 flex items-center gap-8'>
+              <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Watching S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
+              <Button outline text={'Add To WatchList'} className={'!px-8 rounded-none !gap-1 border-[#F47521] text-[#F47521]'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>} />
+            </div>
+          </div>
+        </div>
+      </SectionContainer>
+      <SectionContainer  className={'bg-black mt-8'} padding={false}>
+        <div className='px-10 text-white py-20'>
+        <div className='flex items-center gap-3'>
+          <svg xmlns="http://www.w3.org/2000/svg" width="27" height="27" viewBox="0 0 24 24"><path fill="currentColor" d="m10 14l6-4l-6-4v8Zm-8 8V2h20v16H6l-4 4Zm2-6h16V4H4v12Zm0 0V4v12Z"/></svg>
+          <span className='text-xl font-bold'>New Episodes</span>
+        </div>
+        <div>
+          <div>
+            <h1 className='text-lg font-bold border-b-2 broder-white py-3 mb-5'>Today</h1>
+            <div className='grid grid-cols-3 gap-10'>
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+            </div>
+          </div>
+          <div>
+            <h1 className='text-lg font-bold border-b-2 broder-white py-3 mt-5 mb-5'>Yesterday</h1>
+            <div className='grid grid-cols-3 gap-10'>
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+              <NewEpisodeCard />
+            </div>
+          </div>
+        </div>
+        </div>
+      </SectionContainer>
+      <SectionContainer>
+        <div className='mt-5'>
+          <div className='flex items-center gap-4 text-yellow-400 font-semibold'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 15 15"><path fill="currentColor" fill-rule="evenodd" d="M0 7.5a7.5 7.5 0 1 1 6.965 7.481l.053-.998l.49.017a6.5 6.5 0 1 0-4.65-1.951l.006.007l.136.15V10h1v4H0v-1h2.37l-.234-.258A7.477 7.477 0 0 1 0 7.5Zm7 0V3h1v4.293l2.854 2.853l-.708.708l-3-3A.5.5 0 0 1 7 7.5Z" clip-rule="evenodd"/></svg>
+            <span className='text-lg'>Popular Series</span>
+          </div>
+          <div className='grid mt-4 lg:grid-cols-4 gap-4'>
+              <MovieCard />
+              <MovieCard />
+              <MovieCard />
+              <MovieCard />
+          </div>
+        </div>
+      </SectionContainer>
+      <SectionContainer className={'bg-black mt-8'} padding={false}>
+        <div className='mt-5 px-10 py-10'>
+          <div className='flex items-center gap-4 text-yellow-400 font-semibold'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 15 15"><path fill="currentColor" fill-rule="evenodd" d="M0 7.5a7.5 7.5 0 1 1 6.965 7.481l.053-.998l.49.017a6.5 6.5 0 1 0-4.65-1.951l.006.007l.136.15V10h1v4H0v-1h2.37l-.234-.258A7.477 7.477 0 0 1 0 7.5Zm7 0V3h1v4.293l2.854 2.853l-.708.708l-3-3A.5.5 0 0 1 7 7.5Z" clip-rule="evenodd"/></svg>
+            <span className='text-lg'>Popular Manga</span>
+          </div>
+          <div className='grid mt-4 lg:grid-cols-5 gap-4'>
+              <MangaCard />
+              <MangaCard />
+              <MangaCard />
+              <MangaCard />
+              <MangaCard />
+              <MangaCard />
+              <MangaCard />
+              <MangaCard />
+          </div>
+        </div>
+      </SectionContainer>
+      <SectionContainer  padding={false} style={{ backgroundImage:'linear-gradient(55deg, rgba(223,136,28,1) 13%, rgba(249,198,45,1) 42%, rgba(216,119,23,1) 91%)' }}>
+        <div className='px-10 py-10'>
+        <div className='flex items-center gap-8 bg-[#0D0D0D] rounded-md'>
+          <div className='basis-[40%] flex items-center'>
+            <img className='w-[60%] object-cover h-full' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/260x288/catalog/crunchyroll/03e1ca22f70607da7a54313b48971b8b.png" alt="" />
+            <div className='w-[40%] h-full'>
+              <img className='w-full h-full object-cover' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/480x720/catalog/crunchyroll/c73bc7c503920b61c100eab128e70d5e.jpe" alt="" />
+            </div>
+          </div>
+          <div className='basis-[60%] text-white'>
+            <Link href="#" className='hover:underline'>
+            <h1 className='text-2xl font-bold'>The Rising of the Shield Hero</h1>
+            </Link>
+            <div className='flex items-center gap-1 my-3'>
+              <span className='text-[#40ecf8]'>Series</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"/></svg>
+              <span>Subtitled</span>
+            </div>
+            <p className='w-[95%]'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui amet, voluptatem culpa officiis eligendi odio sequi, voluptates, magni soluta quaerat tempore quia! Vero quam nulla beatae reiciendis aliquam, sequi laboriosam, magnam ex fuga similique, consectetur laborum eligendi. Non, hic id? Aliquam dolore voluptatem quo, reiciendis laboriosam quos omnis optio consequatur.</p>
+            <div className='mt-4 flex items-center gap-8'>
+              <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Reading S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
+              <Button outline text={'Add To WatchList'} className={'!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>} />
+            </div>
+          </div>
+        </div>
+        <div className='flex items-center gap-8 bg-[#0D0D0D] rounded-md mt-8'>
+          <div className='basis-[40%] flex items-center'>
+            <img className='w-[60%] object-cover h-full' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/260x288/catalog/crunchyroll/03e1ca22f70607da7a54313b48971b8b.png" alt="" />
+            <div className='w-[40%] h-full'>
+              <img className='w-full h-full object-cover' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/480x720/catalog/crunchyroll/c73bc7c503920b61c100eab128e70d5e.jpe" alt="" />
+            </div>
+          </div>
+          <div className='basis-[60%] text-white'>
+            <Link href="#" className='hover:underline'>
+            <h1 className='text-2xl font-bold'>The Rising of the Shield Hero</h1>
+            </Link>
+            <div className='flex items-center gap-1 my-3'>
+              <span className='text-[#40ecf8]'>Series</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"/></svg>
+              <span>Subtitled</span>
+            </div>
+            <p className='w-[95%]'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui amet, voluptatem culpa officiis eligendi odio sequi, voluptates, magni soluta quaerat tempore quia! Vero quam nulla beatae reiciendis aliquam, sequi laboriosam, magnam ex fuga similique, consectetur laborum eligendi. Non, hic id? Aliquam dolore voluptatem quo, reiciendis laboriosam quos omnis optio consequatur.</p>
+            <div className='mt-4 flex items-center gap-8'>
+              <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Reading S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
+              <Button outline text={'Add To WatchList'} className={'!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>} />
+            </div>
+          </div>
+        </div>
+        </div>
+      </SectionContainer>
+      <SectionContainer padding={false}>
+        <div className='min-h-[50vh] relative mt-8 bg-fixed bg-no-repeat bg-cover bg-top' style={{ backgroundImage:"url('https://4kwallpapers.com/images/wallpapers/demon-slayer-1024x768-10716.jpg')" }}>
+          <div className='absolute text-white flex items-center flex-col justify-center top-0 left-0 bottom-0 w-full h-full bg-[rgba(0,0,0,0.6)]'>
+          <h1 className='text-4xl font-bold'>Signin Or Register Here</h1>
+          <p className='text-center pt-4 w-[50%] font-semibold text-lg'>
+            Signin Or Register to get better experience and to get more permission.
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, optio.
+          </p>
+          <div className='mt-6 flex items-center gap-8'>
+            <Button text={'Sign In'} className={'!bg-[#F47521] !px-12 !gap-1'} link={'/login'}  />
+            <Button text={'Sign Up'} className={'!border-[#F47521] !px-12 !gap-1 !text-[#F47521]'} outline link={'/register'} />
+          </div>
+
+          </div>
+        </div>
+      </SectionContainer>
+      <SectionContainer className='bg-[#0D0D0D]'>
+        <div className='pt-20 px-20 text-white'>
+        <div className='text-white grid grid-cols-3 gap-10 '>
+          <div className='justify-self-center'> 
+            <h1 className='text-lg font-bold'>Navigation</h1>
+            <ul className='mt-3'>
+              <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
+                <Link>Browse Popular</Link>
+              </li>
+              <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
+                <Link>Browse Anime</Link>
+              </li>
+              <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
+                <Link>Browse Manga</Link>
+              </li>
+              <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
+                <Link>Browse Popular</Link>
+              </li>
+              <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
+                <Link>New</Link>
+              </li>
+            </ul>
+          </div>
+          <div className='justify-self-center'>
+            <h1 className='text-lg font-bold'>Connect With Us</h1>
+            <ul className='mt-3'>
+              <li className='flex group mb-2 items-center gap-2 text-gray-400 hover:text-white'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M0 0h24v24H0z"/><path fill="currentColor" d="M18 3a5 5 0 0 1 5 5v8a5 5 0 0 1-5 5H6a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5zM9 9v6a1 1 0 0 0 1.514.857l5-3a1 1 0 0 0 0-1.714l-5-3A1 1 0 0 0 9 9z"/></g></svg>
+                <span className='text-[15px] font-medium group-hover:underline '>Youtube</span>
+              </li>
+              <li className='flex group mb-2 items-center gap-2 text-gray-400 hover:text-white'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M20 3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h8.615v-6.96h-2.338v-2.725h2.338v-2c0-2.325 1.42-3.592 3.5-3.592c.699-.002 1.399.034 2.095.107v2.42h-1.435c-1.128 0-1.348.538-1.348 1.325v1.735h2.697l-.35 2.725h-2.348V21H20a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1z" fill="currentColor"/></svg>
+                <span className='text-[15px] font-medium  group-hover:underline text-gray-400'>Facebook</span>
+              </li>
+              <li className='flex group mb-2 items-center gap-2 text-gray-400 hover:text-white'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 512 512"><path fill="currentColor" d="M412.19 118.66a109.27 109.27 0 0 1-9.45-5.5a132.87 132.87 0 0 1-24.27-20.62c-18.1-20.71-24.86-41.72-27.35-56.43h.1C349.14 23.9 350 16 350.13 16h-82.44v318.78c0 4.28 0 8.51-.18 12.69c0 .52-.05 1-.08 1.56c0 .23 0 .47-.05.71v.18a70 70 0 0 1-35.22 55.56a68.8 68.8 0 0 1-34.11 9c-38.41 0-69.54-31.32-69.54-70s31.13-70 69.54-70a68.9 68.9 0 0 1 21.41 3.39l.1-83.94a153.14 153.14 0 0 0-118 34.52a161.79 161.79 0 0 0-35.3 43.53c-3.48 6-16.61 30.11-18.2 69.24c-1 22.21 5.67 45.22 8.85 54.73v.2c2 5.6 9.75 24.71 22.38 40.82A167.53 167.53 0 0 0 115 470.66v-.2l.2.2c39.91 27.12 84.16 25.34 84.16 25.34c7.66-.31 33.32 0 62.46-13.81c32.32-15.31 50.72-38.12 50.72-38.12a158.46 158.46 0 0 0 27.64-45.93c7.46-19.61 9.95-43.13 9.95-52.53V176.49c1 .6 14.32 9.41 14.32 9.41s19.19 12.3 49.13 20.31c21.48 5.7 50.42 6.9 50.42 6.9v-81.84c-10.14 1.1-30.73-2.1-51.81-12.61Z"/></svg>
+                <span className='text-[15px] font-medium   group-hover:underline text-gray-400'>Tiktok</span>
+              </li>
+              <li className='flex group mb-2 items-center gap-2 text-gray-400 hover:text-white'>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="none"><g clip-path="url(#akarIconsTelegramFill0)"><path fill="currentColor" fill-rule="evenodd" d="M24 12c0 6.627-5.373 12-12 12S0 18.627 0 12S5.373 0 12 0s12 5.373 12 12ZM12.43 8.859c-1.167.485-3.5 1.49-6.998 3.014c-.568.226-.866.447-.893.663c-.046.366.412.51 1.034.705c.085.027.173.054.263.084c.613.199 1.437.432 1.865.441c.389.008.823-.152 1.302-.48c3.268-2.207 4.955-3.322 5.061-3.346c.075-.017.179-.039.249.024c.07.062.063.18.056.212c-.046.193-1.84 1.862-2.77 2.726c-.29.269-.495.46-.537.504c-.094.097-.19.19-.282.279c-.57.548-.996.96.024 1.632c.49.323.882.59 1.273.856c.427.291.853.581 1.405.943c.14.092.274.187.405.28c.497.355.944.673 1.496.623c.32-.03.652-.331.82-1.23c.397-2.126 1.179-6.73 1.36-8.628a2.111 2.111 0 0 0-.02-.472a.506.506 0 0 0-.172-.325c-.143-.117-.365-.142-.465-.14c-.451.008-1.143.249-4.476 1.635Z" clip-rule="evenodd"/></g><defs><clipPath id="akarIconsTelegramFill0"><path fill="#fff" d="M0 0h24v24H0z"/></clipPath></defs></g></svg>
+                <span className='text-[15px] font-medium  group-hover:underline text-gray-400'>Telegram</span>
+              </li>
+            </ul>
+          </div>
+          <div className='justify-self-center'>
+            <h1 className='text-lg font-bold'>Account</h1>
+            <ul className='mt-3'>
+              <li>
+                <Link className='text-[15px] font-medium hover:text-white hover:underline text-gray-400'>Create Account</Link>
+              </li>
+              <li >
+                <Link className='text-[15px] font-medium hover:text-white hover:underline text-gray-400'>Login</Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className='w-full h-[0.6px] my-5 bg-white'></div>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-3'>
+            <img className='w-32' src={Logo} alt="" />
+            <span className='text-lg cursor-pointer hover:text-yellow-400 font-bold'>AnimeNook</span>
+          </div>
+          <div className='cursor-pointer hover:text-yellow-400'>
+            <span>All right serverd © Developed By Zayarwin</span>
+          </div>
+        </div>
         </div>
       </SectionContainer>
     </div>
