@@ -16,8 +16,24 @@ use Inertia\Inertia;
 |
 */
 
+$isProduction = config('app.env') === 'production';
+
+if ($isProduction) {
+    Route::domain('{group:subdomain}' . config('app.url'))->name('group')->group(function () {
+        Route::get('/', function () {
+            return inertia('Group/Index', []);
+        });
+    });
+} else {
+    Route::prefix('{group:subdomain}')->name('group.')->group(function () {
+        Route::get('/', function () {
+            return inertia('Group/Index', []);
+        });
+    });
+}
+
 Route::get('/', function () {
-    return Inertia::render('Group/Index');
+    // return Inertia::render('Group/Index');
 });
 
 Route::get('/dashboard', function () {
