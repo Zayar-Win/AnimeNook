@@ -8,6 +8,7 @@ import Tag from '@/Components/Tag'
 import { Link } from '@inertiajs/react'
 import Logo from '../../../assets/logo.png'
 import React from 'react'
+import UserLayout from '@/Layouts/UserLayout'
 
 function Index() {
   return (
@@ -406,3 +407,4 @@ function Index() {
 }
 
 export default Index
+Index.layout = page => <UserLayout>{page}</UserLayout>

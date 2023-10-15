@@ -38,3 +38,31 @@
 .hover-effect:hover::before {
     transform: translateX(0);
 }
+
+.animate-input:focus ~ .animate-label,
+.animate-label.active {
+    transform: translateY(-20px);
+}
+
+.shake {
+    display: block;
+    animation: shaking 0.3s linear 1;
+}
+
+@keyframes shaking {
+    0% {
+        transform: translateX(0px);
+    }
+    25% {
+        transform: translateX(10px);
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    75% {
+        transform: translateX(-10px);
+    }
+    100% {
+        transform: translateX(0px);
+    }
+}

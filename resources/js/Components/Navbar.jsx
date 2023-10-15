@@ -2,9 +2,10 @@ import React from 'react'
 import Logo from '../../assets/logo.png';
 import Profile from '../../assets/Profile.jpeg';
 import SectionContainer from './SectionContainer';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
+import Button from './Button';
 const Navbar = () => {
-  const {component} = usePage();
+  const {component,props:{auth}} = usePage();
   return (
     <SectionContainer className='h-30 bg-[#0D0D0D] flex items-center justify-between'>
       <div className='w-20 h-20'>
@@ -34,14 +35,38 @@ const Navbar = () => {
           </li>
         </ul>
       </nav>
+      {
+        auth.user ?
       <div className='flex items-center gap-5'>
           <svg xmlns="http://www.w3.org/2000/svg" className='cursor-pointer' fill='white' width="25" height="25" viewBox="0 0 24 24">
             <path  d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
           </svg>
-          <div className='w-[46px] cursor-pointer h-[46px] rounded-full border-2 border-white overflow-hidden'>
-            <img src={Profile} className="w-full h-full object-cover" />
+          <div className='w-[46px] relative cursor-pointer h-[46px] rounded-full border-2 border-white '>
+            <img src={Profile} className="w-full rounded-full h-full object-cover" />
+            <div className='absolute  bg-white rounded-md z-30 w-[200px] border-2 top-[130%] right-0'>
+              <div className='w-3 h-3 -translate-y-1 absolute top-0 -z-10 right-5  bg-white rotate-45'></div>
+              <div className='flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+                  <Link>Dashboard</Link>
+              </div>
+              <div className='flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 11q.825 0 1.413-.588Q14 9.825 14 9t-.587-1.413Q12.825 7 12 7q-.825 0-1.412.587Q10 8.175 10 9q0 .825.588 1.412Q11.175 11 12 11Zm0 2q-1.65 0-2.825-1.175Q8 10.65 8 9q0-1.65 1.175-2.825Q10.35 5 12 5q1.65 0 2.825 1.175Q16 7.35 16 9q0 1.65-1.175 2.825Q13.65 13 12 13Zm0 11q-2.475 0-4.662-.938q-2.188-.937-3.825-2.574Q1.875 18.85.938 16.663Q0 14.475 0 12t.938-4.663q.937-2.187 2.575-3.825Q5.15 1.875 7.338.938Q9.525 0 12 0t4.663.938q2.187.937 3.825 2.574q1.637 1.638 2.574 3.825Q24 9.525 24 12t-.938 4.663q-.937 2.187-2.574 3.825q-1.638 1.637-3.825 2.574Q14.475 24 12 24Zm0-2q1.8 0 3.375-.575T18.25 19.8q-.825-.925-2.425-1.612q-1.6-.688-3.825-.688t-3.825.688q-1.6.687-2.425 1.612q1.3 1.05 2.875 1.625T12 22Zm-7.7-3.6q1.2-1.3 3.225-2.1q2.025-.8 4.475-.8q2.45 0 4.463.8q2.012.8 3.212 2.1q1.1-1.325 1.713-2.95Q22 13.825 22 12q0-2.075-.788-3.887q-.787-1.813-2.15-3.175q-1.362-1.363-3.175-2.151Q14.075 2 12 2q-2.05 0-3.875.787q-1.825.788-3.187 2.151Q3.575 6.3 2.788 8.113Q2 9.925 2 12q0 1.825.6 3.463q.6 1.637 1.7 2.937Z"/></svg>
+                  <Link>Profile</Link>
+              </div>
+              <div onClick={()=> router.post(route('group.logout'))} className='flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2'>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M6 2h9a2 2 0 0 1 2 2v2h-2V4H6v16h9v-2h2v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path fill="currentColor" d="M16.09 15.59L17.5 17l5-5l-5-5l-1.41 1.41L18.67 11H9v2h9.67z"/></svg>
+                  <span >Logout</span>
+              </div>
+            </div>
           </div>
       </div>
+        :
+         <div className=' flex items-center gap-3'>
+            <Button text={'Sign In'} className={'!bg-[#F47521] !px-12 !gap-1'} link={route('group.login')}  />
+            <Button text={'Sign Up'} className={'!border-[#F47521] !px-12 !gap-1 !text-[#F47521]'} outline link={route('group.register')} />
+          </div>
+        
+      }
     </SectionContainer>
   )
 }
