@@ -11,7 +11,7 @@ createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve:async (name) => {
         let page = await resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'))
-         page = page.default;
+        page = page.default;
         // need to add UserLayout here
         // let defaultLayout = name.startsWith('TechMarket/Admin')
         //     ? (page) => <AdminLayout>{page}</AdminLayout>

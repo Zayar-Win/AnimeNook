@@ -13,8 +13,6 @@ const Login = () => {
     e.preventDefault();
     post(route('group.login'));
   }
-  console.log(errors);
-
   return (
     <div className='w-full h-[100vh] flex items-center justify-center bg-[#0D0D0D]'>
       <div className='w-[80%] flex rounded-lg p-10 gap-8 bg-white'>
