@@ -1,0 +1,39 @@
+{
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended"
+    ],
+    "plugins": ["react", "react-hooks"],
+    "parserOptions": {
+        "ecmaVersion": 2020,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "jsx": true
+        }
+    },
+    "env": {
+        "browser": true,
+        "es2020": true
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "rules": {
+        "indent": ["error", 4],
+        "linebreak-style": 0,
+        "quotes": ["error", "single"],
+        "react/react-in-jsx-scope": "off",
+        "react-hooks/rules-of-hooks": "warn",
+        "react-hooks/exhaustive-deps": "off",
+        "react/prop-types": "off",
+        "import/no-unresolved": "off",
+        "import/extensions": "off",
+        "no-console": "warn",
+        "react/no-unescaped-entities": "off",
+        "react/no-children-prop": "off",
+        "no-unsafe-optional-chaining": "off"
+    }
+}
