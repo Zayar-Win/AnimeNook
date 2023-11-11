@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Anime;
+use App\Models\Group;
+use App\Models\Manga;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -28,9 +32,23 @@ if ($isProduction) {
     });
 } else {
     Route::prefix('/{group:subdomain}')->name('group.')->group(function () {
-        Route::get('/', function () {
-            return inertia('Group/Index', []);
+        Route::get('/', function (Group $group) {
+            $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
+            $newAnimes = Anime::where('group_id', $group->id)->latest()->take(6)->get();
+            $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
+            $continueWatchingAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(4)->get();
+            $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->take(4)->get();
+            $popularMangas = Manga::with('tags')->where('group_id', $group->id)->latest()->take(8)->get();
+            return inertia('Group/Index', [
+                'trendAnimes' => $trendAnimes,
+                'newAnimes' => $newAnimes,
+                'recommendedAnime' => $recommendedAnime,
+                'continueWatchingAnimes' => $continueWatchingAnimes,
+                'popularAnimes' => $popularAnimes,
+                'popularMangas' => $popularMangas
+            ]);
         })->name('home');
+        Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
         Route::get('/login', function () {
             return inertia('Group/Login');
         })->name('login');

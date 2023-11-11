@@ -39,6 +39,18 @@
     transform: translateX(0);
 }
 
+.swiper-pagination-bullet{
+    width:25px !important;
+    height:4px !important;
+    background-color: white !important;
+    border-radius: 100px !important;
+}
+.swiper-pagination-bullet-active{
+    background-color: rgb(244,117,33) !important;
+    width:40px !important;
+
+}
+
 .animate-input:focus ~ .animate-label,
 .animate-label.active {
     transform: translateY(-20px);

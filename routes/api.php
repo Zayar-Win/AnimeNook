@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +17,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+$isProduction = config('app.env') === 'production';
+URL::defaults(['group' => 'delta']);
+if ($isProduction) {
+    Route::domain('{group:subdomain}' . config('app.url'))->name('group')->group(function () {
+        Route::get('/search', [SearchController::class, 'search'])->name('search');
+    });
+} else {
+    Route::prefix('/{group:subdomain}')->name('group.')->group(function () {
+        Route::get('/search', [SearchController::class, 'search'])->name('search');
+    });
+}
