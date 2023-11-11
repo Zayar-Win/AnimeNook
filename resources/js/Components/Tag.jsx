@@ -1,8 +1,9 @@
+import { Link } from '@inertiajs/react'
 import React from 'react'
 
-const Tag = ({text,className}) => {
+const Tag = ({text,className,href='#'}) => {
     return (
-        <div className={`${className} rounded-lg text-white px-3 py-1 font-semibold text-sm`}>{text}</div>
+        <Link href={href} className={`${className} rounded-lg text-white px-3 py-1 font-semibold text-sm`}>{text}</Link>
     )
 }
 

@@ -29,7 +29,8 @@ class AuthController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
         $data['group_id'] = $group->id;
-        User::create($data);
+        $user = User::create($data);
+        auth()->login($user);
         return redirect(route('group.home'))->with('success', 'Welcome from our website.');
     }
     public function userLogout()

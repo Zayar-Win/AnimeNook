@@ -2,11 +2,11 @@ import React from 'react'
 import Tag from './Tag'
 import Button from './Button'
 
-const MovieCard = () => {
+const MovieCard = ({anime}) => {
     return (
         <div className='bg-[#0D0D0D] movie-card transition-all text-white rounded-md cursor-pointer p-5'>
             <div className='w-full relative h-[280px] overflow-hidden object-cover'>
-                <img className='rounded-md  transition-all w-full h-full object-cover' src="https://www.gameinformer.com/sites/default/files/styles/thumbnail/public/2022/12/15/c5b2b37e/my_hero_fortnite.jpg" alt="" />
+                <img className='rounded-md  transition-all w-full h-full object-cover' src={anime?.thumbnail} alt="" />
                 <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
                     <span>18</span>
                     <div className='border-l-2 h-3 border-white rotate-[15deg] mx-2'></div>
@@ -23,10 +23,10 @@ const MovieCard = () => {
                     </div>
                 </div>
             </div>
-            <div className='flex items-center gap-1 mt-5'>
-                <Tag text="SUB" className="bg-[#47BE71]" />
-                <Tag text="HD" className="bg-[#47BE71]" />
-                <Tag text="ONGOING" className="bg-[#47BE71]" />
+            <div className='flex flex-wrap items-center gap-1 mt-5'>
+                {
+                    anime?.tags.map(tag => <Tag key={tag.id} text={tag.name} className="bg-[#47BE71]" />)
+                }
             </div>
             <div className='flex items-center mt-4 justify-between'>
                 <div className='flex items-center gap-2 cursor-pointer hover:text-yellow-400 transition-all'>
@@ -38,8 +38,8 @@ const MovieCard = () => {
                     <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>
                 </div>
             </div>
-            <h1 className='mt-3 text-xl font-extrabold'>My Hero Academia</h1>
-            <p className='font-medium text-sm pt-1'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perspiciatis vero recusandae in autem sed dicta doloribus, deserunt error consequatur veritatis.</p>
+            <h1 className='mt-3 text-xl font-extrabold'>{anime?.name}</h1>
+            <p className='font-medium text-sm pt-1'>{anime?.description}</p>
             <Button text={'Watch Now'} className={'inline-block z-10 relative !text-black bg-white hover-effect mt-3'} type='button' />
         </div>
     )
