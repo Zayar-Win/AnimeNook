@@ -4,8 +4,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Anime;
+use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Manga;
+use App\Models\UserChapter;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -22,6 +24,7 @@ use Inertia\Inertia;
 |
 */
 
+
 $isProduction = config('app.env') === 'production';
 URL::defaults(['group' => 'delta']);
 if ($isProduction) {
@@ -36,7 +39,7 @@ if ($isProduction) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $newAnimes = Anime::where('group_id', $group->id)->latest()->take(6)->get();
             $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
-            $continueWatchingAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(4)->get();
+            $continueWatchingAnimes = Anime::with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments'])->where('group_id', $group->id)->take(4)->get();
             $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->take(4)->get();
             $popularMangas = Manga::with('tags')->where('group_id', $group->id)->latest()->take(8)->get();
             return inertia('Group/Index', [

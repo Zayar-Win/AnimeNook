@@ -15,15 +15,15 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('group_id');
             $table->unsignedBigInteger('chapterable_id');
-            $table->string('chapterable_text');
+            $table->string('chapterable_type');
             $table->bigInteger('chapter_number');
-            $table->enum('type', ['text', 'pdf']);
+            $table->enum('type', ['link', 'pdf']);
             $table->bigInteger('like_count');
             $table->bigInteger('view_count');
-            $table->text('body');
+            $table->text('description');
             $table->text('name');
-            $table->text('chapter_link');
-            $table->json('images');
+            $table->text('chapter_link')->nullable();
+            $table->json('images')->nullable();
             $table->timestamps();
         });
     }

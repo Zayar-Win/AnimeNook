@@ -8,18 +8,18 @@ const MovieCard = ({anime}) => {
             <div className='w-full relative h-[280px] overflow-hidden object-cover'>
                 <img className='rounded-md  transition-all w-full h-full object-cover' src={anime?.thumbnail} alt="" />
                 <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
-                    <span>18</span>
+                    <span>{anime?.latestWatchedChapter?.chapter_number || 1}</span>
                     <div className='border-l-2 h-3 border-white rotate-[15deg] mx-2'></div>
-                    <span>25</span>
+                    <span>{anime?.chapters_count}</span>
                 </div>
                 <div className='absolute flex w-full px-3 items-center justify-between bottom-2'>
                     <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><g fill="currentColor" fillRule="evenodd" clipRule="evenodd"><path d="M12 8.25a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5ZM9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0Z"/><path d="M12 3.25c-4.514 0-7.555 2.704-9.32 4.997l-.031.041c-.4.519-.767.996-1.016 1.56c-.267.605-.383 1.264-.383 2.152c0 .888.116 1.547.383 2.152c.25.564.617 1.042 1.016 1.56l.032.041C4.445 18.046 7.486 20.75 12 20.75c4.514 0 7.555-2.704 9.32-4.997l.031-.041c.4-.518.767-.996 1.016-1.56c.267-.605.383-1.264.383-2.152c0-.888-.116-1.547-.383-2.152c-.25-.564-.617-1.041-1.016-1.56l-.032-.041C19.555 5.954 16.514 3.25 12 3.25ZM3.87 9.162C5.498 7.045 8.15 4.75 12 4.75c3.85 0 6.501 2.295 8.13 4.412c.44.57.696.91.865 1.292c.158.358.255.795.255 1.546s-.097 1.188-.255 1.546c-.169.382-.426.722-.864 1.292C18.5 16.955 15.85 19.25 12 19.25c-3.85 0-6.501-2.295-8.13-4.412c-.44-.57-.696-.91-.865-1.292c-.158-.358-.255-.795-.255-1.546s.097-1.188.255-1.546c.169-.382.426-.722.864-1.292Z"/></g></svg>
-                        <span className='text-[12px] font-semibold leading-none'>1000</span>
+                        <span className='text-[12px] font-semibold leading-none'>{anime?.views_count}</span>
                     </div>
                     <div className='flex items-center gap-1 px-3 py-2 bg-black rounded-md'> 
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"><path fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 4H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h3.188c1 0 1.812.811 1.812 1.812c0 .808.976 1.212 1.547.641l1.867-1.867A2 2 0 0 1 14.828 18H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
-                        <span className='text-[12px] font-semibold leading-none'>78</span>
+                        <span className='text-[12px] font-semibold leading-none'>{anime?.comments_count}</span>
                     </div>
                 </div>
             </div>

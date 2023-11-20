@@ -17,8 +17,17 @@ class Manga extends Model
             ->saveSlugsTo('slug');
     }
 
+    public function chapters()
+    {
+        return $this->morphMany(Chapter::class, 'chapterable');
+    }
+
     public function tags()
     {
         return $this->morphToMany(Tag::class, 'taggables');
+    }
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }
