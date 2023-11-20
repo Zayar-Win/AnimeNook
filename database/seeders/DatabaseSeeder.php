@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-use App\Models\Taggable;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -22,10 +21,14 @@ class DatabaseSeeder extends Seeder
         // ]);
         $this->call([
             GroupSeeder::class,
+            UserSeeder::class,
             AnimeSeeder::class,
             MangaSeeder::class,
             TagSeeder::class,
-            TaggableSeeder::class
+            TaggableSeeder::class,
+            ChapterSeeder::class,
+            UserChapterSeeder::class,
+            CommentSeeder::class,
         ]);
     }
 }
