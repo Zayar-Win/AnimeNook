@@ -15,7 +15,7 @@ import Tag from '@/Components/Tag'
 // import { SwiperSlide } from 'swiper/react'
 
 function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,popularAnimes,popularMangas}) {
-    console.log(continueWatchingAnimes);
+    console.log(recommendedAnime);
     return (
         <div>
             <Navbar />
@@ -141,7 +141,9 @@ function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,po
                         <div className='flex items-center gap-1 my-3'>
                             <span className='text-[#40ecf8]'>Series</span>
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"/></svg>
-                            <span>Subtitled</span>
+                            <div>
+                                {recommendedAnime?.tags.map((tag,i) => <Tag key={tag.id} className={`${(recommendedAnime?.tags.length ===1 && i === recommendedAnime.tags.length -1) ? 'border-left border-white' : '' }`} text={tag.name} />)}
+                            </div>
                         </div>
                         <p className='w-[95%]'>{recommendedAnime?.description}</p>
                         <div className='mt-4 flex items-center gap-8'>
