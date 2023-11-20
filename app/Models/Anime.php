@@ -23,8 +23,10 @@ class Anime extends Model
 
     public function getLatestWatchedChapterAttribute()
     {
-        $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) {
+        $group = request()->route('group');
+        $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
+                ->where('user_chapters.group_id', $group->id)
                 ->where('user_id', 1);
         })->first();
 
