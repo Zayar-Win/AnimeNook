@@ -9,6 +9,7 @@ use App\Models\Group;
 use App\Models\Manga;
 use App\Models\UserChapter;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
@@ -39,9 +40,9 @@ if ($isProduction) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $newAnimes = Anime::where('group_id', $group->id)->latest()->take(6)->get();
             $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
-            $continueWatchingAnimes = Anime::with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments'])->where('group_id', $group->id)->take(4)->get();
-            $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->take(4)->get();
-            $popularMangas = Manga::with('tags')->where('group_id', $group->id)->latest()->take(8)->get();
+            $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
+            $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
+            $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
             return inertia('Group/Index', [
                 'trendAnimes' => $trendAnimes,
                 'newAnimes' => $newAnimes,

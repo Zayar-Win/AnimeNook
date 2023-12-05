@@ -15,7 +15,7 @@ import Tag from '@/Components/Tag'
 // import { SwiperSlide } from 'swiper/react'
 
 function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,popularAnimes,popularMangas}) {
-    console.log(recommendedAnime);
+    console.log(popularMangas);
     return (
         <div>
             <Navbar />

@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ChapterSeeder::class,
             UserChapterSeeder::class,
             CommentSeeder::class,
+            RatingSeeder::class
         ]);
     }
 }
