@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('ratings', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('group_id');
+            $table->unsignedBigInteger('rating');
+            $table->unsignedBigInteger('ratingable_id');
+            $table->string('ratingable_type');
             $table->timestamps();
         });
     }

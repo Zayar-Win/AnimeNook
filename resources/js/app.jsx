@@ -7,6 +7,12 @@ import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+export function formateDate(dateString) {
+    let date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US',{day : '2-digit',month : '2-digit' , year:'numeric'}).format(date).replaceAll('/','.');
+}
+
 window.route = route;
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,

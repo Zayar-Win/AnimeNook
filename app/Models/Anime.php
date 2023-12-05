@@ -27,11 +27,14 @@ class Anime extends Model
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)
-                ->where('user_id', 1);
+                ->where('user_chapters.user_id', 1);
         })->first();
+
 
         return $latestWatchedChapter;
     }
+
+
 
     public function chapters()
     {
@@ -46,5 +49,10 @@ class Anime extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function ratings()
+    {
+        return $this->morphMany(Rating::class, 'ratingable');
     }
 }
