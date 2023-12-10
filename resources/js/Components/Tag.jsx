@@ -3,7 +3,7 @@ import React from 'react'
 
 const Tag = ({text,className,href='#'}) => {
     return (
-        <Link href={href} className={`${className} rounded-lg text-white px-3 py-1 font-semibold text-sm`}>{text}</Link>
+        <Link href={href} className={` rounded-lg text-white px-3 py-1 font-semibold text-sm ${className}`}>{text}</Link>
     )
 }
 
