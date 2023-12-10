@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+body{
+    /* width:100%; */
+    /* overflow-x: hidden; */
+}
+
 .hover-effect {
     position: relative;
     overflow: hidden;
