@@ -14,8 +14,7 @@ import { SwiperSlide } from 'swiper/react'
 import Tag from '@/Components/Tag'
 // import { SwiperSlide } from 'swiper/react'
 
-function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,popularAnimes,popularMangas}) {
-    console.log(popularMangas);
+function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,popularAnimes,popularMangas,newEpisodes}) {
     return (
         <div>
             <Navbar />
@@ -160,25 +159,29 @@ function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,po
                         <span className='text-xl font-bold'>New Episodes</span>
                     </div>
                     <div>
-                        <div>
-                            <h1 className='text-lg font-bold border-b-2 broder-white py-3 mb-5'>Today</h1>
-                            <div className='grid grid-cols-3 gap-10'>
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                            </div>
-                        </div>
-                        <div>
-                            <h1 className='text-lg font-bold border-b-2 broder-white py-3 mt-5 mb-5'>Yesterday</h1>
-                            <div className='grid grid-cols-3 gap-10'>
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                                <NewEpisodeCard />
-                            </div>
-                        </div>
+                        <h1 className='text-lg font-bold border-b-2 broder-white py-3 mb-5'>Today</h1>
+                        {
+                            newEpisodes?.today.length > 0 ?
+                                <div>
+                                    <div className='grid grid-cols-3 gap-10'>
+                                        {
+                                            newEpisodes?.today?.map(episode => <NewEpisodeCard key={episode?.id} episode={episode} /> )
+                                        }
+                                    </div>
+                                </div>
+                                :   
+                                <p className='pt-6 text-[#F47521]'>No new episodes are uploaded today.</p>
+                        }
+                        <h1 className='text-lg font-bold border-b-2 broder-white py-3 mt-5 mb-5'>Yesterday</h1>
+                        {
+                            newEpisodes?.yesterday.length > 0 ?
+                                <div>
+                                    <div className='grid grid-cols-3 gap-10'>
+                                        {newEpisodes?.yesterday?.map(episode => <NewEpisodeCard episode={episode} key={episode?.id} />)}
+                                    </div>
+                                </div>
+                                : <p className='pt-6 text-[#F47521]'>No new episodes are uploaded today.</p>    
+                        }
                     </div>
                 </div>
             </SectionContainer>
@@ -210,52 +213,62 @@ function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,po
             </SectionContainer>
             <SectionContainer  padding={false} style={{ backgroundImage:'linear-gradient(55deg, rgba(223,136,28,1) 13%, rgba(249,198,45,1) 42%, rgba(216,119,23,1) 91%)' }}>
                 <div className='px-10 py-10'>
+                    {
+                        newAnimes?.length > 0 && 
                     <div className='flex items-center gap-8 bg-[#0D0D0D] rounded-md'>
                         <div className='basis-[40%] flex items-center'>
-                            <img className='w-[60%] object-cover h-full' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/260x288/catalog/crunchyroll/03e1ca22f70607da7a54313b48971b8b.png" alt="" />
-                            <div className='w-[40%] h-full'>
-                                <img className='w-full h-full object-cover' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/480x720/catalog/crunchyroll/c73bc7c503920b61c100eab128e70d5e.jpe" alt="" />
+                            <img className='w-[60%] object-cover h-[350px]' src={newAnimes[0]?.transparent_background} alt="" />
+                            <div className='w-[40%] h-[320px]'>
+                                <img className='w-full h-full object-cover' src={newAnimes[0]?.thumbnail} alt="" />
                             </div>
                         </div>
                         <div className='basis-[60%] text-white'>
                             <Link href="#" className='hover:underline'>
-                                <h1 className='text-2xl font-bold'>The Rising of the Shield Hero</h1>
+                                <h1 className='text-2xl font-bold'>{newAnimes[0]?.name}</h1>
                             </Link>
                             <div className='flex items-center gap-1 my-3'>
                                 <span className='text-[#40ecf8]'>Series</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"/></svg>
-                                <span>Subtitled</span>
+                                <div>
+                                    {newAnimes[0]?.tags.map((tag,i) => <Tag key={tag.id} className={`${(recommendedAnime?.tags.length ===1 && i === recommendedAnime.tags.length -1) ? 'border-left border-white' : '' }`} text={tag.name} />)}
+                                </div>
                             </div>
-                            <p className='w-[95%]'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui amet, voluptatem culpa officiis eligendi odio sequi, voluptates, magni soluta quaerat tempore quia! Vero quam nulla beatae reiciendis aliquam, sequi laboriosam, magnam ex fuga similique, consectetur laborum eligendi. Non, hic id? Aliquam dolore voluptatem quo, reiciendis laboriosam quos omnis optio consequatur.</p>
+                            <p className='w-[95%]'>{newAnimes[0]?.description}</p>
                             <div className='mt-4 flex items-center gap-8'>
-                                <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Reading S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
+                                <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Watching S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
                                 <Button outline text={'Add To WatchList'} className={'!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>} />
                             </div>
                         </div>
                     </div>
+                    }
+                    {
+                        trendAnimes?.length > 0 && 
                     <div className='flex items-center gap-8 bg-[#0D0D0D] rounded-md mt-8'>
                         <div className='basis-[40%] flex items-center'>
-                            <img className='w-[60%] object-cover h-full' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/260x288/catalog/crunchyroll/03e1ca22f70607da7a54313b48971b8b.png" alt="" />
-                            <div className='w-[40%] h-full'>
-                                <img className='w-full h-full object-cover' src="https://www.crunchyroll.com/imgsrv/display/thumbnail/480x720/catalog/crunchyroll/c73bc7c503920b61c100eab128e70d5e.jpe" alt="" />
+                            <img className='w-[60%] object-cover h-[350px]' src={trendAnimes[0].transparent_background} alt="" />
+                            <div className='w-[40%] h-[320px]'>
+                                <img className='w-full h-full object-cover' src={trendAnimes[0].thumbnail} alt="" />
                             </div>
                         </div>
                         <div className='basis-[60%] text-white'>
                             <Link href="#" className='hover:underline'>
-                                <h1 className='text-2xl font-bold'>The Rising of the Shield Hero</h1>
+                                <h1 className='text-2xl font-bold'>{trendAnimes[0].name}</h1>
                             </Link>
                             <div className='flex items-center gap-1 my-3'>
                                 <span className='text-[#40ecf8]'>Series</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path fill="currentColor" d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"/></svg>
-                                <span>Subtitled</span>
+                                <div>
+                                    {trendAnimes[0]?.tags.map((tag,i) => <Tag key={tag.id} className={`${(recommendedAnime?.tags.length ===1 && i === recommendedAnime.tags.length -1) ? 'border-left border-white' : '' }`} text={tag.name} />)}
+                                </div>
                             </div>
-                            <p className='w-[95%]'>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui amet, voluptatem culpa officiis eligendi odio sequi, voluptates, magni soluta quaerat tempore quia! Vero quam nulla beatae reiciendis aliquam, sequi laboriosam, magnam ex fuga similique, consectetur laborum eligendi. Non, hic id? Aliquam dolore voluptatem quo, reiciendis laboriosam quos omnis optio consequatur.</p>
+                            <p className='w-[95%]'>{trendAnimes[0].description}</p>
                             <div className='mt-4 flex items-center gap-8'>
-                                <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Reading S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
+                                <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Watching S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
                                 <Button outline text={'Add To WatchList'} className={'!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>} />
                             </div>
                         </div>
                     </div>
+                    }
                 </div>
             </SectionContainer>
             <SectionContainer padding={false}>
@@ -267,8 +280,8 @@ function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,po
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsam, optio.
                         </p>
                         <div className='mt-6 flex items-center gap-8'>
-                            <Button text={'Sign In'} className={'!bg-[#F47521] !px-12 !gap-1'} link={'/login'}  />
-                            <Button text={'Sign Up'} className={'!border-[#F47521] !px-12 !gap-1 !text-[#F47521]'} outline link={'/register'} />
+                            <Button text={'Sign In'} className={'!bg-[#F47521] !px-12 !gap-1'} link={window.route('group.login')}  />
+                            <Button text={'Sign Up'} className={'!border-[#F47521] !px-12 !gap-1 !text-[#F47521]'} outline link={window.route('group.register')} />
                         </div>
                     </div>
                 </div>

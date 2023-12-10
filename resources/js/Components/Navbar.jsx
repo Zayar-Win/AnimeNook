@@ -36,10 +36,10 @@ const Navbar = () => {
     },[decounceSearch])
     return (
         <SectionContainer className='h-30 bg-[#0D0D0D] flex items-center justify-between'>
-            <div className='w-20 h-20'>
+            <div className='w-20 h-20 d-block shrink-0'>
                 <img src={Logo} className='w-full h-full' alt="" />
             </div>
-            <div className='flex items-center relative gap-3 p-2 max-w-[500px] min-w-[500px] rounded-md bg-[#212121]'>
+            <div className='sm:flex hidden items-center relative gap-3 p-2 xl:max-w-[500px] xl:min-w-[500px] lg:min-w-[380px] rounded-md bg-[#212121]'>
                 <label htmlFor="search" className='cursor-pointer'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill='white' x="0px" y="0px" width="23" height="23" viewBox="0 0 30 30">
                         <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z"></path>
@@ -90,7 +90,7 @@ const Navbar = () => {
                 }
                 
             </div>
-            <nav>
+            <nav className='sm:block hidden'>
                 <ul className='flex items-center gap-10 font-semibold text-white'>
                     <li className={`hover:text-yellow-400 trasnition-all ${component === 'Group/Index' ? 'text-yellow-400' : null}`}>
                         <Link href='/'>Home</Link>
@@ -106,18 +106,29 @@ const Navbar = () => {
                     </li>
                 </ul>
             </nav>
-            {
-                auth.user ?
-                    <div className='flex items-center gap-5'>
-                        <svg xmlns="http://www.w3.org/2000/svg" className='cursor-pointer' fill='white' width="25" height="25" viewBox="0 0 24 24">
-                            <path  d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
-                        </svg>
-                        <div onClick={() => {
-                            setIsProfileOpen(prev => !prev)
-                        }} className='w-[46px] profile-container relative cursor-pointer h-[46px] rounded-full border-2 border-white '>
-                            <img src={Profile} className="w-full rounded-full h-full object-cover" />
-                            {
-                                isProfileOpen &&
+            <div className="sm:hidden flex items-center gap-4">
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill='white' x="0px" y="0px" width="26" height="26" viewBox="0 0 30 30">
+                        <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z"></path>
+                    </svg>
+                </div>
+                <div className='text-white'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 256 256"><path fill="currentColor" d="M228 128a12 12 0 0 1-12 12H40a12 12 0 0 1 0-24h176a12 12 0 0 1 12 12ZM40 76h176a12 12 0 0 0 0-24H40a12 12 0 0 0 0 24Zm176 104H40a12 12 0 0 0 0 24h176a12 12 0 0 0 0-24Z"/></svg>
+                </div>
+            </div>
+            <div className='xl:block hidden'>
+                {
+                    auth.user ?
+                        <div className='flex items-center gap-5'>
+                            <svg xmlns="http://www.w3.org/2000/svg" className='cursor-pointer' fill='white' width="25" height="25" viewBox="0 0 24 24">
+                                <path  d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
+                            </svg>
+                            <div onClick={() => {
+                                setIsProfileOpen(prev => !prev)
+                            }} className='w-[46px] profile-container relative cursor-pointer h-[46px] rounded-full border-2 border-white '>
+                                <img src={Profile} className="w-full rounded-full h-full object-cover" />
+                                {
+                                    isProfileOpen &&
                             <div ref={profileRef} className='absolute  bg-white rounded-md z-30 w-[200px] border-2 top-[130%] right-0'>
                                 <div className='w-3 h-3 -translate-y-1 absolute top-0 -z-10 right-5  bg-white rotate-45'></div>
                                 <div className='flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2'>
@@ -133,16 +144,17 @@ const Navbar = () => {
                                     <span >Logout</span>
                                 </div>
                             </div>
-                            }
+                                }
+                            </div>
                         </div>
-                    </div>
-                    :
-                    <div className=' flex items-center gap-3'>
-                        <Button text={'Sign In'} className={'!bg-[#F47521] !px-12 !gap-1'} link={window.route('group.login')}  />
-                        <Button text={'Sign Up'} className={'!border-[#F47521] !px-12 !gap-1 !text-[#F47521]'} outline link={window.route('group.register')} />
-                    </div>
+                        :
+                        <div className=' flex items-center gap-3'>
+                            <Button text={'Sign In'} className={'!bg-[#F47521] !px-12 !gap-1'} link={window.route('group.login')}  />
+                            <Button text={'Sign Up'} className={'!border-[#F47521] !px-12 !gap-1 !text-[#F47521]'} outline link={window.route('group.register')} />
+                        </div>
         
-            }
+                }
+            </div>
         </SectionContainer>
     )
 }

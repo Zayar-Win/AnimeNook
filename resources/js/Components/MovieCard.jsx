@@ -3,7 +3,6 @@ import Tag from './Tag'
 import Button from './Button'
 
 const MovieCard = ({anime}) => {
-    console.log(anime);
     return (
         <div className='bg-[#0D0D0D] movie-card transition-all text-white rounded-md cursor-pointer p-5'>
             <div className='w-full relative h-[280px] overflow-hidden object-cover'>
