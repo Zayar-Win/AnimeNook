@@ -1,3 +1,5 @@
+import Footer from '@/Components/Footer';
+import Navbar from '@/Components/Navbar';
 import { usePage } from '@inertiajs/react';
 import React, { useEffect } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
@@ -29,7 +31,9 @@ const UserLayout = ({children}) => {
     },[toastMessage])
     return (
         <div>
+            <Navbar />
             {children}
+            <Footer />
             <ToastContainer position='bottom-right' />
         </div>
     )
