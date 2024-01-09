@@ -14,8 +14,14 @@ class Chapter extends Model
         return $this->morphTo();
     }
 
+
     public function users()
     {
         return $this->belongsToMany(User::class);
+    }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
     }
 }

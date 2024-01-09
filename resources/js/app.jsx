@@ -8,9 +8,9 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-export function formateDate(dateString) {
+export function formateDate(dateString,format={month : '2-digit',day : '2-digit', year:'numeric'},sperator='.') {
     let date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US',{day : '2-digit',month : '2-digit' , year:'numeric'}).format(date).replaceAll('/','.');
+    return new Intl.DateTimeFormat('en-US',format).format(date).replaceAll('/',sperator);
 }
 
 window.route = route;

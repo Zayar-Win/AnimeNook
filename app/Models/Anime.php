@@ -11,8 +11,9 @@ class Anime extends Model
 {
     use HasFactory, HasSlug;
 
-    protected $appends = ['latestWatchedChapter'];
+    protected $with = ['status', 'tags'];
 
+    protected $appends = ['latestWatchedChapter'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -34,7 +35,10 @@ class Anime extends Model
         return $latestWatchedChapter;
     }
 
-
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
 
     public function chapters()
     {
