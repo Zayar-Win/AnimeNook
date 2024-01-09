@@ -6,9 +6,9 @@ import { formateDate } from '@/app';
 import Button from '@/Components/Button';
 import Heart from '@/../assets/Heart';
 import Comment from '@/../assets/Comment';
+import MovieCard from '@/Components/MovieCard';
 
-const VideoDetailPage = ({anime}) => {
-    console.log(anime);
+const VideoDetailPage = ({anime,recommendedAnimes}) => {
     return (
         <SectionContainer>
             <div className='flex items-start my-10'>
@@ -74,33 +74,47 @@ const VideoDetailPage = ({anime}) => {
             </div>
             <div className='w-full h-[1px] bg-gray-300 my-10'></div>
             <h1 className='text-2xl font-bold'>Eposides</h1>
-            {
-                anime?.chapters.length > 0 ?  <div className='grid grid-cols-4 mt-4 gap-5 mb-5'>
-                    {
-                        anime?.chapters.map((chapter,i) => (
-                            <div key={i} className='bg-gray-100 cursor-pointer px-5 py-4 rounded-lg'>
-                                <h3 className='text-md font-semibold'>{chapter?.name}</h3>
-                                <div className='flex items-center gap-3 text-gray-600'>
-                                    <span>{formateDate(chapter?.created_at,{year:'numeric',month:'2-digit',day:'2-digit'},'-')}</span>
-                                    <div className='flex items-center gap-1'>
-                                        <Heart className={'w-5 h-5'} />
-                                        <span>{chapter?.like_count}</span>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                        <Comment className={'w-5 h-5'} />
-                                        <span>{chapter?.comments_count}</span>
+            <div>
+                {
+                    anime?.chapters.length > 0 ?  <div className='grid grid-cols-4 mt-4 gap-5 mb-5'>
+                        {
+                            anime?.chapters.map((chapter,i) => (
+                                <div key={i} className='bg-gray-100 cursor-pointer px-5 py-4 rounded-lg'>
+                                    <h3 className='text-md font-semibold'>{chapter?.name}</h3>
+                                    <div className='flex items-center gap-3 text-gray-600'>
+                                        <span>{formateDate(chapter?.created_at,{year:'numeric',month:'2-digit',day:'2-digit'},'-')}</span>
+                                        <div className='flex items-center gap-1'>
+                                            <Heart className={'w-5 h-5'} />
+                                            <span>{chapter?.like_count}</span>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                            <Comment className={'w-5 h-5'} />
+                                            <span>{chapter?.comments_count}</span>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
+                            ))
+                        }
+                    </div> : 
+                        <div className='text-center h-[400px] flex items-center justify-center text-xl font-semibold text-gray-400'>
+                            <p>Currently No Eposides Are Uploaded.</p>
+                        </div>
+                }
+            </div>
+            {
+                recommendedAnimes?.data.length > 0 && 
+            <div className='my-14'>
+                <h1 className='text-3xl font-extrabold'>Recommended For You</h1>
+                <div className='grid mt-6 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 xl:gap-4 gap-2'>
+                    {
+                        recommendedAnimes?.data.map((anime,i) => (
+                            <MovieCard key={i} anime={anime} />
                         ))
                     }
-                </div> : 
-                    <div className='text-center h-[400px] flex items-center justify-center text-xl font-semibold text-gray-400'>
-                        <p>Currently No Eposides Are Uploaded.</p>
-                    </div>
+                </div>
+            </div>
             }
-           
         </SectionContainer>
     )
 }

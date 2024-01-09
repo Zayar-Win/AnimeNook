@@ -5,8 +5,8 @@ import {Link} from '@inertiajs/react';
 
 const MovieCard = ({anime}) => {
     return (
-        <Link href={window.route('group.anime.detail',{anime})}>
-            <div className='bg-[#0D0D0D] movie-card transition-all text-white rounded-md cursor-pointer p-5'>
+        <div className='bg-[#0D0D0D] movie-card transition-all text-white rounded-md cursor-pointer p-5'>
+            <Link href={window.route('group.anime.detail',{anime})}>
                 <div className='w-full relative h-[280px] overflow-hidden object-cover'>
                     <img className='rounded-md  transition-all w-full h-full object-cover' src={anime?.thumbnail} alt="" />
                     <div className='absolute rounded-md top-3 left-3 flex px-3 py-1 items-center bg-black'>
@@ -43,8 +43,8 @@ const MovieCard = ({anime}) => {
                 <h1 className='mt-3 text-xl font-extrabold'>{anime?.name}</h1>
                 <p className='font-medium text-sm pt-1'>{anime?.description}</p>
                 <Button text={'Watch Now'} className={'inline-block z-10 relative !text-black bg-white hover-effect mt-3'} type='button' />
-            </div>
-        </Link>
+            </Link>
+        </div>
     )
 }
 
