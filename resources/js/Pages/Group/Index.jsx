@@ -10,6 +10,7 @@ import UserLayout from '@/Layouts/UserLayout'
 import Carousel from '@/Components/Carousel/Index'
 import { SwiperSlide } from 'swiper/react'
 import Tag from '@/Components/Tag'
+import Pause from '@/../assets/Pause'
 
 function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,popularAnimes,popularMangas,newEpisodes}) {
     return (
@@ -144,7 +145,7 @@ function Index({trendAnimes,newAnimes,recommendedAnime,continueWatchingAnimes,po
                         </div>
                         <p className='sm:w-[95%] w-full sm:text-base text-sm'>{recommendedAnime?.description}</p>
                         <div className='mt-4 flex items-center flex-wrap sm:gap-8 gap-4'>
-                            <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Watching S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
+                            <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={'Start Watching S1 Ep1'} type={'button'} Icon={<Pause />} />
                             <Button outline text={'Add To WatchList'} className={'!px-8 rounded-none !gap-1 border-[#F47521] text-[#F47521]'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>} />
                         </div>
                     </div>
