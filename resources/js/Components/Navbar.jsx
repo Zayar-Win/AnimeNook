@@ -93,10 +93,10 @@ const Navbar = () => {
             <nav className='sm:block hidden'>
                 <ul className='flex items-center gap-10 font-semibold text-white'>
                     <li className={`hover:text-yellow-400 trasnition-all ${component === 'Group/Index' ? 'text-yellow-400' : null}`}>
-                        <Link href='/'>Home</Link>
+                        <Link href={window.route('group.home')}>Home</Link>
                     </li>
                     <li className={`hover:text-yellow-400 trasnition-all ${component === 'Group/List' ? 'text-yellow-400' : null}`}>
-                        <Link href='/'>Anime List</Link>
+                        <Link href={window.route('group.animes')}>Anime List</Link>
                     </li>
                     <li className={`hover:text-yellow-400 trasnition-all ${component === 'Group/NewSeason' ? 'text-yellow-400' : null}`}>
                         <Link href='/'>New Season</Link>
