@@ -7,9 +7,15 @@ import Star from '@/../assets/Star';
 import Button from '@/Components/Button';
 import BookMark from '@/../assets/BookMark';
 import Pause from '@/../assets/Pause';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import {format } from 'timeago.js'
+import Reply from '@/../assets/Reply';
+import Like from '@/../assets/Like';
+import Edit from '@/../assets/Edit';
+import Delete from '@/../assets/Delete';
 
 const VideoDetail = ({anime}) => {
-    console.log(anime);
     return (
         <>
             <div className='h-[350px] relative ' >
@@ -70,7 +76,7 @@ const VideoDetail = ({anime}) => {
                             anime?.chapters.length > 0 ? <div className='grid grid-cols-4 gap-5'>
                                 {
                                     anime?.chapters?.map((chapter,i) => (
-                                        <div key={i}>
+                                        <div key={i} >
                                             <div className='h-[150px] object-cover relative'>
                                                 <img src={chapter?.thumbnail ?? anime?.thumbnail} className='w-full h-full object-cover' alt="" />
                                                 <div className='absolute top-[50%] left-[50%] w-12 h-12 flex items-center justify-center bg-[#0006] rounded-full translate-x-[-50%]  translate-y-[-50%]'>
@@ -90,6 +96,61 @@ const VideoDetail = ({anime}) => {
                             </div> : <div className='h-[400px] flex items-center justify-center'><h1 className='font-bold text-2xl'>No Eposides are current uploaded.</h1></div>
                         }
                         
+                    </div>
+                    <div className='mt-10'>
+                        <div>
+                            <h1 className='text-xl font-bold'>100 Comments</h1>
+                        </div>
+                        <div className='w-full h-[1px] bg-gray-500 my-6'></div>
+                        <div className='w-[70%] mb-10'>
+                            <div className='flex items-start gap-5 mb-16'>
+                                <div className='w-[60px]'>
+                                    <img className='object-cover w-full h-[60px] rounded-full' src={anime?.thumbnail} alt="" />
+                                </div>
+                                <div className='grow h-[150px] text-black'>
+                                    <ReactQuill theme='snow' className='text-black'  />
+                                </div>
+                            </div>
+                            {
+                                anime?.comments?.length > 0 ? 
+                                    anime?.comments.map((comment,i) => (
+                                        <div key={i} className='flex gap-4 mt-8'>
+                                            <div className='w-[60px] shrink-0'>
+                                                <img className='w-full h-[60px] rounded-full object-cover ' src={comment?.user?.profile_picture} alt="" />
+                                            </div>
+                                            <div>
+                                                <div className='flex gap-2 items-center'>
+                                                    <h1 className='uppercase  font-bold'>{comment?.user?.name}</h1>
+                                                    <span className='text-gray-400 font-medium'>{format(comment?.created_at)}</span>
+                                                </div>
+                                                <p className='py-2 font-semibold'>{comment?.body}</p>
+                                                <div className='flex items-center gap-4 mt-2'> 
+                                                    <div className='flex cursor-pointer items-center gap-1'>
+                                                        <Reply className={'w-5 h-5'} />
+                                                        <span className='uppercase text-sm font-semibold'>Reply</span>
+                                                    </div>
+                                                    <div className='flex cursor-pointer items-center gap-1'>
+                                                        <Like className={'w-5 h-5'} />
+                                                        <span className='uppercase text-sm font-semibold'>Likes</span>
+                                                    </div>
+                                                    <div className='flex cursor-pointer items-center gap-1'>
+                                                        <Edit className={'w-5 h-5'} />
+                                                        <span className='uppercase text-sm font-semibold'>Edit</span>
+                                                    </div>
+                                                    <div className='flex cursor-pointer items-center gap-1'>
+                                                        <Delete className={'w-5 h-5'} />
+                                                        <span className='uppercase text-sm font-semibold'>Delete</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                                    : <div>
+                                        <p>No comments are created yet.</p>
+                                    </div>
+                            }
+                            
+                        </div>
                     </div>
                 </div>
             </SectionContainer>

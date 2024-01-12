@@ -9,7 +9,7 @@ class AnimeDetailController extends Controller
 {
     public function index(Group $group, Anime $anime)
     {
-        $anime = Anime::with('chapters')->where('id', $anime->id)->withCount('ratings')->first();
+        $anime = Anime::with('chapters', 'comments', 'comments.user')->where('id', $anime->id)->withCount('ratings')->first();
         return inertia('Group/VideoDetail', [
             'anime' => $anime
         ]);
