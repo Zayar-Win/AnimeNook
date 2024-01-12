@@ -1,8 +1,8 @@
 import React from 'react'
 
-const Tags = ({tags,tagClassName}) => {
+const Tags = ({tags,tagClassName,className}) => {
     return (
-        <div className='flex items-center'> 
+        <div className={`flex items-center ${className}`}> 
             {
                 tags.length > 0 && tags?.map((tag,i) =>  {
                     return(

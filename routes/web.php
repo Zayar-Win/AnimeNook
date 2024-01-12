@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnimeDetailController;
+use App\Http\Controllers\AnimesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaDetailController;
@@ -60,6 +61,7 @@ if ($isProduction) {
                 ],
             ]);
         })->name('home');
+        Route::get('/animes', [AnimesController::class, 'index'])->name('animes');
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
