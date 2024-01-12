@@ -1,9 +1,10 @@
 <?php
 
+use App\Http\Controllers\AnimeDetailController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\VideoDetailController;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
@@ -59,7 +60,8 @@ if ($isProduction) {
                 ],
             ]);
         })->name('home');
-        Route::get('/animes/{anime:slug}', [VideoDetailController::class, 'index'])->name('anime.detail');
+        Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
+        Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
         Route::get('/login', function () {
             return inertia('Group/Login');

@@ -13,4 +13,9 @@ class Group extends Model
     {
         return $this->hasMany(Anime::class);
     }
+
+    public function mangas()
+    {
+        return $this->hasMany(Manga::class);
+    }
 }

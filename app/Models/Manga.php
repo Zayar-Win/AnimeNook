@@ -11,6 +11,8 @@ class Manga extends Model
 {
     use HasFactory, HasSlug;
 
+    protected $with = ['status', 'tags'];
+
     protected $appends = ['latestWatchedChapter'];
 
     public function getSlugOptions(): SlugOptions
@@ -43,6 +45,11 @@ class Manga extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
     }
 
     public function ratings()
