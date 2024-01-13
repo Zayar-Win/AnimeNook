@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Anime;
 use App\Models\Group;
 use App\Models\Manga;
-use Illuminate\Http\Request;
 
 class AnimesController extends Controller
 {
