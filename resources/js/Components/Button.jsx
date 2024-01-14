@@ -1,13 +1,13 @@
 import { Link } from '@inertiajs/react'
 import React from 'react'
 
-const Button = ({link,text,className,outline,Icon,type}) => {
+const Button = ({link,text,className,onClick,outline,Icon,type}) => {
     return (
         <>
             {
                 type === 'button' || type === 'submit' ? 
                     <div className='inline-block cursor-pointer'>
-                        <button type={type} className={`flex items-center flex-grow-0 gap-3 ${outline ? 'border-2 border-black bg-transparent' : 'bg-white'} text-white px-4 py-2 rounded-lg font-semibold ${className}`}>
+                        <button onClick={onClick} type={type} className={`flex items-center flex-grow-0 gap-3 ${outline ? 'border-2 border-black bg-transparent' : 'bg-white'} text-white px-4 py-2 rounded-lg font-semibold ${className}`}>
                             {
                                 Icon && <span>{Icon}</span>
                             }

@@ -8,8 +8,11 @@ import Heart from '@/../assets/Heart';
 import Comment from '@/../assets/Comment';
 import MangaCard from '@/Components/MangaCard';
 import Tags from '@/Components/Tags';
+import Comments from '@/Components/Comments';
+import CommentForm from '@/Components/CommentForm';
 
 const MangaDetail = ({manga,recommendedMangas}) => {
+    
     return (
         <>
             <SectionContainer>
@@ -92,12 +95,24 @@ const MangaDetail = ({manga,recommendedMangas}) => {
                             </div>
                     }
                 </div>
-            
+            </SectionContainer>
+            <SectionContainer className={'bg-[#0D0D0D]'}>
+                <div className='mt-10'>
+                    <div>
+                        <h1 className='text-xl font-bold'>100 Comments</h1>
+                    </div>
+                    <div className='w-full h-[1px] bg-gray-500 my-6'></div>
+                    <div className='w-[70%]'>
+                        <CommentForm manga={manga} />
+                        <Comments comments={manga?.comments} />
+                            
+                    </div>
+                </div>
             </SectionContainer>
             <div>
                 {
                     recommendedMangas?.data.length > 0 && 
-            <SectionContainer  className='mt-14 bg-[#0D0D0D] px-10 pb-20 pt-16' padding={false}>
+            <SectionContainer  className=' bg-[#0D0D0D] px-10 pb-20 pt-20' padding={false}>
                 <h1 className='text-3xl font-extrabold text-white pb-5'>Recommended For You</h1>
                 <div className='grid mt-6 xl:grid-cols-4  lg:grid-cols-3 md:grid-cols-2 xl:gap-4 gap-2'>
                     {
@@ -109,6 +124,7 @@ const MangaDetail = ({manga,recommendedMangas}) => {
             </SectionContainer>
                 }
             </div>
+            
         </>
     )
 }

@@ -11,6 +11,8 @@ class MangaDetailController extends Controller
     {
         $manga = Manga::with(['chapters', 'chapters' => function ($query) {
             return $query->withCount('comments');
+        }, 'comments' => function ($query) {
+            $query->orderBy('created_at', 'desc');
         }])->where('id', $manga->id)->withCount('ratings')->first();
         $recommendedMangas = Manga::with(['chapters', 'comments', 'tags' => function ($query) use ($manga) {
             return $query->whereIn('tags.id', $manga->tags->pluck('id')->toArray());
