@@ -8,14 +8,14 @@ import Button from '@/Components/Button';
 import BookMark from '@/../assets/BookMark';
 import Pause from '@/../assets/Pause';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-import {format } from 'timeago.js'
-import Reply from '@/../assets/Reply';
-import Like from '@/../assets/Like';
-import Edit from '@/../assets/Edit';
-import Delete from '@/../assets/Delete';
+import {useForm} from '@inertiajs/react'
+import Comments from '@/Components/Comments';
 
 const VideoDetail = ({anime}) => {
+    const {data,setData,errors,post,reset} = useForm({
+        comment : '',
+        animeId : anime?.id,
+    });
     return (
         <>
             <div className='h-[350px] relative ' >
@@ -108,47 +108,19 @@ const VideoDetail = ({anime}) => {
                                     <img className='object-cover w-full h-[60px] rounded-full' src={anime?.thumbnail} alt="" />
                                 </div>
                                 <div className='grow h-[150px] text-black'>
-                                    <ReactQuill theme='snow' className='text-black'  />
+                                    <ReactQuill value={data.comment} onChange={data => setData('comment',data)} theme='snow' className='text-black'  />
+                                    {
+                                        errors?.comment && <span>{errors?.comment}</span>
+                                    }
+                                    <div className='flex justify-end'>
+                                        <Button type={'button'} className={'!bg-primary my-2 !px-10'} text={'Comment'} onClick={() => post(window.route('group.comment.create'),{
+                                            preserveScroll:true,
+                                            onSuccess:() => reset()
+                                        })} />
+                                    </div>
                                 </div>
                             </div>
-                            {
-                                anime?.comments?.length > 0 ? 
-                                    anime?.comments.map((comment,i) => (
-                                        <div key={i} className='flex gap-4 mt-8'>
-                                            <div className='w-[60px] shrink-0'>
-                                                <img className='w-full h-[60px] rounded-full object-cover ' src={comment?.user?.profile_picture} alt="" />
-                                            </div>
-                                            <div>
-                                                <div className='flex gap-2 items-center'>
-                                                    <h1 className='uppercase  font-bold'>{comment?.user?.name}</h1>
-                                                    <span className='text-gray-400 font-medium'>{format(comment?.created_at)}</span>
-                                                </div>
-                                                <p className='py-2 font-semibold'>{comment?.body}</p>
-                                                <div className='flex items-center gap-4 mt-2'> 
-                                                    <div className='flex cursor-pointer items-center gap-1'>
-                                                        <Reply className={'w-5 h-5'} />
-                                                        <span className='uppercase text-sm font-semibold'>Reply</span>
-                                                    </div>
-                                                    <div className='flex cursor-pointer items-center gap-1'>
-                                                        <Like className={'w-5 h-5'} />
-                                                        <span className='uppercase text-sm font-semibold'>Likes</span>
-                                                    </div>
-                                                    <div className='flex cursor-pointer items-center gap-1'>
-                                                        <Edit className={'w-5 h-5'} />
-                                                        <span className='uppercase text-sm font-semibold'>Edit</span>
-                                                    </div>
-                                                    <div className='flex cursor-pointer items-center gap-1'>
-                                                        <Delete className={'w-5 h-5'} />
-                                                        <span className='uppercase text-sm font-semibold'>Delete</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                    : <div>
-                                        <p>No comments are created yet.</p>
-                                    </div>
-                            }
+                            <Comments comments={anime?.comments} />
                             
                         </div>
                     </div>
