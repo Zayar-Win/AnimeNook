@@ -8,14 +8,21 @@ import Button from '@/Components/Button';
 import BookMark from '@/../assets/BookMark';
 import Pause from '@/../assets/Pause';
 import ReactQuill from 'react-quill';
-import {useForm} from '@inertiajs/react'
+import {router, useForm} from '@inertiajs/react'
 import Comments from '@/Components/Comments';
+import Like from '@/../assets/Like';
 
 const VideoDetail = ({anime}) => {
     const {data,setData,errors,post,reset} = useForm({
         comment : '',
         animeId : anime?.id,
     });
+    const likeAnime = () => {
+        router.post(window.route('group.anime.like',{anime}),{
+            preserveScroll:true,
+            preserveState:true
+        })
+    }
     return (
         <>
             <div className='h-[350px] relative ' >
@@ -55,6 +62,7 @@ const VideoDetail = ({anime}) => {
                             </div>
                             <div className='flex'>
                                 <Button text={'Add to WatchList'} outline className={'border-primary rounded-none !text-primary uppercase my-5'} Icon={<BookMark />} />
+                                <Button text={'Like'} type={'button'} onClick={() => likeAnime()} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<Like />} />
                             </div>
                             <p className='my-5'>{anime?.description}</p>
                         </div>

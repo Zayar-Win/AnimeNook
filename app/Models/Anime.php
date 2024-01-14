@@ -13,7 +13,7 @@ class Anime extends Model
 
     protected $with = ['status', 'tags'];
 
-    protected $appends = ['latestWatchedChapter'];
+    protected $appends = ['latestWatchedChapter', 'isLikeByCurrentUser'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -33,6 +33,14 @@ class Anime extends Model
 
 
         return $latestWatchedChapter;
+    }
+
+    public function getIsLikeByCurrentUserAttribute()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return $this->likeUsers()->where('user_id', auth()->id())->exists();
     }
 
     public function status()
@@ -58,5 +66,15 @@ class Anime extends Model
     public function ratings()
     {
         return $this->morphMany(Rating::class, 'ratingable');
+    }
+
+    public function likes()
+    {
+        return $this->morphMany(Likeable::class, 'likeable');
+    }
+
+    public function likeUsers()
+    {
+        return $this->morphToMany(User::class, 'likeable');
     }
 }

@@ -6,7 +6,7 @@ use App\Models\Anime;
 use App\Models\Group;
 use App\Models\Manga;
 
-class AnimesController extends Controller
+class AnimeController extends Controller
 {
     public function index(Group $group)
     {
@@ -34,7 +34,13 @@ class AnimesController extends Controller
                 'animes' => $filters['filter'] === 'animes' || $filters['filter'] === null ? $animes : [],
                 'mangas' => $filters['filter'] === 'mangas' || $filters['filter'] === null ? $mangas : []
             ],
-            'filters' => $filters
+            'filters' => $filters,
         ]);
+    }
+
+    public function likeOrUnlike(Group $group, Anime $anime)
+    {
+        $anime->likeUsers()->toggle(auth()->id());
+        return back();
     }
 }

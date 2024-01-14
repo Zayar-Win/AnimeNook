@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('thumbnail');
             $table->bigInteger('rating');
             $table->bigInteger('views_count')->default(0);
-            $table->bigInteger('love_count')->default(0);
+            $table->bigInteger('likes_count')->default(0);
             $table->unsignedBigInteger('status_id')->default(1);
             $table->boolean('is_trending')->default(false);
             $table->boolean('is_recommended')->default(false);

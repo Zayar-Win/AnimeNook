@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeDetailController;
-use App\Http\Controllers\AnimesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\ProfileController;
 use App\Models\Anime;
@@ -62,8 +63,10 @@ if ($isProduction) {
                 ],
             ]);
         })->name('home');
-        Route::get('/animes', [AnimesController::class, 'index'])->name('animes');
+        Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
         Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
+        Route::post('/mangas/{manga:slug}/like', [MangaController::class, 'like'])->name('manga.like');
+        Route::post('/animes/{anime:slug}/like', [AnimeController::class, 'likeOrUnlike'])->name('anime.like');
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
