@@ -1,11 +1,22 @@
 import React from 'react'
 import {format } from 'timeago.js'
 import Reply from '@/../assets/Reply';
-import Like from '@/../assets/Like';
 import Edit from '@/../assets/Edit';
 import Delete from '@/../assets/Delete';
+import {router, usePage} from '@inertiajs/react';
+import Liked from '@/../assets/Liked';
 
 const Comments = ({comments}) => {
+    const {auth} = usePage().props;
+
+    const likeOrUnlike = (comment) => {
+        router.post(window.route('group.comment.like',{comment}),{},{
+            preserveScroll:true,
+            preserveState:true
+        })
+    }
+
+
     return (
         <div>
             {
@@ -26,18 +37,23 @@ const Comments = ({comments}) => {
                                         <Reply className={'w-5 h-5'} />
                                         <span className='uppercase text-sm font-semibold'>Reply</span>
                                     </div>
-                                    <div className='flex cursor-pointer items-center gap-1'>
-                                        <Like className={'w-5 h-5'} />
-                                        <span className='uppercase text-sm font-semibold'>Likes</span>
+                                    <div onClick={() => likeOrUnlike(comment)} className='flex cursor-pointer items-center gap-1'>
+                                        <Liked  className={`w-5 h-5 ${comment?.isLikeByCurrentUser ? 'text-primary' : '' }`} />
+                                        <span className='uppercase text-sm font-semibold'>{comment?.likes_count} Likes</span>
                                     </div>
-                                    <div className='flex cursor-pointer items-center gap-1'>
-                                        <Edit className={'w-5 h-5'} />
-                                        <span className='uppercase text-sm font-semibold'>Edit</span>
-                                    </div>
-                                    <div className='flex cursor-pointer items-center gap-1'>
-                                        <Delete className={'w-5 h-5'} />
-                                        <span className='uppercase text-sm font-semibold'>Delete</span>
-                                    </div>
+                                    {
+                                        auth?.user?.id === comment?.user_id &&
+                                        <>
+                                            <div className='flex cursor-pointer items-center gap-1'>
+                                                <Edit className={'w-5 h-5'} />
+                                                <span className='uppercase text-sm font-semibold'>Edit</span>
+                                            </div>
+                                            <div className='flex cursor-pointer items-center gap-1'>
+                                                <Delete className={'w-5 h-5'} />
+                                                <span className='uppercase text-sm font-semibold'>Delete</span>
+                                            </div>
+                                        </>
+                                    }
                                 </div>
                             </div>
                         </div>

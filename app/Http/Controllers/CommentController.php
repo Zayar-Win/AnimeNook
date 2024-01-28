@@ -7,7 +7,6 @@ use App\Models\Anime;
 use App\Models\Comment;
 use App\Models\Group;
 use App\Models\Manga;
-use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
@@ -23,5 +22,19 @@ class CommentController extends Controller
         ]);
 
         return back()->with('success', 'Comment Created successful.');
+    }
+    public function likeOrUnlike(Group $group, Comment $comment)
+    {
+        $likeStatus = $comment->likeUsers()->toggle(auth()->id());
+        if ($likeStatus['attached']) {
+            $comment->update([
+                'likes_count' => $comment->likes_count + 1
+            ]);
+        } else {
+            $comment->update([
+                'likes_count' => $comment->likes_count - 1
+            ]);
+        }
+        return back();
     }
 }

@@ -110,7 +110,7 @@ const VideoDetail = ({anime}) => {
                     </div>
                     <div className='mt-10'>
                         <div>
-                            <h1 className='text-xl font-bold'>100 Comments</h1>
+                            <h1 className='text-xl font-bold'>{anime?.comments_count} {anime?.comments_count > 1 ? 'Comments' : 'Comment'}</h1>
                         </div>
                         <div className='w-full h-[1px] bg-gray-500 my-6'></div>
                         <div className='w-[70%] mb-10'>

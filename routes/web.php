@@ -30,7 +30,7 @@ use Inertia\Inertia;
 
 
 $isProduction = config('app.env') === 'production';
-URL::defaults(['group' => 'delta']);
+// URL::defaults(['group' => 'delta']);
 if ($isProduction) {
     Route::domain('{group:subdomain}' . config('app.url'))->name('group')->group(function () {
         Route::get('/', function () {
@@ -68,6 +68,7 @@ if ($isProduction) {
             Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
             Route::post('/mangas/{manga:slug}/like', [MangaController::class, 'like'])->name('manga.like');
             Route::post('/animes/{anime:slug}/like', [AnimeController::class, 'likeOrUnlike'])->name('anime.like');
+            Route::post('/comments/{comment:id}/like', [CommentController::class, 'likeOrUnlike'])->name('comment.like');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

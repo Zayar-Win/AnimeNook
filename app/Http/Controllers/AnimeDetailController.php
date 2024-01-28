@@ -10,8 +10,8 @@ class AnimeDetailController extends Controller
     public function index(Group $group, Anime $anime)
     {
         $anime = Anime::with(['chapters', 'comments' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        },  'comments.user'])->where('id', $anime->id)->withCount('ratings')->first();
+            $query->withCount('likes')->orderBy('created_at', 'desc');
+        },  'comments.user', 'comments.likes'])->where('id', $anime->id)->withCount('ratings', 'comments')->first();
         $anime->append('isLikeByCurrentUser');
         return inertia('Group/VideoDetail', [
             'anime' => $anime
