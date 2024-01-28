@@ -43,6 +43,11 @@ class User extends Authenticatable
     public function chapters()
     {
 
-        $this->belongsToMany(Chapter::class);
+        return $this->belongsToMany(Chapter::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(Likeable::class);
     }
 }

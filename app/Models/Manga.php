@@ -13,6 +13,8 @@ class Manga extends Model
 
     protected $with = ['status', 'tags'];
 
+    protected $guarded = [];
+
     protected $appends = ['latestWatchedChapter'];
 
     public function getSlugOptions(): SlugOptions
@@ -55,5 +57,16 @@ class Manga extends Model
     public function ratings()
     {
         return $this->morphMany(Rating::class, 'ratingable');
+    }
+
+    public function likes()
+    {
+        return $this->morphMany(Likeable::class, 'likeable');
+    }
+
+
+    public function isLikeByUser()
+    {
+        return $this->likes()->where('user_id', auth()->id())->exists();
     }
 }
