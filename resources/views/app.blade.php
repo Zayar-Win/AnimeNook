@@ -6,6 +6,18 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        @php
+            $group = request()->route('group');
+        @endphp
+        <style>
+            :root {
+            --primary-color: {{ $agency->primary_color ?? '#ED6400' }};
+            /* Default primary color */
+            --secondary-color: {{ $group->secondary_color ?? 'black' }};
+            /* Default secondary color */
+        }
+
+        </style>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

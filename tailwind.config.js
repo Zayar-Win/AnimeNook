@@ -11,9 +11,16 @@ export default {
     ],
 
     theme: {
+        
         extend: {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            colors:{
+                'primary' : 'var(--primary-color)'
+            },
+            screens:{
+                'xxs' : '330px'
             },
         },
     },

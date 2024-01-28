@@ -1,3 +1,115 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body{
+    /* width:100%; */
+    /* overflow-x: hidden; */
+}
+*{
+    box-sizing: border-box !important;
+}
+
+.sort:hover .sort-options,
+.filter:hover .filter-options{
+    display: block;
+}
+
+.ql-toolbar{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    overflow: hidden;
+    border-color: var(--primary-color) !important;
+    background-color: white;
+    /* border:2px solid white !important; */
+}
+
+.ql-container{
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    overflow: hidden;
+    border-color: var(--primary-color) !important;
+    color:black;
+    font-size:15px !important;
+    background-color: white;
+    /* border:2px solid white !important; */
+    border-top:0px !important;
+    height:100px !important;
+}
+
+.hover-effect {
+    position: relative;
+    overflow: hidden;
+}
+.hover-effect span {
+    position: relative;
+    z-index: 10;
+}
+.hover-effect {
+    transition: all 0.3s linear;
+}
+.hover-effect:hover {
+    color: white !important;
+}
+
+.movie-card:hover img {
+    transform: scale(1.1);
+}
+
+.hover-effect::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: green;
+    z-index: 7;
+    transform: translateX(-100%);
+    transition: all 0.3s linear;
+}
+.hover-effect:hover::before {
+    transform: translateX(0);
+}
+
+.swiper-pagination-bullet{
+    width:25px !important;
+    height:4px !important;
+    background-color: white !important;
+    border-radius: 100px !important;
+}
+.swiper-pagination-bullet-active{
+    background-color: rgb(244,117,33) !important;
+    width:40px !important;
+
+}
+
+.animate-input:focus ~ .animate-label,
+.animate-label.active {
+    transform: translateY(-20px);
+}
+
+.shake {
+    display: block;
+    animation: shaking 0.3s linear 1;
+}
+
+@keyframes shaking {
+    0% {
+        transform: translateX(0px);
+    }
+    25% {
+        transform: translateX(10px);
+    }
+    50% {
+        transform: translateX(0px);
+    }
+    75% {
+        transform: translateX(-10px);
+    }
+    100% {
+        transform: translateX(0px);
+    }
+}
