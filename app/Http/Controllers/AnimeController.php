@@ -40,7 +40,16 @@ class AnimeController extends Controller
 
     public function likeOrUnlike(Group $group, Anime $anime)
     {
-        $anime->likeUsers()->toggle(auth()->id());
+        $likeStatus = $anime->likeUsers()->toggle(auth()->id());
+        if ($likeStatus['attached']) {
+            $anime->update([
+                'likes_count' => $anime->likes_count + 1
+            ]);
+        } else {
+            $anime->update([
+                'likes_count' => $anime->likes_count - 1
+            ]);
+        }
         return back();
     }
 }

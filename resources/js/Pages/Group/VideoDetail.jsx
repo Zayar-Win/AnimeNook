@@ -10,7 +10,7 @@ import Pause from '@/../assets/Pause';
 import ReactQuill from 'react-quill';
 import {router, useForm} from '@inertiajs/react'
 import Comments from '@/Components/Comments';
-import Like from '@/../assets/Like';
+import Liked from '@/../assets/Liked';
 
 const VideoDetail = ({anime}) => {
     const {data,setData,errors,post,reset} = useForm({
@@ -18,7 +18,7 @@ const VideoDetail = ({anime}) => {
         animeId : anime?.id,
     });
     const likeAnime = () => {
-        router.post(window.route('group.anime.like',{anime}),{
+        router.post(window.route('group.anime.like',{anime}),{},{
             preserveScroll:true,
             preserveState:true
         })
@@ -59,10 +59,13 @@ const VideoDetail = ({anime}) => {
                                 <div className='text-gray-400 font-medium'>
                                     {anime?.views_count} Views
                                 </div>
+                                <div className='text-gray-400 font-medium'>
+                                    {anime?.likes_count} Likes
+                                </div>
                             </div>
-                            <div className='flex'>
+                            <div className='flex items-center gap-3 '>
                                 <Button text={'Add to WatchList'} outline className={'border-primary rounded-none !text-primary uppercase my-5'} Icon={<BookMark />} />
-                                <Button text={'Like'} type={'button'} onClick={() => likeAnime()} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<Like />} />
+                                <Button text={anime?.isLikeByCurrentUser ? 'Liked' : 'Like'} outline type={'button'} onClick={() => likeAnime()} className={'border-primary !px-8 w-[140px] py-3 rounded-none !gap-1'} Icon={<Liked className={`w-6 h-6 ${anime?.isLikeByCurrentUser ? 'text-primary' : 'text-white'}`} />} />
                             </div>
                             <p className='my-5'>{anime?.description}</p>
                         </div>

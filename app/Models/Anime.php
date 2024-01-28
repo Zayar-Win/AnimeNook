@@ -12,8 +12,9 @@ class Anime extends Model
     use HasFactory, HasSlug;
 
     protected $with = ['status', 'tags'];
+    protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isLikeByCurrentUser'];
+    protected $appends = ['latestWatchedChapter'];
 
     public function getSlugOptions(): SlugOptions
     {
