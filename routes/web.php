@@ -66,6 +66,7 @@ if ($isProduction) {
         Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
         Route::middleware('auth')->group(function () {
             Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
+            Route::post('/comments/update', [CommentController::class, 'update'])->name('comment.update');
             Route::post('/mangas/{manga:slug}/like', [MangaController::class, 'like'])->name('manga.like');
             Route::post('/animes/{anime:slug}/like', [AnimeController::class, 'likeOrUnlike'])->name('anime.like');
             Route::post('/comments/{comment:id}/like', [CommentController::class, 'likeOrUnlike'])->name('comment.like');

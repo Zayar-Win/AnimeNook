@@ -23,6 +23,15 @@ class CommentController extends Controller
 
         return back()->with('success', 'Comment Created successful.');
     }
+    public function update(Group $group, CommentRequest $request)
+    {
+        $validatedData = $request->validated();
+        Comment::where('id', $validatedData['commentId'])->update([
+            'body' => $validatedData['comment']
+        ]);
+
+        return back()->with('success', 'Comment Updated successful.');
+    }
     public function likeOrUnlike(Group $group, Comment $comment)
     {
         $likeStatus = $comment->likeUsers()->toggle(auth()->id());
