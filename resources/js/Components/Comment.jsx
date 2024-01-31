@@ -5,8 +5,10 @@ import Edit from '@/../assets/Edit';
 import Delete from '@/../assets/Delete';
 import Liked from '@/../assets/Liked';
 import CommentForm from './CommentForm';
+import DeleteModal from './DeleteModal';
 const Comment = ({comment,auth,likeOrUnlike,anime,manga}) => {
     const [isEditFormOpen,setIsEditFormOpen] = useState(false);
+    const [isDeleteModelOpen,setIsDeleteModelOpen] = useState(false);
     return (
         <div  className='flex gap-4 mt-8 text-white'>
             <div className='w-[60px] shrink-0'>
@@ -20,6 +22,7 @@ const Comment = ({comment,auth,likeOrUnlike,anime,manga}) => {
                 {
                     isEditFormOpen ? <div className='pl-6 mt-5'><CommentForm anime={anime} manga={manga} onSuccess={() => setIsEditFormOpen(false)} comment={comment} focus type='update'  /></div> : 
                         <>
+
                             <p className='py-2 font-semibold' dangerouslySetInnerHTML={{__html: comment.body}}></p>
                             <div className='flex items-center gap-4 mt-2'> 
                                 <div className='flex cursor-pointer items-center gap-1'>
@@ -37,13 +40,16 @@ const Comment = ({comment,auth,likeOrUnlike,anime,manga}) => {
                                                 <Edit className={'w-5 h-5'} />
                                                 <span className='uppercase text-sm font-semibold'>Edit</span>
                                             </div>
-                                            <div className='flex cursor-pointer items-center gap-1'>
+                                            <div onClick={() => setIsDeleteModelOpen(prev => !prev) } className='flex cursor-pointer items-center gap-1'>
                                                 <Delete className={'w-5 h-5'} />
                                                 <span className='uppercase text-sm font-semibold'>Delete</span>
                                             </div>
                                         </>
                                 }
                             </div>
+                            {
+                                isDeleteModelOpen && <DeleteModal />
+                            }
                         </>
                 }
             </div>
