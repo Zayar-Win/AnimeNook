@@ -3,7 +3,7 @@ import UserLayout from '@/Layouts/UserLayout'
 import React from 'react'
 import Share from '@/../assets/Share';
 import Tags from '@/Components/Tags';
-import Star from '@/../assets/Star';
+// import Star from '@/../assets/Star';
 import Button from '@/Components/Button';
 import BookMark from '@/../assets/BookMark';
 import Pause from '@/../assets/Pause';
@@ -11,12 +11,18 @@ import {router} from '@inertiajs/react'
 import Comments from '@/Components/Comments';
 import Liked from '@/../assets/Liked';
 import CommentForm from '@/Components/CommentForm';
+import Rating from '@/Components/Rating';
 
 const VideoDetail = ({anime}) => {
     const likeAnime = () => {
         router.post(window.route('group.anime.like',{anime}),{},{
             preserveScroll:true,
             preserveState:true
+        })
+    }
+    const ratingHandler = (rating) => {
+        router.post(window.route('group.anime.rating',{anime}),{rating},{
+            preserveScroll:true,
         })
     }
     return (
@@ -40,13 +46,7 @@ const VideoDetail = ({anime}) => {
                                 <Tags tags={anime?.tags} />
                             </div>
                             <div className='flex items-center gap-2 mt-6'>
-                                <div className='flex items-center'>
-                                    <Star className={'w-6 h-6'} />
-                                    <Star className={'w-6 h-6'}/>
-                                    <Star className={'w-6 h-6'}/>
-                                    <Star className={'w-6 h-6'}/>
-                                    <Star className={'w-6 h-6'}/>
-                                </div>
+                                <Rating ratingHandler={ratingHandler} />
                                 <span className='inline-block h-6 mx-1 border-l-2 border-gray-500'></span>
                                 <div>
                                     <div className='font-medium text-gray-400'>Average Rating: <span className='text-white font-bold'>{anime?.rating}({anime?.ratings_count})</span></div>

@@ -9,6 +9,8 @@ class Rating extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function ratingable()
     {
         return $this->morphTo();

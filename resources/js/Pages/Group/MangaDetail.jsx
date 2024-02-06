@@ -1,7 +1,7 @@
 import SectionContainer from '@/Components/SectionContainer';
 import UserLayout from '@/Layouts/UserLayout'
 import React from 'react'
-import Star from '../../../assets/Star';
+// import Star from '../../../assets/Star';
 import { formateDate } from '@/app';
 import Button from '@/Components/Button';
 import Heart from '@/../assets/Heart';
@@ -12,6 +12,7 @@ import Comments from '@/Components/Comments';
 import CommentForm from '@/Components/CommentForm';
 import Like from '@/../assets/Like';
 import { router } from '@inertiajs/react';
+import Rating from '@/Components/Rating';
 
 const MangaDetail = ({manga,recommendedMangas}) => {
     const likeManga = () => {
@@ -19,6 +20,11 @@ const MangaDetail = ({manga,recommendedMangas}) => {
             preserveScroll:true,
             preserveState:true,
         });
+    }
+    const ratingHandler = (rating) => {
+        router.post(window.route('group.manga.rating',{manga}),{rating},{
+            preserveScroll:true
+        })
     }
     return (
         <>
@@ -51,14 +57,11 @@ const MangaDetail = ({manga,recommendedMangas}) => {
                         </div>
                         <div className='my-5'>
                             <div className='flex items-center gap-3'>
-                                <div className='flex items-center'>
-                                    <Star className={'text-primary w-6 h-6'} />
-                                    <Star className={'text-primary w-6 h-6'}/>
-                                    <Star className={'text-primary w-6 h-6'}/>
-                                    <Star  className={'text-primary w-6 h-6'}/>
-                                    <Star className={'text-primary w-6 h-6' } />
+                                <Rating ratingHandler={ratingHandler} />
+                                <span className='inline-block h-6 mx-1 border-l-2 border-gray-500'></span>
+                                <div>
+                                    <div className='font-medium text-gray-600'>Average Rating: <span className='text-black font-bold'>{manga?.rating}({manga?.ratings_count})</span></div>
                                 </div>
-                                <p className='font-2xl font-bold'>{manga?.rating}</p>
                             </div>
                         </div>
                         <p className='text-gray-600'>{manga?.description}</p>
