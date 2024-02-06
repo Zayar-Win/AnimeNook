@@ -70,6 +70,7 @@ if ($isProduction) {
             Route::post('/mangas/{manga:slug}/like', [MangaController::class, 'like'])->name('manga.like');
             Route::post('/animes/{anime:slug}/like', [AnimeController::class, 'likeOrUnlike'])->name('anime.like');
             Route::post('/comments/{comment:id}/like', [CommentController::class, 'likeOrUnlike'])->name('comment.like');
+            Route::post('/comments/{comment}/delete', [CommentController::class, 'deleteComment'])->name('comment.delete');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

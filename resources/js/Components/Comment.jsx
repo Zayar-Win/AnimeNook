@@ -6,9 +6,18 @@ import Delete from '@/../assets/Delete';
 import Liked from '@/../assets/Liked';
 import CommentForm from './CommentForm';
 import DeleteModal from './DeleteModal';
+import { router } from '@inertiajs/react';
 const Comment = ({comment,auth,likeOrUnlike,anime,manga}) => {
     const [isEditFormOpen,setIsEditFormOpen] = useState(false);
     const [isDeleteModelOpen,setIsDeleteModelOpen] = useState(false);
+    const commentDelete = () => {
+        router.post(window.route('group.comment.delete',{comment}),comment,{
+            preserveScroll:true,
+            onSuccess:() => {
+                setIsDeleteModelOpen(false);
+            }
+        })
+    }
     return (
         <div  className='flex gap-4 mt-8 text-white'>
             <div className='w-[60px] shrink-0'>
@@ -48,7 +57,7 @@ const Comment = ({comment,auth,likeOrUnlike,anime,manga}) => {
                                 }
                             </div>
                             {
-                                isDeleteModelOpen && <DeleteModal />
+                                isDeleteModelOpen && <DeleteModal title={'Delete Comment'} deleteHandler={commentDelete} setIsDeleteModelOpen={setIsDeleteModelOpen} />
                             }
                         </>
                 }

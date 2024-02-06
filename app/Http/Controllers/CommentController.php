@@ -46,4 +46,13 @@ class CommentController extends Controller
         }
         return back();
     }
+
+    public function deleteComment(Group $group, Comment $comment)
+    {
+        if ($comment->user_id !== auth()->id()) {
+            return back()->with('warn', 'You can\'t delete other user\'s comment.');
+        }
+        $comment->delete();
+        return back()->with('success', 'Deleted comment.');
+    }
 }
