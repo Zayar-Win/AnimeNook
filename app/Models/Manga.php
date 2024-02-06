@@ -77,4 +77,9 @@ class Manga extends Model
     {
         return $this->likes()->where('user_id', auth()->id())->exists();
     }
+
+    public function collectionItems()
+    {
+        return $this->morphMany(CollectionItems::class, 'item');
+    }
 }

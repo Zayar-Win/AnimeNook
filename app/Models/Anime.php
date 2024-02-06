@@ -79,4 +79,9 @@ class Anime extends Model
     {
         return $this->morphToMany(User::class, 'likeable');
     }
+
+    public function collectionItems()
+    {
+        return $this->morphMany(CollectionItems::class, 'item');
+    }
 }
