@@ -23,8 +23,9 @@ class CommentRequest extends FormRequest
     {
         return [
             'comment' => ['required', 'min:3', 'max:200'],
-            'animeId' => ['sometimes'],
-            'mangaId' => ['sometimes']
+            'animeId' => ['nullable'],
+            'mangaId' => ['nullable'],
+            'commentId' => ['nullable']
         ];
     }
 }

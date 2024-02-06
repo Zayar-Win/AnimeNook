@@ -44,6 +44,7 @@ class Anime extends Model
         return $this->likeUsers()->where('user_id', auth()->id())->exists();
     }
 
+
     public function status()
     {
         return $this->belongsTo(Status::class);
