@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Group;
 use App\Models\Likeable;
 use App\Models\Manga;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 
 class MangaController extends Controller
@@ -24,5 +25,31 @@ class MangaController extends Controller
             ]);
         }
         return back();
+    }
+    public function rating(Group $group, Manga $manga)
+    {
+        $totalRating = $manga->ratings()->sum('rating');
+        $rating = $manga->ratings()->where('user_id', auth()->id())->first();
+        if ($rating) {
+            $manga->update([
+                'rating' => number_format(($totalRating - $rating->rating + request('rating'))   / $manga->ratings()->count(), 1)
+            ]);
+            $rating->update([
+                'rating' => request('rating')
+            ]);
+            return back()->with('success', 'Updated your rating.');
+        } else {
+            Rating::create([
+                'user_id' => auth()->id(),
+                'group_id' => $group->id,
+                'rating' => request('rating'),
+                'ratingable_id' => $manga->id,
+                'ratingable_type' => Manga::class
+            ]);
+            $manga->update([
+                'rating' => number_format(($totalRating + request('rating')) / $manga->ratings()->count(), 1)
+            ]);
+            return back()->with('success', 'Thank for your rating.');
+        }
     }
 }

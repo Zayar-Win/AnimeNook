@@ -35,6 +35,14 @@ class Manga extends Model
         return $latestWatchedChapter;
     }
 
+    public function getIsLikeByCurrentUserAttribute()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return $this->likes()->where('user_id', auth()->id())->exists();
+    }
+
     public function chapters()
     {
         return $this->morphMany(Chapter::class, 'chapterable');
