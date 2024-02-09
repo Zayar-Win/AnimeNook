@@ -26,6 +26,9 @@ class Anime extends Model
     public function getLatestWatchedChapterAttribute()
     {
         $group = request()->route('group');
+        if (gettype($group) !== 'object') {
+            $group = Group::where('subdomain', $group)->first();
+        }
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)
