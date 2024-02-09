@@ -7,13 +7,14 @@ import Tags from '@/Components/Tags';
 import Button from '@/Components/Button';
 import BookMark from '@/../assets/BookMark';
 import Pause from '@/../assets/Pause';
-import {router} from '@inertiajs/react'
+import {router,usePage} from '@inertiajs/react'
 import Comments from '@/Components/Comments';
 import Liked from '@/../assets/Liked';
 import CommentForm from '@/Components/CommentForm';
 import Rating from '@/Components/Rating';
 
 const VideoDetail = ({anime}) => {
+    const {auth : {user}} = usePage().props; 
     const likeAnime = () => {
         router.post(window.route('group.anime.like',{anime}),{},{
             preserveScroll:true,
@@ -22,6 +23,14 @@ const VideoDetail = ({anime}) => {
     }
     const ratingHandler = (rating) => {
         router.post(window.route('group.anime.rating',{anime}),{rating},{
+            preserveScroll:true,
+        })
+    }
+    const saveToWatchList  = () => {
+        router.post(window.route('group.item.save',{collection:user.collections[0]}),{
+            'id' : anime.id,
+            'type' : 'anime',
+        },{
             preserveScroll:true,
         })
     }
@@ -60,7 +69,7 @@ const VideoDetail = ({anime}) => {
                                 </div>
                             </div>
                             <div className='flex items-center gap-3 '>
-                                <Button text={'Add to WatchList'} outline className={'border-primary rounded-none !text-primary uppercase my-5'} Icon={<BookMark />} />
+                                <Button text={anime.isSaveByCurrentUser ? 'Added to WatchList' : 'Add to WatchList'} type={'button'} onClick={() => saveToWatchList()} outline className={'border-primary rounded-none !text-primary uppercase my-5'} Icon={<BookMark />} />
                                 <Button text={anime?.isLikeByCurrentUser ? 'Liked' : 'Like'} outline type={'button'} onClick={() => likeAnime()} className={'border-primary !px-8 w-[140px] py-3 rounded-none !gap-1'} Icon={<Liked className={`w-6 h-6 ${anime?.isLikeByCurrentUser ? 'text-primary' : 'text-white'}`} />} />
                             </div>
                             <p className='my-5'>{anime?.description}</p>

@@ -30,6 +30,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $with = ['collections'];
+
     /**
      * The attributes that should be cast.
      *
@@ -40,10 +42,24 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    protected static function booted()
+    {
+        static::created(function (User $user) {
+            Collection::create([
+                'user_id' => $user->id,
+                'name' => 'Favourite'
+            ]);
+        });
+    }
+
     public function chapters()
     {
-
         return $this->belongsToMany(Chapter::class);
+    }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
     }
 
     public function likes()

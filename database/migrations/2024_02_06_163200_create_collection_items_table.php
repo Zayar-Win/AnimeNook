@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('collection_items', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('collection_id');
             $table->string('item_type');
             $table->unsignedBigInteger('item_id');

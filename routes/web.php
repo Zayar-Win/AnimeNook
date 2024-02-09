@@ -3,6 +3,7 @@
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeDetailController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
@@ -73,6 +74,7 @@ if ($isProduction) {
             Route::post('/comments/{comment}/delete', [CommentController::class, 'deleteComment'])->name('comment.delete');
             Route::post('/animes/{anime}/rating', [AnimeController::class, 'rating'])->name('anime.rating');
             Route::post('/mangas/{manga}/rating', [MangaController::class, 'rating'])->name('manga.rating');
+            Route::post('/collections/{collection}/save', [CollectionItemsController::class, 'saveOrUnSave'])->name('item.save');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

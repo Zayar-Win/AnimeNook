@@ -9,6 +9,8 @@ class CollectionItems extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function item()
     {
         return $this->morphTo('item', 'item_type', 'item_id');
