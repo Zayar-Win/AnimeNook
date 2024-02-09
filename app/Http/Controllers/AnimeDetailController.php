@@ -14,7 +14,7 @@ class AnimeDetailController extends Controller
         },  'comments.user', 'comments.likes'])->where('id', $anime->id)->withCount('ratings', 'comments')->first();
         $anime->append('isLikeByCurrentUser');
         return inertia('Group/VideoDetail', [
-            'anime' => $anime
+            'anime' => $anime,
         ]);
     }
 }
