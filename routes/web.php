@@ -3,6 +3,8 @@
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeDetailController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
@@ -30,7 +32,7 @@ use Inertia\Inertia;
 
 
 $isProduction = config('app.env') === 'production';
-URL::defaults(['group' => 'delta']);
+// URL::defaults(['group' => 'delta']);
 if ($isProduction) {
     Route::domain('{group:subdomain}' . config('app.url'))->name('group')->group(function () {
         Route::get('/', function () {
@@ -66,8 +68,16 @@ if ($isProduction) {
         Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
         Route::middleware('auth')->group(function () {
             Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
+            Route::post('/comments/update', [CommentController::class, 'update'])->name('comment.update');
             Route::post('/mangas/{manga:slug}/like', [MangaController::class, 'like'])->name('manga.like');
             Route::post('/animes/{anime:slug}/like', [AnimeController::class, 'likeOrUnlike'])->name('anime.like');
+            Route::post('/comments/{comment:id}/like', [CommentController::class, 'likeOrUnlike'])->name('comment.like');
+            Route::post('/comments/{comment}/delete', [CommentController::class, 'deleteComment'])->name('comment.delete');
+            Route::post('/animes/{anime}/rating', [AnimeController::class, 'rating'])->name('anime.rating');
+            Route::post('/mangas/{manga}/rating', [MangaController::class, 'rating'])->name('manga.rating');
+            Route::post('/collections/{collection}/save', [CollectionItemsController::class, 'saveOrUnSave'])->name('item.save');
+            Route::get('/savelist', [CollectionController::class, 'index'])->name('savelist');
+            Route::post('/collections/{collection}/items/{item}', [CollectionController::class, 'removeSaveItem'])->name('remove.save.item');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

@@ -14,7 +14,7 @@ class Anime extends Model
     protected $with = ['status', 'tags'];
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter'];
+    protected $appends = ['latestWatchedChapter', 'isSaveByCurrentUser'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -26,6 +26,9 @@ class Anime extends Model
     public function getLatestWatchedChapterAttribute()
     {
         $group = request()->route('group');
+        if (gettype($group) !== 'object') {
+            $group = Group::where('subdomain', $group)->first();
+        }
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)
@@ -36,6 +39,14 @@ class Anime extends Model
         return $latestWatchedChapter;
     }
 
+    public function getIsSaveByCurrentUserAttribute()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return $this->collectionItems()->where('user_id', auth()->id())->exists();
+    }
+
     public function getIsLikeByCurrentUserAttribute()
     {
         if (!auth()->check()) {
@@ -43,6 +54,7 @@ class Anime extends Model
         }
         return $this->likeUsers()->where('user_id', auth()->id())->exists();
     }
+
 
     public function status()
     {
@@ -77,5 +89,10 @@ class Anime extends Model
     public function likeUsers()
     {
         return $this->morphToMany(User::class, 'likeable');
+    }
+
+    public function collectionItems()
+    {
+        return $this->morphMany(CollectionItems::class, 'item');
     }
 }

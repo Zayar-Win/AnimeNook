@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CommentRequest extends FormRequest
+class CollectionitemRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,8 @@ class CommentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'comment' => ['required', 'min:3', 'max:200'],
-            'animeId' => ['nullable'],
-            'mangaId' => ['nullable'],
-            'commentId' => ['nullable']
+            'id' => 'required',
+            'type' => 'required'
         ];
     }
 }

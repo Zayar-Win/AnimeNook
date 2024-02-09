@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Rating extends Model
+class CollectionItems extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function ratingable()
+    public function item()
     {
-        return $this->morphTo();
+        return $this->morphTo('item', 'item_type', 'item_id');
     }
 }

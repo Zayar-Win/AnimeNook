@@ -1,7 +1,7 @@
 import SectionContainer from '@/Components/SectionContainer';
 import UserLayout from '@/Layouts/UserLayout'
 import React from 'react'
-import Star from '../../../assets/Star';
+// import Star from '../../../assets/Star';
 import { formateDate } from '@/app';
 import Button from '@/Components/Button';
 import Heart from '@/../assets/Heart';
@@ -10,15 +10,28 @@ import MangaCard from '@/Components/MangaCard';
 import Tags from '@/Components/Tags';
 import Comments from '@/Components/Comments';
 import CommentForm from '@/Components/CommentForm';
-import Like from '@/../assets/Like';
-import { router } from '@inertiajs/react';
+import { router,usePage } from '@inertiajs/react';
+import Rating from '@/Components/Rating';
+import Liked from '@/../assets/Liked';
 
 const MangaDetail = ({manga,recommendedMangas}) => {
+    const {auth:{user}} = usePage().props;
     const likeManga = () => {
         router.post(window.route('group.manga.like',{manga}),{
             preserveScroll:true,
             preserveState:true,
         });
+    }
+    const ratingHandler = (rating) => {
+        router.post(window.route('group.manga.rating',{manga}),{rating},{
+            preserveScroll:true
+        })
+    }
+    const saveToCollection = () => {
+        router.post(window.route('group.item.save',{collection :user.collections[0] }),{
+            id : manga.id,
+            type : 'manga'
+        })
     }
     return (
         <>
@@ -51,14 +64,11 @@ const MangaDetail = ({manga,recommendedMangas}) => {
                         </div>
                         <div className='my-5'>
                             <div className='flex items-center gap-3'>
-                                <div className='flex items-center'>
-                                    <Star className={'text-primary w-6 h-6'} />
-                                    <Star className={'text-primary w-6 h-6'}/>
-                                    <Star className={'text-primary w-6 h-6'}/>
-                                    <Star  className={'text-primary w-6 h-6'}/>
-                                    <Star className={'text-primary w-6 h-6' } />
+                                <Rating ratingHandler={ratingHandler} />
+                                <span className='inline-block h-6 mx-1 border-l-2 border-gray-500'></span>
+                                <div>
+                                    <div className='font-medium text-gray-600'>Average Rating: <span className='text-black font-bold'>{manga?.rating}({manga?.ratings_count})</span></div>
                                 </div>
-                                <p className='font-2xl font-bold'>{manga?.rating}</p>
                             </div>
                         </div>
                         <p className='text-gray-600'>{manga?.description}</p>
@@ -69,8 +79,8 @@ const MangaDetail = ({manga,recommendedMangas}) => {
                 </div>
                 <div className='flex items-center gap-5 my-4'>
                     <Button className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} text={manga?.latestWatchedChapter ? `Continue Watching Ep${manga?.latestWatchedChapter.chapter_number}` : 'Start Watching S1 Ep1'} type={'button'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"/></svg>} />
-                    <Button text={'Save To Collection'} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V5q0-.825.588-1.412T7 3h6v2H7v12.95l5-2.15l5 2.15V11h2v10l-7-3zM7 5h6zm10 4V7h-2V5h2V3h2v2h2v2h-2v2z"/></svg>} />
-                    <Button text={'Like'} type={'button'} onClick={() => likeManga()} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<Like />} />
+                    <Button text={manga.isSaveByCurrentUser ? 'Saved To Collection' : 'Save To Collection'} type={'button'} onClick={saveToCollection} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V5q0-.825.588-1.412T7 3h6v2H7v12.95l5-2.15l5 2.15V11h2v10l-7-3zM7 5h6zm10 4V7h-2V5h2V3h2v2h2v2h-2v2z"/></svg>} />
+                    <Button text={manga.isLikeByCurrentUser ? 'Liked' : 'Like'} type={'button'} onClick={() => likeManga()} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<Liked className={'text-white'} />} />
                     <Button text={'Share'} className={'!bg-[#F47521] !px-8 rounded-none !gap-1'} Icon={<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M18 22q-1.25 0-2.125-.875T15 19q0-.175.025-.363t.075-.337l-7.05-4.1q-.425.375-.95.588T6 15q-1.25 0-2.125-.875T3 12q0-1.25.875-2.125T6 9q.575 0 1.1.213t.95.587l7.05-4.1q-.05-.15-.075-.337T15 5q0-1.25.875-2.125T18 2q1.25 0 2.125.875T21 5q0 1.25-.875 2.125T18 8q-.575 0-1.1-.212t-.95-.588L8.9 11.3q.05.15.075.338T9 12q0 .175-.025.363T8.9 12.7l7.05 4.1q.425-.375.95-.587T18 16q1.25 0 2.125.875T21 19q0 1.25-.875 2.125T18 22"/></svg>} />
                 </div>
                 <div className='w-full h-[1px] bg-gray-300 my-10'></div>

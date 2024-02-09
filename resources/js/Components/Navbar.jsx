@@ -39,13 +39,15 @@ const Navbar = () => {
             <div className='w-20 h-20 d-block shrink-0'>
                 <img src={Logo} className='w-full h-full' alt="" />
             </div>
-            <div className='sm:flex hidden items-center relative gap-3 p-2 xl:max-w-[500px] xl:min-w-[500px] lg:min-w-[380px] rounded-md bg-[#212121]'>
-                <label htmlFor="search" className='cursor-pointer'>
+            <div 
+                className='relative'
+            >
+                <label htmlFor="search" className='cursor-pointer absolute left-0'>
                     <svg xmlns="http://www.w3.org/2000/svg" fill='white' x="0px" y="0px" width="23" height="23" viewBox="0 0 30 30">
                         <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z"></path>
                     </svg>
                 </label>
-                <input type="text" value={search} onChange={e => setSearch(e.target.value)} autoComplete='off' id='search' placeholder='Search Anime' className='bg-transparent text-white p-0 w-full h-full border-0 focus:ring-0 outline-none' />
+                <input type="text" value={search} onChange={e => setSearch(e.target.value)} autoComplete='off'  id='search' placeholder='Search Anime' className='bg-transparent text-white p-0 w-full h-full border-0 focus:ring-0 outline-none pl-8' />
                 {
                     animes.length > 0 && searchModalOpen && 
                     <div ref={ref} className='absolute overflow-hidden left-0 z-40 right-0 w-full bg-white top-[110%] shadow-md rounded-md'>
@@ -103,6 +105,9 @@ const Navbar = () => {
                     </li>
                     <li className={`hover:text-yellow-400 trasnition-all ${component === 'Group/Popular' ? 'text-yellow-400' : null}`}>
                         <Link href='/'>Popular</Link>
+                    </li>
+                    <li className={`hover:text-yellow-400 trasnition-all ${component === 'Group/SaveList' ? 'text-yellow-400' : null}`}>
+                        <Link href={window.route('group.savelist')}>SaveList</Link>
                     </li>
                 </ul>
             </nav>

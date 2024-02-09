@@ -3,24 +3,35 @@ import UserLayout from '@/Layouts/UserLayout'
 import React from 'react'
 import Share from '@/../assets/Share';
 import Tags from '@/Components/Tags';
-import Star from '@/../assets/Star';
+// import Star from '@/../assets/Star';
 import Button from '@/Components/Button';
 import BookMark from '@/../assets/BookMark';
 import Pause from '@/../assets/Pause';
-import ReactQuill from 'react-quill';
-import {router, useForm} from '@inertiajs/react'
+import {router,usePage} from '@inertiajs/react'
 import Comments from '@/Components/Comments';
 import Liked from '@/../assets/Liked';
+import CommentForm from '@/Components/CommentForm';
+import Rating from '@/Components/Rating';
 
 const VideoDetail = ({anime}) => {
-    const {data,setData,errors,post,reset} = useForm({
-        comment : '',
-        animeId : anime?.id,
-    });
+    const {auth : {user}} = usePage().props; 
     const likeAnime = () => {
         router.post(window.route('group.anime.like',{anime}),{},{
             preserveScroll:true,
             preserveState:true
+        })
+    }
+    const ratingHandler = (rating) => {
+        router.post(window.route('group.anime.rating',{anime}),{rating},{
+            preserveScroll:true,
+        })
+    }
+    const saveToWatchList  = () => {
+        router.post(window.route('group.item.save',{collection:user.collections[0]}),{
+            'id' : anime.id,
+            'type' : 'anime',
+        },{
+            preserveScroll:true,
         })
     }
     return (
@@ -44,13 +55,7 @@ const VideoDetail = ({anime}) => {
                                 <Tags tags={anime?.tags} />
                             </div>
                             <div className='flex items-center gap-2 mt-6'>
-                                <div className='flex items-center'>
-                                    <Star className={'w-6 h-6'} />
-                                    <Star className={'w-6 h-6'}/>
-                                    <Star className={'w-6 h-6'}/>
-                                    <Star className={'w-6 h-6'}/>
-                                    <Star className={'w-6 h-6'}/>
-                                </div>
+                                <Rating ratingHandler={ratingHandler} />
                                 <span className='inline-block h-6 mx-1 border-l-2 border-gray-500'></span>
                                 <div>
                                     <div className='font-medium text-gray-400'>Average Rating: <span className='text-white font-bold'>{anime?.rating}({anime?.ratings_count})</span></div>
@@ -64,7 +69,7 @@ const VideoDetail = ({anime}) => {
                                 </div>
                             </div>
                             <div className='flex items-center gap-3 '>
-                                <Button text={'Add to WatchList'} outline className={'border-primary rounded-none !text-primary uppercase my-5'} Icon={<BookMark />} />
+                                <Button text={anime.isSaveByCurrentUser ? 'Added to WatchList' : 'Add to WatchList'} type={'button'} onClick={() => saveToWatchList()} outline className={'border-primary rounded-none !text-primary uppercase my-5'} Icon={<BookMark />} />
                                 <Button text={anime?.isLikeByCurrentUser ? 'Liked' : 'Like'} outline type={'button'} onClick={() => likeAnime()} className={'border-primary !px-8 w-[140px] py-3 rounded-none !gap-1'} Icon={<Liked className={`w-6 h-6 ${anime?.isLikeByCurrentUser ? 'text-primary' : 'text-white'}`} />} />
                             </div>
                             <p className='my-5'>{anime?.description}</p>
@@ -110,7 +115,7 @@ const VideoDetail = ({anime}) => {
                     </div>
                     <div className='mt-10'>
                         <div>
-                            <h1 className='text-xl font-bold'>100 Comments</h1>
+                            <h1 className='text-xl font-bold'>{anime?.comments_count} {anime?.comments_count > 1 ? 'Comments' : 'Comment'}</h1>
                         </div>
                         <div className='w-full h-[1px] bg-gray-500 my-6'></div>
                         <div className='w-[70%] mb-10'>
@@ -118,21 +123,9 @@ const VideoDetail = ({anime}) => {
                                 <div className='w-[60px]'>
                                     <img className='object-cover w-full h-[60px] rounded-full' src={anime?.thumbnail} alt="" />
                                 </div>
-                                <div className='grow h-[150px] text-black'>
-                                    <ReactQuill value={data.comment} onChange={data => setData('comment',data)} theme='snow' className='text-black'  />
-                                    {
-                                        errors?.comment && <span>{errors?.comment}</span>
-                                    }
-                                    <div className='flex justify-end'>
-                                        <Button type={'button'} className={'!bg-primary my-2 !px-10'} text={'Comment'} onClick={() => post(window.route('group.comment.create'),{
-                                            preserveScroll:true,
-                                            onSuccess:() => reset()
-                                        })} />
-                                    </div>
-                                </div>
+                                <CommentForm anime={anime}  />
                             </div>
-                            <Comments comments={anime?.comments} />
-                            
+                            <Comments anime={anime} comments={anime?.comments} />
                         </div>
                     </div>
                 </div>
