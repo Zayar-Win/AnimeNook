@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
@@ -18,6 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,6 +80,9 @@ if ($isProduction) {
             Route::post('/collections/{collection}/save', [CollectionItemsController::class, 'saveOrUnSave'])->name('item.save');
             Route::get('/savelist', [CollectionController::class, 'index'])->name('savelist');
             Route::post('/collections/{collection}/items/{item}', [CollectionController::class, 'removeSaveItem'])->name('remove.save.item');
+        });
+        Route::name('admin.')->middleware(['auth', 'admin'])->group(function () {
+            Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
