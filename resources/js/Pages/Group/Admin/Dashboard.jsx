@@ -1,3 +1,4 @@
+import AdminLayout from '@/Layouts/AdminLayout'
 import React from 'react'
 
 const Dashboard = () => {
@@ -7,3 +8,4 @@ const Dashboard = () => {
 }
 
 export default Dashboard
+Dashboard.layout = page => <AdminLayout>{page}</AdminLayout>

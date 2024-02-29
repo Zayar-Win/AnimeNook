@@ -1,8 +1,12 @@
+import Sidebar from '@/Components/Sidebar'
 import React from 'react'
 
-const AdminLayout = () => {
+const AdminLayout = ({children}) => {
     return (
-        <div>AdminLayout</div>
+        <div>
+            <Sidebar />
+            <div className='pl-[22%]'>{children}</div>
+        </div>
     )
 }
 
