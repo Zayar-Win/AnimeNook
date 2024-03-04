@@ -36,13 +36,13 @@ export const sidebarLinks = [
         ),
         children: [
             {
-                name: "User Management",
+                name: "Users",
                 routeName: "group.admin.users",
             },
-            // {
-            //     name: "Subscribers",
-            //     routeName: "subscribers",
-            // },
+            {
+                name: "Subscribers",
+                routeName: "group.admin.subscribers",
+            },
         ],
     },
 ];
