@@ -7,6 +7,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
@@ -83,6 +84,12 @@ if ($isProduction) {
         });
         Route::name('admin.')->middleware(['auth', 'admin'])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::get('/admin/users',[GroupAdminUserController::class,'index'])->name('users');
+            Route::get('/admin/users/create',[GroupAdminUserController::class,'create'])->name('create');
+            Route::post('/admin/users/store',[GroupAdminUserController::class,'store'])->name('users.store');   
+            Route::get('/admin/users/{user}/edit',[GroupAdminUserController::class,'edit'])->name('users.edit');   
+            Route::post('/admin/users/{user}/update',[GroupAdminUserController::class,'update'])->name('users.update');   
+            Route::post('/admin/users/{user}/delete',[GroupAdminUserController::class,'delete'])->name('users.delete');   
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

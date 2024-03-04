@@ -1,13 +1,14 @@
-import Sidebar from '@/Components/Sidebar'
-import React from 'react'
+import Sidebar from "@/Components/Sidebar";
+import React from "react";
+import ToastLayout from "./ToastLayout";
 
-const AdminLayout = ({children}) => {
+const AdminLayout = ({ children }) => {
     return (
-        <div>
+        <ToastLayout>
             <Sidebar />
-            <div className='pl-[22%]'>{children}</div>
-        </div>
-    )
-}
+            <div className="pl-[22%]">{children}</div>
+        </ToastLayout>
+    );
+};
 
-export default AdminLayout
+export default AdminLayout;
