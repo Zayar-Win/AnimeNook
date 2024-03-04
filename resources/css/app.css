@@ -2,20 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
+body {
     /* width:100%; */
     /* overflow-x: hidden; */
 }
-*{
+* {
     box-sizing: border-box !important;
 }
 
 .sort:hover .sort-options,
-.filter:hover .filter-options{
+.filter:hover .filter-options {
     display: block;
 }
 
-.ql-toolbar{
+.ql-toolbar {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     overflow: hidden;
@@ -24,17 +24,17 @@ body{
     /* border:2px solid white !important; */
 }
 
-.ql-container{
+.ql-container {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     overflow: hidden;
     border-color: var(--primary-color) !important;
-    color:black;
-    font-size:15px !important;
+    color: black;
+    font-size: 15px !important;
     background-color: white;
     /* border:2px solid white !important; */
-    border-top:0px !important;
-    height:100px !important;
+    border-top: 0px !important;
+    height: 100px !important;
 }
 
 .hover-effect {
@@ -74,16 +74,21 @@ body{
     transform: translateX(0);
 }
 
-.swiper-pagination-bullet{
-    width:25px !important;
-    height:4px !important;
+.react-select__input:focus {
+    outline: none !important;
+    outline-offset: none !important;
+    box-shadow: none !important;
+}
+
+.swiper-pagination-bullet {
+    width: 25px !important;
+    height: 4px !important;
     background-color: white !important;
     border-radius: 100px !important;
 }
-.swiper-pagination-bullet-active{
-    background-color: rgb(244,117,33) !important;
-    width:40px !important;
-
+.swiper-pagination-bullet-active {
+    background-color: rgb(244, 117, 33) !important;
+    width: 40px !important;
 }
 
 .animate-input:focus ~ .animate-label,

@@ -30,7 +30,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $with = ['collections'];
+    protected $with = ['collections', 'role'];
 
     /**
      * The attributes that should be cast.
@@ -50,6 +50,11 @@ class User extends Authenticatable
                 'name' => 'Favourite'
             ]);
         });
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
     public function chapters()
