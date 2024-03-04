@@ -16,8 +16,8 @@ class GroupAdminUserController extends Controller
     {
         
     }
-    public function index(){
-        $users = User::latest()->paginate(10);
+    public function index(Group $group){
+        $users = $group->users()->latest()->paginate(10);
         return inertia('Group/Admin/Users/Index',[
             'users' => $users
         ]);
@@ -39,7 +39,7 @@ class GroupAdminUserController extends Controller
     public function update(Group $group,User $user){
         $validatedData = request()->validate([
             'name' => 'required',
-            'email' => ['required','email',Rule::unique('users')->ignore($user->id)],
+            'email' => ['required','email',Rule::unique('users','email')->ignore($user->id)],
             'profile_picture' => ['required'],
             'role_id' => ['required'],
             'type' => ['required','in:free,paid'],

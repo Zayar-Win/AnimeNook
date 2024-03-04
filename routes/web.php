@@ -7,6 +7,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
@@ -90,6 +91,10 @@ if ($isProduction) {
             Route::get('/admin/users/{user}/edit',[GroupAdminUserController::class,'edit'])->name('users.edit');   
             Route::post('/admin/users/{user}/update',[GroupAdminUserController::class,'update'])->name('users.update');   
             Route::post('/admin/users/{user}/delete',[GroupAdminUserController::class,'delete'])->name('users.delete');   
+            Route::get('/admin/subscribers',[GroupAdminSubscriberController::class,'index'])->name('subscribers');
+            Route::get('/admin/subscribers/{subscriber}/edit',[GroupAdminSubscriberController::class,'edit'])->name('subscribers.edit');
+            Route::post('/admin/subscribers/{subscriber}/update',[GroupAdminSubscriberController::class,'update'])->name('subscribers.update');
+            Route::post('/admin/subscribers/{subscriber}/delete',[GroupAdminSubscriberController::class,'delete'])->name('subscribers.delete');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

@@ -68,7 +68,14 @@ const Index = ({ users }) => {
                 <TableData>
                     {(user) => (
                         <div className="flex items-center gap-2 text-blue-600">
-                            <Link className="hover:underline">Edit</Link>
+                            <Link
+                                href={window.route("group.admin.users.edit", {
+                                    user,
+                                })}
+                                className="hover:underline"
+                            >
+                                Edit
+                            </Link>
                             <div
                                 onClick={() => {
                                     setIsDeleteModalOpen(true);

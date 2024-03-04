@@ -71,7 +71,7 @@ const Table = ({ columns, datas, children, theadClasses }) => {
                             >
                                 <td
                                     className="py-8 px-2 bg-slate-50"
-                                    colSpan={columns.length}
+                                    colSpan={columns.length + 1}
                                 >
                                     No Table Data
                                 </td>
