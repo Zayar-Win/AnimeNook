@@ -26,7 +26,7 @@ class ChapterFactory extends Factory
             'like_count' => 10,
             'view_count' => 1000,
             'description' => 'this is body',
-            'name' => 'Episode One',
+            'title' => 'Episode One',
         ];
     }
 }

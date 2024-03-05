@@ -7,6 +7,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
@@ -85,16 +86,30 @@ if ($isProduction) {
         });
         Route::name('admin.')->middleware(['auth', 'admin'])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            //User Routes
             Route::get('/admin/users',[GroupAdminUserController::class,'index'])->name('users');
             Route::get('/admin/users/create',[GroupAdminUserController::class,'create'])->name('create');
             Route::post('/admin/users/store',[GroupAdminUserController::class,'store'])->name('users.store');   
             Route::get('/admin/users/{user}/edit',[GroupAdminUserController::class,'edit'])->name('users.edit');   
             Route::post('/admin/users/{user}/update',[GroupAdminUserController::class,'update'])->name('users.update');   
             Route::post('/admin/users/{user}/delete',[GroupAdminUserController::class,'delete'])->name('users.delete');   
+            // Subscriber Routes
             Route::get('/admin/subscribers',[GroupAdminSubscriberController::class,'index'])->name('subscribers');
             Route::get('/admin/subscribers/{subscriber}/edit',[GroupAdminSubscriberController::class,'edit'])->name('subscribers.edit');
             Route::post('/admin/subscribers/{subscriber}/update',[GroupAdminSubscriberController::class,'update'])->name('subscribers.update');
             Route::post('/admin/subscribers/{subscriber}/delete',[GroupAdminSubscriberController::class,'delete'])->name('subscribers.delete');
+            // Anime Routes
+            Route::get('/admin/animes',[GroupAdminAnimeController::class,'index'])->name('animes');
+            Route::get('/admin/animes/create',[GroupAdminAnimeController::class,'create'])->name('animes.create');
+            Route::get('/admin/animes/{anime}/edit',[GroupAdminAnimeController::class,'edit'])->name('animes.edit');
+            Route::post('/admin/animes/{anime}/update',[GroupAdminAnimeController::class,'update'])->name('animes.update');
+            Route::post('/admin/animes/{anime}/delete',[GroupAdminAnimeController::class,'delete'])->name('animes.delete');
+            Route::post('/admin/animes/store',[GroupAdminAnimeController::class,'store'])->name('animes.store');
+            Route::get('/admin/animes/{anime}/episodes/create',[GroupAdminAnimeController::class,'episodeCreate'])->name('animes.episodes.create');
+            Route::post('/admin/animes/{anime}/episodes/store',[GroupAdminAnimeController::class,'episodeStore'])->name('animes.episodes.store');
+            Route::get('/admin/animes/{anime}/episodes/{episode}/edit',[GroupAdminAnimeController::class,'editEpisode'])->name('animes.episodes.edit');
+            Route::post('/admin/animes/{anime}/episodes/{episode}/update',[GroupAdminAnimeController::class,'updateEpisode'])->name('animes.episodes.update');
+            Route::post('/admin/animes/{anime}/episodes/{episode}/delete',[GroupAdminAnimeController::class,'delegdgbvteEpisode'])->name('animes.episodes.delete');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
