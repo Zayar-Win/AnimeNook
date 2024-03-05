@@ -11,11 +11,13 @@ const Select = ({ options, label, defaultValue, onChange, selected }) => {
     return (
         <div>
             {label && <InputLabel value={label} />}
-            <ReactSelect
-                onChange={onChange}
-                options={options}
-                defaultValue={defaultValue}
-            />
+            {options.length && (
+                <ReactSelect
+                    onChange={onChange}
+                    options={options}
+                    defaultValue={defaultValue}
+                />
+            )}
         </div>
     );
 };
