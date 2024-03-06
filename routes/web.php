@@ -8,6 +8,7 @@ use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
+use App\Http\Controllers\GroupAdminMangaController;
 use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
@@ -110,6 +111,18 @@ if ($isProduction) {
             Route::get('/admin/animes/{anime}/episodes/{episode}/edit',[GroupAdminAnimeController::class,'editEpisode'])->name('animes.episodes.edit');
             Route::post('/admin/animes/{anime}/episodes/{episode}/update',[GroupAdminAnimeController::class,'updateEpisode'])->name('animes.episodes.update');
             Route::post('/admin/animes/{anime}/episodes/{episode}/delete',[GroupAdminAnimeController::class,'delegdgbvteEpisode'])->name('animes.episodes.delete');
+            // Manga Route
+            Route::get('/admin/mangas',[GroupAdminMangaController::class,'index'])->name("mangas");
+            Route::get('/admin/mangas/create',[GroupAdminMangaController::class,'create'])->name('mangas.create');
+            Route::post('/admin/mangas/store',[GroupAdminMangaController::class,'store'])->name('mangas.store');
+            Route::get('/admin/mangas/{manga}/edit',[GroupAdminMangaController::class,'edit'])->name('mangas.edit');
+            Route::post('/admin/mangas/{manga}/update',[GroupAdminMangaController::class,'update'])->name("mangas.update");
+            Route::post('/admin/mangas/delete',[GroupAdminMangaController::class,'delete'])->name('mangas.delete');
+            Route::get('/admin/mangas/{manga}/chapters/create',[GroupAdminMangaController::class,'chapterCreate'])->name('mangas.chapters.create');
+            Route::post('/admin/mangas/{manga}/chapters/store',[GroupAdminMangaController::class,'chapterStore'])->name('mangas.chapters.store');
+            Route::get('/admin/mangas/{manga}/chapters/{chapter}/edit',[GroupAdminMangaController::class,'editChapter'])->name('mangas.chapters.edit');
+            Route::post('/admin/mangas/{manga}/chapters/{chapter}/update',[GroupAdminMangaController::class,'updateChapter'])->name('mangas.chapters.update');
+            Route::post('/admin/mangas/{manga}/chapters/{chapter}/delete',[GroupAdminMangaController::class,'deleteChapter'])->name('mangas.chapters.delete');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
