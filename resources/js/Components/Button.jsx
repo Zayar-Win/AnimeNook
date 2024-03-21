@@ -18,14 +18,18 @@ const Button = ({ href, text, className, onClick, outline, Icon, type }) => {
                     <span>{text}</span>
                 </button>
             ) : (
-                <div
-                    className={` cursor-pointer flex items-center gap-3 justify-center flex-grow-0 text-white px-4 py-2 rounded-lg font-semibold ${className} ${
-                        outline ? "border-2 border-black bg-transparent" : ""
-                    }`}
-                >
-                    {Icon && <span>{Icon}</span>}
-                    <Link href={href}>{text}</Link>
-                </div>
+                <Link href={href}>
+                    <div
+                        className={` cursor-pointer flex items-center gap-3 justify-center flex-grow-0 text-white px-4 py-2 rounded-lg font-semibold ${className} ${
+                            outline
+                                ? "border-2 border-black bg-transparent"
+                                : ""
+                        }`}
+                    >
+                        {Icon && <span>{Icon}</span>}
+                        <p>{text}</p>
+                    </div>
+                </Link>
             )}
         </>
     );
