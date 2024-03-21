@@ -8,6 +8,7 @@ use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
+use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
 use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminUserController;
@@ -21,9 +22,7 @@ use App\Models\Group;
 use App\Models\Manga;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
-use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +34,6 @@ use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-
 $isProduction = config('app.env') === 'production';
 // URL::defaults(['group' => 'delta']);
 if ($isProduction) {
@@ -123,6 +120,9 @@ if ($isProduction) {
             Route::get('/admin/mangas/{manga}/chapters/{chapter}/edit',[GroupAdminMangaController::class,'editChapter'])->name('mangas.chapters.edit');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/update',[GroupAdminMangaController::class,'updateChapter'])->name('mangas.chapters.update');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/delete',[GroupAdminMangaController::class,'deleteChapter'])->name('mangas.chapters.delete');
+            // Comment Route
+            Route::get('/admin/comments',[GroupAdminCommentController::class,'index'])->name('comments');
+            Route::post('/admin/comments/{comment}/delete',[GroupAdminCommentController::class,'delete'])->name('comments.delete');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

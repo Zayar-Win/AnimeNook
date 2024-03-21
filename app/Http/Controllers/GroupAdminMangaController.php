@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\helpers\ShortenLinkGenerator;
 use App\helpers\Uploader;
 use App\Models\Chapter;
 use App\Models\Group;
@@ -99,6 +100,7 @@ class GroupAdminMangaController extends Controller
     public function chapterStore(Group $group , Manga $manga){
         $validatedData = request()->validate([
             'thumbnail' => ['required','image'],
+            'chapter_number' => ['required'],
             'title' => ['required'],
             'link' => ['required'],
             'description' => ['nullable']
@@ -109,18 +111,13 @@ class GroupAdminMangaController extends Controller
         $validatedData['group_id'] = $group->id;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
-        $latestChapter = Chapter::where('group_id',$group->id)->where('chapterable_id',$manga->id)->where('chapterable_type',Manga::class)->latest()->first();
-        if($latestChapter){
-            $validatedData['chapter_number'] = $latestChapter->chapter_number + 1;
-        }else{
-            $validatedData['chapter_number'] = 1;
-        }
-
         $validatedData['type']  = 'link';
-        $validatedData['chapter_link'] = $validatedData['link'];
+        $generator = new ShortenLinkGenerator();
+        $link = $generator->generate($validatedData['link']);
+        $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
         Chapter::create($validatedData);
-        return back()->with('success','Chpater created Successful.');
+        return redirect(route('group.admin.mangas.edit',['manga' => $manga]))->with('success','Chpater created Successful.');
     }
 
     public function editChapter(Group $group,Manga $manga,Chapter $chapter){
@@ -143,6 +140,13 @@ class GroupAdminMangaController extends Controller
             $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'],'animes');
         }
         $validatedData['group_id'] = $group->id;
+        if($chapter->chapter_link !== $validatedData['link']){
+            $generator = new ShortenLinkGenerator();
+            $link = $generator->generate($validatedData['link']);
+            $validatedData['chapter_link'] = $link;
+        }else{
+            $validatedData['chapter_link'] = $validatedData['link'];
+        }
         $validatedData['chapter_link'] = $validatedData['link'];
         unset($validatedData['link']);
         $validatedData['chapterable_type'] = Manga::class;
