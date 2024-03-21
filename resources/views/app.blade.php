@@ -31,4 +31,9 @@
     <body class="font-sans antialiased">
         @inertia
     </body>
+    <script type="text/javascript">
+    var ouo_token = 'ANeq6B81';
+    var exclude_domains = ['example.com', 'http://localhost:8000']; 
+</script>
+<script src="//cdn.ouo.io/js/full-page-script.js"></script>
 </html>

@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('chapterable_type');
             $table->bigInteger('chapter_number');
             $table->enum('type', ['link', 'pdf']);
-            $table->bigInteger('like_count');
-            $table->bigInteger('view_count');
-            $table->text('description');
-            $table->text('name');
+            $table->bigInteger('like_count')->default(0);
+            $table->bigInteger('view_count')->default(0);
+            $table->text('description')->nullable();
+            $table->text('title');
             $table->text('chapter_link')->nullable();
             $table->text('thumbnail')->nullable();
             $table->timestamps();

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('slug');
             $table->text('description');
             $table->string('thumbnail');
-            $table->bigInteger('rating');
+            $table->bigInteger('rating')->default(0);
             $table->bigInteger('views_count')->default(0);
             $table->bigInteger('likes_count')->default(0);
             $table->unsignedBigInteger('status_id')->default(1);

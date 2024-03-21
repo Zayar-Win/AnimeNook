@@ -14,6 +14,14 @@ class Group extends Model
         return $this->hasMany(Anime::class);
     }
 
+    public function users(){
+        return $this->hasMany(User::class);
+    }
+
+    public function subscribers(){
+        return $this->hasMany(Subscriber::class);
+    }
+
     public function mangas()
     {
         return $this->hasMany(Manga::class);

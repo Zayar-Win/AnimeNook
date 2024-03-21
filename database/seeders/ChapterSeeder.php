@@ -19,31 +19,31 @@ class ChapterSeeder extends Seeder
             'chapter_number' => 2,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode Two'
+            'title' => 'Episode Two'
         ])->create();
         Chapter::factory([
             'chapter_number' => 3,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode 3'
+            'title' => 'Episode 3'
         ])->create();
         Chapter::factory([
             'chapter_number' => 4,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode Four'
+            'title' => 'Episode Four'
         ])->create();
         Chapter::factory([
             'chapter_number' => 5,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode Five'
+            'title' => 'Episode Five'
         ])->create();
         Chapter::factory([
             'chapter_number' => 1,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode One',
+            'title' => 'Episode One',
             'chapterable_type' => Manga::class,
             'chapterable_id' => 1,
         ])->create();
@@ -51,7 +51,7 @@ class ChapterSeeder extends Seeder
             'chapter_number' => 2,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode two',
+            'title' => 'Episode two',
             'chapterable_type' => Manga::class,
             'chapterable_id' => 1,
         ])->create();
@@ -59,7 +59,7 @@ class ChapterSeeder extends Seeder
             'chapter_number' => 3,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode three',
+            'title' => 'Episode three',
             'chapterable_type' => Manga::class,
             'chapterable_id' => 1,
         ])->create();
@@ -67,7 +67,7 @@ class ChapterSeeder extends Seeder
             'chapter_number' => 4,
             'like_count' => 100,
             'view_count' => 1000,
-            'name' => 'Episode four',
+            'title' => 'Episode four',
             'chapterable_type' => Manga::class,
             'chapterable_id' => 1,
         ])->create();

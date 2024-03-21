@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('background_image')->nullable();
             $table->string('transparent_background')->nullable();
             $table->unsignedBigInteger('status_id')->default(1);
-            $table->bigInteger('rating');
+            $table->bigInteger('rating')->default(0);
             $table->timestamps();
         });
     }

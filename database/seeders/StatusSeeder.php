@@ -23,7 +23,7 @@ class StatusSeeder extends Seeder
         ])->create();
         Status::factory([
             'name' => 'Announced',
-            'keyword' => 'annlunced'
+            'keyword' => 'announced'
         ])->create();
     }
 }
