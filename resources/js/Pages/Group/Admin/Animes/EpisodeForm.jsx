@@ -15,6 +15,7 @@ const EpisodeForm = ({ anime, episode, type }) => {
         link: episode?.chapter_link ?? "",
         description: episode?.description ?? "",
     });
+
     return (
         <div className="w-[90%] mx-auto mb-10">
             <h1 className="text-xl font-semibold my-6">

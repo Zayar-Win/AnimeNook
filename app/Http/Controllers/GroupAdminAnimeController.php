@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\helpers\ShortenLinkGenerator;
 use App\helpers\Uploader;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Status;
+use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\UploadedFile;
 use Illuminate\Http\Request;
 
@@ -101,7 +103,8 @@ class GroupAdminAnimeController extends Controller
             'thumbnail' => ['required','image'],
             'title' => ['required'],
             'link' => ['required'],
-            'description' => ['nullable']
+            'description' => ['nullable'],
+            'chapter_number' => ['required']
         ]);
         if(gettype($validatedData['thumbnail']) !== 'string'){
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'],'animes');
@@ -109,18 +112,14 @@ class GroupAdminAnimeController extends Controller
         $validatedData['group_id'] = $group->id;
         $validatedData['chapterable_id'] = $anime->id;
         $validatedData['chapterable_type'] = Anime::class;
-        $latestChapter = Chapter::where('group_id',$group->id)->where('chapterable_id',$anime->id)->where('chapterable_type',Anime::class)->latest()->first();
-        if($latestChapter){
-            $validatedData['chapter_number'] = $latestChapter->chapter_number + 1;
-        }else{
-            $validatedData['chapter_number'] = 1;
-        }
 
         $validatedData['type']  = 'link';
-        $validatedData['chapter_link'] = $validatedData['link'];
+        $generator = new ShortenLinkGenerator();
+        $link = $generator->generate($validatedData['link']);
+        $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
         Chapter::create($validatedData);
-        return back()->with('success','Chpater created Successful.');
+        return redirect(route('group.admin.animes.edit',['anime' => $anime]))->with('success','Chpater created Successful.');
     }
 
     public function editEpisode(Group $group,Anime $anime,Chapter $episode){
@@ -143,7 +142,13 @@ class GroupAdminAnimeController extends Controller
             $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'],'animes');
         }
         $validatedData['group_id'] = $group->id;
-        $validatedData['chapter_link'] = $validatedData['link'];
+        if($episode->chapter_link !== $validatedData['link']){
+            $generator = new ShortenLinkGenerator();
+            $link = $generator->generate($validatedData['link']);
+            $validatedData['chapter_link'] = $link;
+        }else{
+            $validatedData['chapter_link'] = $validatedData['link'];
+        }
         unset($validatedData['link']);
         $validatedData['chapterable_type'] = Anime::class;
         $validatedData['chapterable_id'] = $anime->id;
