@@ -233,12 +233,16 @@ function Index({
                     </div>
                     <div className="flex items-center gap-9">
                         <Button
-                            text={"Read Now"}
+                            text={"Watch Now"}
                             className={"!bg-black"}
-                            link="https://www.google.com"
+                            href={window.route("group.anime.detail", {
+                                anime: recommendedAnime,
+                            })}
                         />
                         <Link
-                            href="https://www.google.com"
+                            href={window.route("group.anime.detail", {
+                                anime: recommendedAnime,
+                            })}
                             className="underline"
                         >
                             Go to Website
