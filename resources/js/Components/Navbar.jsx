@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Logo from "../../assets/logo.png";
-import Profile from "../../assets/Profile.jpeg";
 import SectionContainer from "./SectionContainer";
 import { Link, router, usePage } from "@inertiajs/react";
 import Button from "./Button";
@@ -270,10 +269,10 @@ const Navbar = () => {
                             onClick={() => {
                                 setIsProfileOpen((prev) => !prev);
                             }}
-                            className="w-[46px] profile-container relative cursor-pointer h-[46px] rounded-full border-2 border-white "
+                            className="w-[46px] profile-container relative cursor-pointer h-[46px] rounded-full border-2 border-primary "
                         >
                             <img
-                                src={Profile}
+                                src={auth?.user?.profile_picture}
                                 className="w-full rounded-full h-full object-cover"
                             />
                             {isProfileOpen && (
@@ -282,27 +281,33 @@ const Navbar = () => {
                                     className="absolute  bg-white rounded-md z-30 w-[200px] border-2 top-[130%] right-0"
                                 >
                                     <div className="w-3 h-3 -translate-y-1 absolute top-0 -z-10 right-5  bg-white rotate-45"></div>
+                                    {auth?.user?.role?.name === "admin" && (
+                                        <Link
+                                            href={window.route(
+                                                "group.admin.dashboard"
+                                            )}
+                                        >
+                                            <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        fill="currentColor"
+                                                        d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
+                                                    />
+                                                </svg>
+                                                <p>Dashboard</p>
+                                            </div>
+                                        </Link>
+                                    )}
                                     <Link
                                         href={window.route(
-                                            "group.admin.dashboard"
+                                            "group.user.profile"
                                         )}
                                     >
-                                        <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                            >
-                                                <path
-                                                    fill="currentColor"
-                                                    d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"
-                                                />
-                                            </svg>
-                                            <p>Dashboard</p>
-                                        </div>
-                                    </Link>
-                                    <Link>
                                         <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"

@@ -16,6 +16,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
@@ -81,6 +82,8 @@ if ($isProduction) {
             Route::post('/collections/{collection}/save', [CollectionItemsController::class, 'saveOrUnSave'])->name('item.save');
             Route::get('/savelist', [CollectionController::class, 'index'])->name('savelist');
             Route::post('/collections/{collection}/items/{item}', [CollectionController::class, 'removeSaveItem'])->name('remove.save.item');
+            Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.profile');
+            Route::post('/user/profile/update', [UserController::class, 'update'])->name('users.profile.update');
         });
         Route::name('admin.')->middleware(['auth', 'admin'])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
