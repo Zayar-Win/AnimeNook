@@ -53,52 +53,61 @@ function Index({
                             </svg>
                             <p className="font-semibold">News</p>
                         </div>
-                        <Carousel>
-                            {trendAnimes?.map((anime, i) => (
-                                <SwiperSlide key={i} className="w-full h-full">
-                                    <div className="relative w-full h-full  overflow-hidden text-white">
-                                        <img
-                                            className="absolute z-10 top-0 left-0  right-0 bottom-0 w-full h-full object-cover"
-                                            src={anime?.background_image}
-                                            alt=""
-                                        />
-                                        <div className="relative z-20 pt-40 sm:pl-10 p-4 pb-12">
-                                            <p className="font-semibold flex items-center">
-                                                Home{" "}
-                                                <span className="inline-block h-4 mx-1 border-l-2 border-white"></span>
-                                                TV
-                                            </p>
-                                            <h1 className="text-4xl font-extrabold mt-4">
-                                                {anime.name}
-                                            </h1>
-                                            <p className="flex items-center mt-3 mb-3">
-                                                Ep 24{" "}
-                                                <span className="block w-1 h-1 rounded-full bg-white mx-1"></span>
-                                                24m
-                                            </p>
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                {anime?.tags.map((tag, i) => (
-                                                    <Tag
-                                                        key={i}
-                                                        text={tag?.name}
-                                                        className="bg-[#47BE71]"
-                                                    />
-                                                ))}
+                        <div className="h-[500px]">
+                            <Carousel>
+                                {trendAnimes?.map((anime, i) => (
+                                    <SwiperSlide
+                                        key={i}
+                                        className="w-full h-full"
+                                    >
+                                        <div className="relative w-full h-full  overflow-hidden text-white">
+                                            <img
+                                                className="absolute z-10 top-0 left-0  right-0 bottom-0 w-full h-full object-cover"
+                                                src={anime?.background_image}
+                                                alt=""
+                                            />
+                                            <div className="relative z-20 pt-40 sm:pl-10 p-4 pb-12">
+                                                <p className="font-semibold flex items-center">
+                                                    Home{" "}
+                                                    <span className="inline-block h-4 mx-1 border-l-2 border-white"></span>
+                                                    TV
+                                                </p>
+                                                <h1 className="text-4xl font-extrabold mt-4">
+                                                    {anime.name}
+                                                </h1>
+                                                <p className="flex items-center mt-3 mb-3">
+                                                    Ep 24{" "}
+                                                    <span className="block w-1 h-1 rounded-full bg-white mx-1"></span>
+                                                    24m
+                                                </p>
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    {anime?.tags.map(
+                                                        (tag, i) => (
+                                                            <Tag
+                                                                key={i}
+                                                                text={tag?.name}
+                                                                className="bg-[#47BE71]"
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                                <p className="lg:w-[40%] sm:w-[70%] w-full mt-3 font-semibold">
+                                                    Lorem ipsum dolor sit, amet
+                                                    consectetur adipisicing
+                                                    elit. Aspernatur,
+                                                    repudiandae quas nam
+                                                    pariatur ullam optio
+                                                    provident, esse at quam sunt
+                                                    eum voluptates nisi quis
+                                                    autem velit harum, voluptate
+                                                    hic voluptatem.
+                                                </p>
                                             </div>
-                                            <p className="lg:w-[40%] sm:w-[70%] w-full mt-3 font-semibold">
-                                                Lorem ipsum dolor sit, amet
-                                                consectetur adipisicing elit.
-                                                Aspernatur, repudiandae quas nam
-                                                pariatur ullam optio provident,
-                                                esse at quam sunt eum voluptates
-                                                nisi quis autem velit harum,
-                                                voluptate hic voluptatem.
-                                            </p>
                                         </div>
-                                    </div>
-                                </SwiperSlide>
-                            ))}
-                        </Carousel>
+                                    </SwiperSlide>
+                                ))}
+                            </Carousel>
+                        </div>
                     </div>
                     <div className="xl:w-[30%] w-full xl:ml-4 xl:mt-0 mt-10">
                         <div className="flex items-center mb-4 text-yellow-400 gap-2">
@@ -164,7 +173,9 @@ function Index({
                                                             d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"
                                                         />
                                                     </svg>
-                                                    <span>2000</span>
+                                                    <span>
+                                                        {anime?.views_count}
+                                                    </span>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <svg
@@ -178,7 +189,9 @@ function Index({
                                                             d="m12 21l-1.45-1.3q-2.525-2.275-4.175-3.925T3.75 12.812Q2.775 11.5 2.388 10.4T2 8.15Q2 5.8 3.575 4.225T7.5 2.65q1.3 0 2.475.55T12 4.75q.85-1 2.025-1.55t2.475-.55q2.35 0 3.925 1.575T22 8.15q0 1.15-.388 2.25t-1.362 2.412q-.975 1.313-2.625 2.963T13.45 19.7L12 21Zm0-2.7q2.4-2.15 3.95-3.688t2.45-2.674q.9-1.138 1.25-2.026T20 8.15q0-1.5-1-2.5t-2.5-1q-1.175 0-2.175.662T12.95 7h-1.9q-.375-1.025-1.375-1.688T7.5 4.65q-1.5 0-2.5 1t-1 2.5q0 .875.35 1.763t1.25 2.025q.9 1.137 2.45 2.675T12 18.3Zm0-6.825Z"
                                                         />
                                                     </svg>
-                                                    <span>1000</span>
+                                                    <span>
+                                                        {anime?.likes_count}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
