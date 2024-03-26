@@ -6,6 +6,7 @@ use App\Models\Anime;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Rating;
+use App\Models\Tag;
 
 class AnimeController extends Controller
 {
@@ -15,20 +16,39 @@ class AnimeController extends Controller
             'search' => request()->get('search'),
             'sort' => request()->get('sort'),
             'filter' => request()->get('filter'),
+            'tags' => request()->get('tags')
         ];
+
         $animes = Anime::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
                 ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
         })->when($filters['sort'] === 'newest', function ($query) {
             $query->orderBy('created_at', 'desc');
         })
+            ->when($filters['tags'] ?? null, function ($query, $tags) {
+                $tags = explode(',', $tags);
+                $query->whereHas('tags', function ($query) use ($tags) {
+                    $query->whereIn('name', $tags);
+                });
+            })
             ->when($filters['sort'] === 'popularity', function ($query) {
                 $query->orderBy('views_count', 'desc');
             })->get();
         $mangas = Manga::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
                 ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
-        })->get();
+        })->when($filters['sort'] === 'newest', function ($query) {
+            $query->orderBy('created_at', 'desc');
+        })
+            ->when($filters['tags'] ?? null, function ($query, $tags) {
+                $tags = explode(',', $tags);
+                $query->whereHas('tags', function ($query) use ($tags) {
+                    $query->whereIn('name', $tags);
+                });
+            })
+            ->when($filters['sort'] === 'popularity', function ($query) {
+                $query->orderBy('views_count', 'desc');
+            })->get();
 
         return inertia('Group/Animes', [
             'data' => [
@@ -36,6 +56,7 @@ class AnimeController extends Controller
                 'mangas' => $filters['filter'] === 'mangas' || $filters['filter'] === null ? $mangas : []
             ],
             'filters' => $filters,
+            'tags' => Tag::all()
         ]);
     }
 
