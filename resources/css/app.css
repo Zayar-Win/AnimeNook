@@ -111,6 +111,21 @@ body {
     animation: shaking 0.3s linear 1;
 }
 
+
+.tags::-webkit-scrollbar{
+    display: none;
+}
+
+
+.tags{
+    scroll-snap-type:inline mandatory;
+    touch-action: pan-y;
+}
+
+.tags > * {
+    scroll-snap-align: start;
+}
+
 @keyframes shaking {
     0% {
         transform: translateX(0px);

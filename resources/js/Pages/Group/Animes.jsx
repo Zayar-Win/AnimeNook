@@ -9,12 +9,14 @@ import {Link} from '@inertiajs/react';
 import { useDebounce } from '@uidotdev/usehooks';
 import useFilter from '@/hooks/useFilter';
 
-const Animes = ({data,filters}) => {
+
+const Animes = ({data,filters,tags}) => {
     const [search,setSearch] = useState(filters['search'] || '');
+    const [filterTags,setFilterTags] = useState(filters['tags']?.split(',') || []);
     const [sort,setSort] = useState(filters['sort'] || 'newest');
     const [filter,setFilter] = useState(filters['filter'] || 'all');
     const debounceSearch = useDebounce(search,500);
-    const {setIsFilter} = useFilter({search:debounceSearch,sort,filter},window.route('group.animes'));
+    const {setIsFilter} = useFilter({search:debounceSearch,sort,filter,tags:filterTags},window.route('group.animes'));
     return (
         <SectionContainer className={'bg-black py-10'}>
             <div className='w-[80%] mx-auto'>
@@ -57,7 +59,31 @@ const Animes = ({data,filters}) => {
                             </ul>
                         </div>
                     </div>
+                    
                 </div>
+                {
+                    tags.length > 0 &&
+                <div className='flex text-white overflow-auto gap-4 tags'>
+                    {
+                        tags.map(tag => {
+                            return (
+                                <div key={tag.id} onClick={() => {
+                                    setFilterTags(prev => {
+                                        if(prev.includes(tag.name)){
+                                            return prev.filter(prevTag => prevTag !== tag.name)
+                                        }else{
+                                            return [...prev,tag.name]
+                                        }
+                                    })
+                                    setIsFilter(true)
+                                }} className={`shrink-0 cursor-pointer border-[1px] border-primary px-5 py-1 rounded-3xl ${filterTags.includes(tag.name) ? 'bg-primary text-white' : ''}`}>
+                                    {tag.name}
+                                </div>
+                            )
+                        })
+                    }
+                </div>
+                }
                 <div>
                     {
                         data?.animes?.length > 0 &&
