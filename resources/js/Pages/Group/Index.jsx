@@ -4,13 +4,14 @@ import MovieCard from "@/Components/MovieCard";
 import NewEpisodeCard from "@/Components/NewEpisodeCard";
 import SectionContainer from "@/Components/SectionContainer";
 // import Tag from '@/Components/Tag'
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import React from "react";
 import UserLayout from "@/Layouts/UserLayout";
 import Carousel from "@/Components/Carousel/Index";
 import { SwiperSlide } from "swiper/react";
 import Tag from "@/Components/Tag";
 import Pause from "@/../assets/Pause";
+import {usePage} from "@inertiajs/react"
 
 function Index({
     trendAnimes,
@@ -21,6 +22,24 @@ function Index({
     popularMangas,
     newEpisodes,
 }) {
+    const {auth:{user}} = usePage().props;
+    const saveToWatchList = (anime) => {
+        if(!user){
+            return router.get(window.route('group.login'));
+        }
+        router.post(
+            window.route("group.item.save", {
+                collection: user?.collections[0],
+            }),
+            {
+                id: anime.id,
+                type: "anime",
+            },
+            {
+                preserveScroll: true,
+            }
+        );
+    };
     return (
         <>
             <SectionContainer>
@@ -85,7 +104,7 @@ function Index({
                                                         (tag, i) => (
                                                             <Tag
                                                                 key={i}
-                                                                text={tag?.name}
+                                                                tag={tag}
                                                                 className="bg-[#47BE71]"
                                                             />
                                                         )
@@ -224,7 +243,7 @@ function Index({
                     <div className="flex gap-2 flex-wrap items-center my-5 mb-7 sm:text-base text-sm font-semibold">
                         {recommendedAnime?.tags.map((tag, i) => (
                             <>
-                                <span>{tag.name}</span>
+                                <Link href={window.route('group.animes',{tags : tag.name})}>{tag.name}</Link>
                                 {i + 1 !== recommendedAnime?.tags.length && (
                                     <div className="border-l-[3px] mx-1 border-black h-5"></div>
                                 )}
@@ -325,7 +344,7 @@ function Index({
                                                 ? "border-left border-white"
                                                 : ""
                                         } sm:px-3 !px-0`}
-                                        text={tag.name}
+                                        tag={tag}
                                     />
                                 ))}
                             </div>
@@ -339,15 +358,16 @@ function Index({
                                     "!bg-[#F47521] !px-8 rounded-none !gap-1"
                                 }
                                 text={"Start Watching S1 Ep1"}
-                                type={"button"}
+                                href={window.route('group.anime.detail',{anime : recommendedAnime,scrollTo:'chapters'})}
                                 Icon={<Pause />}
                             />
                             <Button
                                 outline
-                                text={"Add To WatchList"}
+                                text={recommendedAnime.isSavedByCurrentUser ? 'Saved' : "Add To WatchList"}
                                 className={
                                     "!px-8 rounded-none !gap-1 border-[#F47521] text-[#F47521]"
                                 }
+                                onClick={() => saveToWatchList(recommendedAnime)}
                                 type={"button"}
                                 Icon={
                                     <svg
@@ -535,7 +555,7 @@ function Index({
                                                         ? "border-left border-white"
                                                         : ""
                                                 } sm:px-3 !px-0`}
-                                                text={tag.name}
+                                                tag={tag}
                                             />
                                         ))}
                                     </div>
@@ -549,7 +569,7 @@ function Index({
                                             "!bg-[#F47521] !px-8 rounded-none !gap-1"
                                         }
                                         text={"Start Watching S1 Ep1"}
-                                        type={"button"}
+                                        href={window.route('group.anime.detail',{anime:newAnimes[0],scrollTo : 'chapters'})}
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -566,11 +586,12 @@ function Index({
                                     />
                                     <Button
                                         outline
-                                        text={"Add To WatchList"}
+                                        text={newAnimes[0].isSavedByCurrentUser ? "Saved" :  "Add To WatchList"}
                                         className={
                                             "!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]"
                                         }
                                         type={"button"}
+                                        onClick={() => saveToWatchList(newAnimes[0])}
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -606,7 +627,7 @@ function Index({
                                 </div>
                             </div>
                             <div className="lg:basis-[60%] w-full text-white">
-                                <Link href="#" className="hover:underline">
+                                <Link href={window.route('group.anime.detail',{anime:trendAnimes[0]})} className="hover:underline">
                                     <h1 className="text-2xl font-bold">
                                         {trendAnimes[0].name}
                                     </h1>
@@ -641,7 +662,7 @@ function Index({
                                                         ? "border-left border-white"
                                                         : ""
                                                 } sm:px-3 px-0`}
-                                                text={tag.name}
+                                                tag={tag}
                                             />
                                         ))}
                                     </div>
@@ -654,8 +675,8 @@ function Index({
                                         className={
                                             "!bg-[#F47521] !px-8 rounded-none !gap-1"
                                         }
+                                        href={window.route('group.anime.detail',{anime:trendAnimes[0],scrollTo : 'chapters'})}
                                         text={"Start Watching S1 Ep1"}
-                                        type={"button"}
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -672,11 +693,12 @@ function Index({
                                     />
                                     <Button
                                         outline
-                                        text={"Add To WatchList"}
+                                        text={trendAnimes[0].isSavedByCurrentUser ? "Saved" :  "Add To WatchList"}
                                         className={
                                             "!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]"
                                         }
-                                        type={"button"}
+                                        type={'button'}
+                                        onClick={() => saveToWatchList(trendAnimes[0])}
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -718,7 +740,7 @@ function Index({
                             <Button
                                 text={"Sign In"}
                                 className={"!bg-[#F47521] !px-12 !gap-1"}
-                                link={window.route("group.login")}
+                                href={window.route("group.login")}
                             />
                             <Button
                                 text={"Sign Up"}
@@ -726,7 +748,7 @@ function Index({
                                     "!border-[#F47521] !px-12 !gap-1 !text-[#F47521]"
                                 }
                                 outline
-                                link={window.route("group.register")}
+                                href={window.route("group.register")}
                             />
                         </div>
                     </div>

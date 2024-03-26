@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Logo from "../../assets/logo.png";
+import LogoImg from "../../assets/logo.png";
 import SectionContainer from "./SectionContainer";
 import { Link, router, usePage } from "@inertiajs/react";
 import Button from "./Button";
@@ -7,6 +7,7 @@ import { useDebounce } from "@uidotdev/usehooks";
 import axios from "axios";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import Modal from "./Modal";
+import Logo from "./Logo";
 const Navbar = () => {
     const {
         component,
@@ -47,7 +48,7 @@ const Navbar = () => {
     return (
         <SectionContainer className="h-30 bg-[#0D0D0D] flex items-center justify-between">
             <div className="w-20 h-20 d-block shrink-0">
-                <img src={Logo} className="w-full h-full" alt="" />
+                <Logo logo={LogoImg} />
             </div>
             <div className="relative">
                 <label
@@ -175,7 +176,10 @@ const Navbar = () => {
                                 </Link>
                             ))}
                             <div className="my-2 hover:text-[#F47521] text-center text-sm font-medium underline">
-                                <Link>Show More...</Link>
+                                <Link onSuccess={() => {
+                                    setSearchModalOpen(false);
+                                    setSearch("");
+                                }} href={window.route('group.animes')}>Show More...</Link>
                             </div>
                         </>
                     </div>

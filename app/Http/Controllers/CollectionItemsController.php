@@ -31,7 +31,7 @@ class CollectionItemsController extends Controller
             $data = Chapter::find($validatedData['id']);
         }
         $collectionItem = $data->collectionItems()->where('user_id', auth()->id())->first();
-        if ($data->isSaveByCurrentUser) {
+        if ($data->isSavedByCurrentUser) {
             $collectionItem->delete();
             return back()->with('success', 'Item remove from your ' . $collection->name . ' list.');
         }

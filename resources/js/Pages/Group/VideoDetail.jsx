@@ -1,6 +1,6 @@
 import SectionContainer from "@/Components/SectionContainer";
 import UserLayout from "@/Layouts/UserLayout";
-import React from "react";
+import React, { useEffect } from "react";
 import Share from "@/../assets/Share";
 import Tags from "@/Components/Tags";
 // import Star from '@/../assets/Star';
@@ -12,11 +12,13 @@ import Comments from "@/Components/Comments";
 import Liked from "@/../assets/Liked";
 import CommentForm from "@/Components/CommentForm";
 import Rating from "@/Components/Rating";
+import { getQueryParam } from "@/helpers/getQueryParams";
 
 const VideoDetail = ({ anime }) => {
     const {
-        auth: { user },
-    } = usePage().props;
+        props:{auth: { user }},
+        url
+    } = usePage();
     const likeAnime = () => {
         router.post(
             window.route("group.anime.like", { anime }),
@@ -37,9 +39,12 @@ const VideoDetail = ({ anime }) => {
         );
     };
     const saveToWatchList = () => {
+        if(!user){
+            return router.get(window.route('group.login'));
+        }
         router.post(
             window.route("group.item.save", {
-                collection: user.collections[0],
+                collection: user?.collections[0],
             }),
             {
                 id: anime.id,
@@ -50,6 +55,14 @@ const VideoDetail = ({ anime }) => {
             }
         );
     };
+    useEffect(() => {
+        const scrollTo = getQueryParam(url,'scrollTo');
+        if(scrollTo){
+            document.getElementById(scrollTo).scrollIntoView({
+                behavior:'smooth'
+            })
+        }
+    },[]);
     return (
         <>
             <div className="h-[350px] relative ">
@@ -168,7 +181,7 @@ const VideoDetail = ({ anime }) => {
                         </div>
                     </div>
                     <h1 className="text-2xl font-bold mt-6">{anime?.name}</h1>
-                    <div>
+                    <div id='chapters'>
                         {anime?.chapters.length > 0 ? (
                             <div className="grid grid-cols-4 gap-5">
                                 {anime?.chapters?.map((chapter, i) => (
@@ -211,7 +224,7 @@ const VideoDetail = ({ anime }) => {
                             </div>
                         )}
                     </div>
-                    <div className="mt-10">
+                    <div className="mt-10" id='comments'>
                         <div>
                             <h1 className="text-xl font-bold">
                                 {anime?.comments_count}{" "}
