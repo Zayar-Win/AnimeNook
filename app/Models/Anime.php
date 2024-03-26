@@ -14,7 +14,7 @@ class Anime extends Model
     protected $with = ['status', 'tags'];
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSaveByCurrentUser'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -39,7 +39,7 @@ class Anime extends Model
         return $latestWatchedChapter;
     }
 
-    public function getIsSaveByCurrentUserAttribute()
+    public function getIsSavedByCurrentUserAttribute()
     {
         if (!auth()->check()) {
             return false;

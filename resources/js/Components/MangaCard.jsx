@@ -1,8 +1,26 @@
 import { formateDate } from '@/app'
 import React from 'react'
-import {Link} from '@inertiajs/react';
+import {Link, router} from '@inertiajs/react';
+import {usePage} from '@inertiajs/react';
 
 const MangaCard = ({manga}) => {
+    const {auth : {user}} = usePage().props;
+    const saveToCollection = () => {
+        if(!user){
+            return router.get(window.route('group.login'));
+        }
+        router.post(
+            window.route("group.item.save", {
+                collection: user.collections[0],
+            }),
+            {
+                id: manga.id,
+                type: "manga",
+            },{
+                preserveScroll:true,
+            }
+        );
+    };
     return (
         <div className='text-white relative rounded-md overflow-hidden cursor-pointer pb-4'>
             <Link href={window.route('group.manga.detail',manga)}>
@@ -24,7 +42,17 @@ const MangaCard = ({manga}) => {
                     <p>{manga?.description}</p>
                     <div className='flex items-center left-5 gap-3 mt-16 absolute text-yellow-400 bottom-4'>
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path d="M2 8v11.529S6.621 19.357 12 22c5.379-2.643 10-2.471 10-2.471V8s-5.454 0-10 2.471C7.454 8 2 8 2 8z" fill="currentColor"/><circle cx="12" cy="5" r="3" fill="currentColor"/></svg>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>
+                        {
+                            manga?.isSavedByCurrentUser ? <svg xmlns="http://www.w3.org/2000/svg" onClick={e => {
+                                e.preventDefault();
+                                saveToCollection();
+                            }} width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V5q0-.825.588-1.412T7 3h10q.825 0 1.413.588T19 5v16l-7-3z"/></svg>
+                                :
+                                <svg onClick={e => {
+                                    e.preventDefault();
+                                    saveToCollection();
+                                }} xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>
+                        }
                     </div>
                 </div>
             </Link>

@@ -1,7 +1,8 @@
 import React from 'react'
 import SectionContainer from './SectionContainer'
 import {Link} from '@inertiajs/react';
-import Logo from '../../assets/logo.png';
+import LogoImg from '../../assets/logo.png';
+import Logo from './Logo';
 
 
 const Footer = () => {
@@ -13,19 +14,16 @@ const Footer = () => {
                         <h1 className='text-lg font-bold'>Navigation</h1>
                         <ul className='mt-3'>
                             <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
-                                <Link>Browse Popular</Link>
+                                <Link href={window.route('group.animes',{sort:'popularity'})}>Browse Popular</Link>
                             </li>
                             <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
-                                <Link>Browse Anime</Link>
+                                <Link href={window.route('group.animes',{filter:'animes'})}>Browse Anime</Link>
                             </li>
                             <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
-                                <Link>Browse Manga</Link>
+                                <Link href={window.route('group.animes',{filter : 'mangas'})}>Browse Manga</Link>
                             </li>
                             <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
-                                <Link>Browse Popular</Link>
-                            </li>
-                            <li className='text-[15px] font-medium pb-2 hover:text-white hover:underline text-gray-400'>
-                                <Link>New</Link>
+                                <Link href={window.route('group.animes',{sort : 'newest'})}>New</Link>
                             </li>
                         </ul>
                     </div>
@@ -54,10 +52,10 @@ const Footer = () => {
                         <h1 className='text-lg font-bold'>Account</h1>
                         <ul className='mt-3'>
                             <li>
-                                <Link className='text-[15px] font-medium hover:text-white hover:underline text-gray-400'>Create Account</Link>
+                                <Link href={window.route('group.register')} className='text-[15px] font-medium hover:text-white hover:underline text-gray-400'>Create Account</Link>
                             </li>
                             <li >
-                                <Link className='text-[15px] font-medium hover:text-white hover:underline text-gray-400'>Login</Link>
+                                <Link href={window.route('group.login')} className='text-[15px] font-medium hover:text-white hover:underline text-gray-400'>Login</Link>
                             </li>
                         </ul>
                     </div>
@@ -65,7 +63,7 @@ const Footer = () => {
                 <div className='w-full h-[0.6px] my-5 bg-white'></div>
                 <div className='flex items-center sm:flex-row flex-col justify-between'>
                     <div className='flex items-center gap-3'>
-                        <img className='w-32' src={Logo} alt="" />
+                        <Logo logo={LogoImg} className="!w-32" />
                         <span className='text-lg cursor-pointer hover:text-yellow-400 font-bold'>AnimeNook</span>
                     </div>
                     <div className='cursor-pointer hover:text-yellow-400 sm:pb-0 pb-10'>

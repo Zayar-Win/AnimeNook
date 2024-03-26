@@ -15,7 +15,7 @@ class Manga extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSaveByCurrentUser'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -27,6 +27,9 @@ class Manga extends Model
     public function getLatestWatchedChapterAttribute()
     {
         $group = request()->route('group');
+        if (gettype($group) === 'string') {
+            $group = Group::where('name', $group)->first();
+        }
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)
@@ -35,7 +38,7 @@ class Manga extends Model
         return $latestWatchedChapter;
     }
 
-    public function getIsSaveByCurrentUserAttribute()
+    public function getIsSavedByCurrentUserAttribute()
     {
         return $this->collectionItems()->where('user_id', auth()->id())->exists();
     }

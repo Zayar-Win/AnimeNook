@@ -28,6 +28,7 @@
         "react-hooks/rules-of-hooks": "warn",
         "react-hooks/exhaustive-deps": "off",
         "react/prop-types": "off",
+        "quotes": ["off"],
         "import/no-unresolved": "off",
         "import/extensions": "off",
         "no-console": "warn",
