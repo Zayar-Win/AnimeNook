@@ -17,6 +17,7 @@ class CommentController extends Controller
             'user_id' => auth()->id(),
             'group_id' => $group->id,
             'body' => $validatedData['comment'],
+            'comment_id' => $validatedData['commentId'] ?? null,
             'commentable_id' => $validatedData['animeId'] ?? $validatedData['mangaId'],
             'commentable_type' => $validatedData['animeId'] ?? null !== null ? Anime::class : Manga::class,
         ]);

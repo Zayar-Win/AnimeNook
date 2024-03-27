@@ -5,11 +5,12 @@ import Button from './Button'
 
 const CommentForm = ({manga,anime,comment,focus,type='create',onSuccess = () => {}}) => {
     const {data,setData,post,errors,reset} = useForm({
-        comment:comment ? comment.body :'',
+        comment:(comment && type === 'update') ? comment.body :'',
         mangaId : manga?.id,
         animeId  : anime?.id,
         commentId : comment?.id
     })
+    console.log(data);
     const quillRef = useRef();
     useEffect(() => {
         if(focus){
@@ -26,7 +27,7 @@ const CommentForm = ({manga,anime,comment,focus,type='create',onSuccess = () => 
                 errors?.comment && <span className='text-red-500'>{errors?.comment}</span>
             }
             <div className='flex justify-end'>
-                <Button type={'button'} className={'!bg-primary my-2 !px-10'} text={type === 'create' ? 'Comment' : 'Update'} onClick={() => post(type === 'create' ? window.route('group.comment.create') : window.route('group.comment.update'),{
+                <Button type={'button'} className={'!bg-primary my-2 !px-10'} text={type === 'create' ? 'Comment' :  type=== 'reply' ? 'Reply' :  'Update'} onClick={() => post((type === 'create' || type === 'reply') ? window.route('group.comment.create') : window.route('group.comment.update'),{
                     preserveScroll:true,
                     onSuccess:() => {
                         reset();

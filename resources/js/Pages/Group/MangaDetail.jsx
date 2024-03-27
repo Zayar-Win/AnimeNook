@@ -275,7 +275,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                     <div className="w-full h-[1px] bg-gray-500 my-6"></div>
                     <div className="w-[70%]">
                         <CommentForm manga={manga} />
-                        <Comments comments={manga?.comments} />
+                        <Comments comments={manga?.comments} manga={manga} />
                     </div>
                 </div>
             </SectionContainer>

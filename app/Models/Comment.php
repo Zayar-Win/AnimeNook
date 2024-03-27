@@ -36,4 +36,9 @@ class Comment extends Model
     {
         return $this->morphToMany(User::class, 'likeable');
     }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }
