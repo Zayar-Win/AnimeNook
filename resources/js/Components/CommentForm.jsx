@@ -23,7 +23,7 @@ const CommentForm = ({manga,anime,comment,focus,type='create',onSuccess = () => 
         <div className='grow h-[150px] text-black'>
             <ReactQuill ref={quillRef} value={data.comment} onChange={data => setData('comment',data)} theme='snow' className='text-black'  />
             {
-                errors?.comment && <span>{errors?.comment}</span>
+                errors?.comment && <span className='text-red-500'>{errors?.comment}</span>
             }
             <div className='flex justify-end'>
                 <Button type={'button'} className={'!bg-primary my-2 !px-10'} text={type === 'create' ? 'Comment' : 'Update'} onClick={() => post(type === 'create' ? window.route('group.comment.create') : window.route('group.comment.update'),{

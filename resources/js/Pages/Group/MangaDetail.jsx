@@ -144,28 +144,33 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                     </div>
                 </div>
                 <div className="flex items-center gap-5 my-4">
-                    <Button
-                        className={"!bg-[#F47521] !px-8 rounded-none !gap-1"}
-                        text={
-                            manga?.latestWatchedChapter
-                                ? `Continue Watching Ep${manga?.latestWatchedChapter.chapter_number}`
-                                : "Start Watching S1 Ep1"
-                        }
-                        type={"button"}
-                        Icon={
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="32"
-                                height="32"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"
-                                />
-                            </svg>
-                        }
-                    />
+                    {
+                        manga?.chapters[0] &&
+                        <a href={manga.chapters[0].chapter_link}>
+                            <Button
+                                className={"!bg-[#F47521] !px-8 rounded-none !gap-1"}
+                                text={
+                                    manga?.latestWatchedChapter
+                                        ? `Continue Reading Ep${manga?.latestWatchedChapter.chapter_number}`
+                                        : "Start Reading " + manga.chapters[0]?.name
+                                } 
+                                type='button'
+                                Icon={
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="32"
+                                        height="32"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill="currentColor"
+                                            d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"
+                                        />
+                                    </svg>
+                                }
+                            />
+                        </a>
+                    }
                     <Button
                         text={
                             manga.isSaveByCurrentUser
@@ -220,37 +225,39 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                     {manga?.chapters.length > 0 ? (
                         <div className="grid grid-cols-4 mt-4 gap-5 mb-5">
                             {manga?.chapters.map((chapter, i) => (
-                                <div
-                                    key={i}
-                                    className="bg-gray-100 cursor-pointer px-5 py-4 rounded-lg"
-                                >
-                                    <h3 className="text-md font-semibold">
-                                        {chapter?.title}
-                                    </h3>
-                                    <div className="flex items-center gap-3 text-gray-600">
-                                        <span>
-                                            {formateDate(
-                                                chapter?.created_at,
-                                                {
-                                                    year: "numeric",
-                                                    month: "2-digit",
-                                                    day: "2-digit",
-                                                },
-                                                "-"
-                                            )}
-                                        </span>
-                                        <div className="flex items-center gap-1">
-                                            <Heart className={"w-5 h-5"} />
-                                            <span>{chapter?.like_count}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <Comment className={"w-5 h-5"} />
+                                <a key={i} href={chapter.chapter_link}>
+                                    <div
+                                        
+                                        className="bg-gray-100 cursor-pointer px-5 py-4 rounded-lg"
+                                    >
+                                        <h3 className="text-md font-semibold">
+                                            {chapter?.title}
+                                        </h3>
+                                        <div className="flex items-center gap-3 text-gray-600">
                                             <span>
-                                                {chapter?.comments_count}
+                                                {formateDate(
+                                                    chapter?.created_at,
+                                                    {
+                                                        year: "numeric",
+                                                        month: "2-digit",
+                                                        day: "2-digit",
+                                                    },
+                                                    "-"
+                                                )}
                                             </span>
+                                            <div className="flex items-center gap-1">
+                                                <Heart className={"w-5 h-5"} />
+                                                <span>{chapter?.like_count}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Comment className={"w-5 h-5"} />
+                                                <span>
+                                                    {chapter?.comments_count}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             ))}
                         </div>
                     ) : (
