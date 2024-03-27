@@ -6,14 +6,13 @@ const useFilter = (states,route) => {
         const params = {};
         Object.keys(states).map(key => {
             if(states[key] !== undefined && states[key] !== null && states[key] !== '' && states[key] !== 'all'){
-                if(Array.isArray(states[key])){
+                if(Array.isArray(states[key]) && states[key].length){
                     params[key] = states[key].join(',');
                 }else{
                     params[key] = states[key]
                 }
             }
         })
-        console.log(params);
         return params;
     },[...Object.values(states)])
 

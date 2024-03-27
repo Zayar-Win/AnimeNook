@@ -39,6 +39,21 @@ class Anime extends Model
         return $latestWatchedChapter;
     }
 
+    public function isViewedByCurrentUser()
+    {
+        if (auth()->check()) {
+            return $this->views()->where('user_id', auth()->id())->exists();
+        } else {
+            $anonymous_identifier = session()->get('anonymous_identifier');
+            if ($anonymous_identifier) {
+
+                return $this->views()->where('anonymous_identifier', $anonymous_identifier)->exists();
+            } else {
+                return false;
+            }
+        }
+    }
+
     public function getIsSavedByCurrentUserAttribute()
     {
         if (!auth()->check()) {
@@ -94,5 +109,10 @@ class Anime extends Model
     public function collectionItems()
     {
         return $this->morphMany(CollectionItems::class, 'item');
+    }
+
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
     }
 }

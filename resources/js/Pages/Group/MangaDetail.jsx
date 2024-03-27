@@ -1,6 +1,6 @@
 import SectionContainer from "@/Components/SectionContainer";
 import UserLayout from "@/Layouts/UserLayout";
-import React from "react";
+import React, { useEffect } from "react";
 // import Star from '../../../assets/Star';
 import { formateDate } from "@/app";
 import Button from "@/Components/Button";
@@ -13,6 +13,7 @@ import CommentForm from "@/Components/CommentForm";
 import { router, usePage } from "@inertiajs/react";
 import Rating from "@/Components/Rating";
 import Liked from "@/../assets/Liked";
+import axios from 'axios';
 
 const MangaDetail = ({ manga, recommendedMangas }) => {
     const {
@@ -44,6 +45,16 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
             }
         );
     };
+
+    useEffect(() => {
+        const createView = async()  => {
+            await axios.post(window.route('group.views.store'),{
+                'viewable_type' : 'manga',
+                'viewable_id' : manga.id
+            });
+        }
+        createView();
+    },[]);
     return (
         <>
             <SectionContainer>

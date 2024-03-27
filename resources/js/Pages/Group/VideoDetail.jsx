@@ -13,12 +13,15 @@ import Liked from "@/../assets/Liked";
 import CommentForm from "@/Components/CommentForm";
 import Rating from "@/Components/Rating";
 import { getQueryParam } from "@/helpers/getQueryParams";
+import Saved from "@/../assets/Saved";
+import axios from 'axios';
 
 const VideoDetail = ({ anime }) => {
     const {
         props:{auth: { user }},
         url
     } = usePage();
+    // const [isFirst,setIsFirst]  = useState(true);
     const likeAnime = () => {
         router.post(
             window.route("group.anime.like", { anime }),
@@ -62,6 +65,16 @@ const VideoDetail = ({ anime }) => {
                 behavior:'smooth'
             })
         }
+    },[]);
+
+    useEffect(() => {
+        const createView = async()  => {
+            await axios.post(window.route('group.views.store'),{
+                'viewable_type' : 'anime',
+                'viewable_id' : anime.id
+            });
+        }
+        createView();
     },[]);
     return (
         <>
@@ -118,7 +131,7 @@ const VideoDetail = ({ anime }) => {
                             <div className="flex items-center gap-3 ">
                                 <Button
                                     text={
-                                        anime.isSaveByCurrentUser
+                                        anime.isSavedByCurrentUser
                                             ? "Added to WatchList"
                                             : "Add to WatchList"
                                     }
@@ -128,7 +141,7 @@ const VideoDetail = ({ anime }) => {
                                     className={
                                         "border-primary rounded-none !text-primary uppercase my-5"
                                     }
-                                    Icon={<BookMark />}
+                                    Icon={anime.isSavedByCurrentUser ? <Saved /> : <BookMark />}
                                 />
                                 <Button
                                     text={

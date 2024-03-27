@@ -85,9 +85,28 @@ class Manga extends Model
     {
         return $this->likes()->where('user_id', auth()->id())->exists();
     }
+    public function isViewedByCurrentUser()
+    {
+        if (auth()->check()) {
+            return $this->views()->where('user_id', auth()->id())->exists();
+        } else {
+            $anonymous_identifier = request()->session()->get('anonymous_identifier');
+            if ($anonymous_identifier) {
+
+                return $this->views()->where('anonymous_identifier', $anonymous_identifier)->exists();
+            } else {
+                return false;
+            }
+        }
+    }
 
     public function collectionItems()
     {
         return $this->morphMany(CollectionItems::class, 'item');
+    }
+
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
     }
 }
