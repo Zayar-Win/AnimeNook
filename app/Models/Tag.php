@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tag extends Model
 {
     use HasFactory, HasSlug;
+    protected $guarded = [];
 
     public function getSlugOptions(): SlugOptions
     {

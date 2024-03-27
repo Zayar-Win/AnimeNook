@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tags', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('group_id');
             $table->text('name');
             $table->text('slug');
             $table->timestamps();
