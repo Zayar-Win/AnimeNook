@@ -13,12 +13,15 @@ import Liked from "@/../assets/Liked";
 import CommentForm from "@/Components/CommentForm";
 import Rating from "@/Components/Rating";
 import { getQueryParam } from "@/helpers/getQueryParams";
+import Saved from "@/../assets/Saved";
+import axios from 'axios';
 
 const VideoDetail = ({ anime }) => {
     const {
         props:{auth: { user }},
         url
     } = usePage();
+    // const [isFirst,setIsFirst]  = useState(true);
     const likeAnime = () => {
         router.post(
             window.route("group.anime.like", { anime }),
@@ -62,6 +65,16 @@ const VideoDetail = ({ anime }) => {
                 behavior:'smooth'
             })
         }
+    },[]);
+
+    useEffect(() => {
+        const createView = async()  => {
+            await axios.post(window.route('group.views.store'),{
+                'viewable_type' : 'anime',
+                'viewable_id' : anime.id
+            });
+        }
+        createView();
     },[]);
     return (
         <>
@@ -118,7 +131,7 @@ const VideoDetail = ({ anime }) => {
                             <div className="flex items-center gap-3 ">
                                 <Button
                                     text={
-                                        anime.isSaveByCurrentUser
+                                        anime.isSavedByCurrentUser
                                             ? "Added to WatchList"
                                             : "Add to WatchList"
                                     }
@@ -128,7 +141,7 @@ const VideoDetail = ({ anime }) => {
                                     className={
                                         "border-primary rounded-none !text-primary uppercase my-5"
                                     }
-                                    Icon={<BookMark />}
+                                    Icon={anime.isSavedByCurrentUser ? <Saved /> : <BookMark />}
                                 />
                                 <Button
                                     text={
@@ -156,6 +169,8 @@ const VideoDetail = ({ anime }) => {
                             <p className="my-5">{anime?.description}</p>
                         </div>
                         <div className="basis-[30%]">
+                            {
+                                anime?.chapters[0] &&
                             <div>
                                 <div className="relative">
                                     <div className="w-12 cursor-pointer absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] h-12 rounded-full flex items-center justify-center bg-[#0006]">
@@ -171,13 +186,15 @@ const VideoDetail = ({ anime }) => {
                                     />
                                 </div>
                                 <Button
-                                    text={"Start Watching S1 EP1"}
+                                    text={`Start Watching ${anime?.chapters[0]?.name}`}
                                     className={
                                         "bg-primary rounded-none mt-3 justify-center"
                                     }
+                                    href={anime?.chapters[0]?.chapter_link}
                                     Icon={<Pause />}
                                 />
                             </div>
+                            }
                         </div>
                     </div>
                     <h1 className="text-2xl font-bold mt-6">{anime?.name}</h1>
@@ -185,7 +202,7 @@ const VideoDetail = ({ anime }) => {
                         {anime?.chapters.length > 0 ? (
                             <div className="grid grid-cols-4 gap-5">
                                 {anime?.chapters?.map((chapter, i) => (
-                                    <a href={chapter.chapter_link} key={i}>
+                                    <a href={chapter.chapter_link || ''} key={i}>
                                         <div>
                                             <div className="h-[150px] object-cover relative">
                                                 <img
@@ -198,9 +215,6 @@ const VideoDetail = ({ anime }) => {
                                                 />
                                                 <div className="absolute top-[50%] left-[50%] w-12 h-12 flex items-center justify-center bg-[#0006] rounded-full translate-x-[-50%]  translate-y-[-50%]">
                                                     <Pause />
-                                                </div>
-                                                <div className="px-1 py-[2px] bg-[#0006] font-bold text-sm absolute bottom-1 right-1">
-                                                    24m
                                                 </div>
                                             </div>
                                             <h1 className="text-xs font-semibold text-gray-400 uppercase pt-3">
