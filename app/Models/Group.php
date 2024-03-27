@@ -14,11 +14,13 @@ class Group extends Model
         return $this->hasMany(Anime::class);
     }
 
-    public function users(){
+    public function users()
+    {
         return $this->hasMany(User::class);
     }
 
-    public function subscribers(){
+    public function subscribers()
+    {
         return $this->hasMany(Subscriber::class);
     }
 
@@ -30,5 +32,10 @@ class Group extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function tags()
+    {
+        return $this->hasMany(Tag::class);
     }
 }

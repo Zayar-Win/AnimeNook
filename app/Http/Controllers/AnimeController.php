@@ -56,7 +56,7 @@ class AnimeController extends Controller
                 'mangas' => $filters['filter'] === 'mangas' || $filters['filter'] === null ? $mangas : []
             ],
             'filters' => $filters,
-            'tags' => Tag::all()
+            'tags' => $group->tags()->get()
         ]);
     }
 

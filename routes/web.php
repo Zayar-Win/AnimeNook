@@ -11,6 +11,7 @@ use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
 use App\Http\Controllers\GroupAdminSubscriberController;
+use App\Http\Controllers\GroupAdminTagController;
 use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
@@ -129,6 +130,13 @@ if ($isProduction) {
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
+            //Tag Routes
+            Route::get('/admin/tags', [GroupAdminTagController::class, 'index'])->name('tags');
+            Route::get('/admin/tags/create', [GroupAdminTagController::class, 'create'])->name('tags.create');
+            Route::post('/admin/tags/store', [GroupAdminTagController::class, 'store'])->name('tags.store');
+            Route::get('/admin/tags/{tag}/edit', [GroupAdminTagController::class, 'edit'])->name('tags.edit');
+            Route::post('/admin/tags/{tag}/update', [GroupAdminTagController::class, 'update'])->name('tags.update');
+            Route::post('/admin/tags/{tag}/delete', [GroupAdminTagController::class, 'delete'])->name('tags.delete');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
