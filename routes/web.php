@@ -19,6 +19,7 @@ use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViewController;
+use App\Http\Middleware\GroupMiddleware;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
@@ -48,7 +49,7 @@ if ($isProduction) {
         });
     });
 } else {
-    Route::prefix('/{group:subdomain}')->name('group.')->group(function () {
+    Route::prefix('/{group:subdomain}')->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
@@ -141,7 +142,8 @@ if ($isProduction) {
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
-        Route::get('/login', function () {
+       Route::middleware('guest')->group(function(){
+         Route::get('/login', function () {
             return inertia('Group/Login');
         })->name('login');
         Route::post('/login', [AuthController::class, 'userLogin'])->name('login');
@@ -149,6 +151,7 @@ if ($isProduction) {
             return inertia('Group/Register');
         })->name('register');
         Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
+       });
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });
 }

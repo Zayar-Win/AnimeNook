@@ -11,7 +11,7 @@ import Carousel from "@/Components/Carousel/Index";
 import { SwiperSlide } from "swiper/react";
 import Tag from "@/Components/Tag";
 import Pause from "@/../assets/Pause";
-import {usePage} from "@inertiajs/react"
+import { usePage } from "@inertiajs/react";
 
 function Index({
     trendAnimes,
@@ -22,10 +22,12 @@ function Index({
     popularMangas,
     newEpisodes,
 }) {
-    const {auth:{user}} = usePage().props;
+    const {
+        auth: { user },
+    } = usePage().props;
     const saveToWatchList = (anime) => {
-        if(!user){
-            return router.get(window.route('group.login'));
+        if (!user) {
+            return router.get(window.route("group.login"));
         }
         router.post(
             window.route("group.item.save", {
@@ -222,52 +224,61 @@ function Index({
                 </div>
             </SectionContainer>
             <SectionContainer>
-                <div
-                    className="rounded-lg mb-20 mt-20 relative overflow-hidden px-5 py-8"
-                    style={{
-                        background:
-                            "linear-gradient(90deg, rgba(203,177,48,0.6285364487591911) 0%, rgba(249,181,45,1) 42%)",
-                    }}
-                >
-                    <div className="w-[400px] h-[400px] sm:block hidden z-10 lg:right-28 right-10 bottom-0 translate-y-[30%] rounded-full bg-[rgba(230,216,142,0.63)] absolute"></div>
-                    <div className="w-[340px] h-[340px] sm:block hidden z-20 lg:right-36 right-16 bottom-0 translate-y-[27%] rounded-full bg-[#caab79] absolute"></div>
-                    <div className="w-[280px] h-[280px] sm:block hidden z-30 lg:right-44 right-24 bottom-0 translate-y-[22%] rounded-full bg-[#FFF2DE] absolute"></div>
-                    <img
-                        className="absolute w-[280px] sm:block hidden z-40 object-contain bottom-0 lg:right-40 right-24 h-[210px]"
-                        src={recommendedAnime?.transparent_background}
-                        alt=""
-                    />
-                    <h1 className="sm:text-3xl text-xl font-extrabold uppercase">
-                        Watch {recommendedAnime?.name}
-                    </h1>
-                    <div className="flex gap-2 flex-wrap items-center my-5 mb-7 sm:text-base text-sm font-semibold">
-                        {recommendedAnime?.tags.map((tag, i) => (
-                            <>
-                                <Link href={window.route('group.animes',{tags : tag.name})}>{tag.name}</Link>
-                                {i + 1 !== recommendedAnime?.tags.length && (
-                                    <div className="border-l-[3px] mx-1 border-black h-5"></div>
-                                )}
-                            </>
-                        ))}
-                    </div>
-                    <div className="flex items-center gap-9">
-                        <Button
-                            text={"Watch Now"}
-                            className={"!bg-black"}
-                            href={window.route("group.anime.detail", {
-                                anime: recommendedAnime,
-                            })}
+                {recommendedAnime ? (
+                    <div
+                        className="rounded-lg mb-20 mt-20 relative overflow-hidden px-5 py-8"
+                        style={{
+                            background:
+                                "linear-gradient(90deg, rgba(203,177,48,0.6285364487591911) 0%, rgba(249,181,45,1) 42%)",
+                        }}
+                    >
+                        <div className="w-[400px] h-[400px] sm:block hidden z-10 lg:right-28 right-10 bottom-0 translate-y-[30%] rounded-full bg-[rgba(230,216,142,0.63)] absolute"></div>
+                        <div className="w-[340px] h-[340px] sm:block hidden z-20 lg:right-36 right-16 bottom-0 translate-y-[27%] rounded-full bg-[#caab79] absolute"></div>
+                        <div className="w-[280px] h-[280px] sm:block hidden z-30 lg:right-44 right-24 bottom-0 translate-y-[22%] rounded-full bg-[#FFF2DE] absolute"></div>
+                        <img
+                            className="absolute w-[280px] sm:block hidden z-40 object-contain bottom-0 lg:right-40 right-24 h-[210px]"
+                            src={recommendedAnime?.transparent_background}
+                            alt=""
                         />
-                        <Link
-                            href={window.route("group.anime.detail", {
-                                anime: recommendedAnime,
-                            })}
-                            className="underline"
-                        >
-                            Go to Website
-                        </Link>
+                        <h1 className="sm:text-3xl text-xl font-extrabold uppercase">
+                            Watch {recommendedAnime?.name}
+                        </h1>
+                        <div className="flex gap-2 flex-wrap items-center my-5 mb-7 sm:text-base text-sm font-semibold">
+                            {recommendedAnime?.tags.map((tag, i) => (
+                                <>
+                                    <Link
+                                        href={window.route("group.animes", {
+                                            tags: tag.name,
+                                        })}
+                                    >
+                                        {tag.name}
+                                    </Link>
+                                    {i + 1 !==
+                                        recommendedAnime?.tags.length && (
+                                        <div className="border-l-[3px] mx-1 border-black h-5"></div>
+                                    )}
+                                </>
+                            ))}
+                        </div>
+                        <div className="flex items-center gap-9">
+                            <Button
+                                text={"Watch Now"}
+                                className={"!bg-black"}
+                                href={window.route("group.anime.detail", {
+                                    anime: recommendedAnime,
+                                })}
+                            />
+                            <Link
+                                href={window.route("group.anime.detail", {
+                                    anime: recommendedAnime,
+                                })}
+                                className="underline"
+                            >
+                                Go to Website
+                            </Link>
+                        </div>
                     </div>
-                </div>
+                ) : null}
             </SectionContainer>
             <SectionContainer>
                 <div className="mt-5">
@@ -295,97 +306,110 @@ function Index({
                 </div>
             </SectionContainer>
             <SectionContainer>
-                <div className="flex lg:p-0 p-10 items-center gap-8 bg-[#0D0D0D] rounded-md mt-8">
-                    <div className="basis-[40%] lg:flex  hidden items-center">
-                        <img
-                            className="xl:w-[60%] w-full object-cover h-full"
-                            src={recommendedAnime?.transparent_background}
-                            alt=""
-                        />
-                        <div className="w-[40%] xl:block hidden h-full">
+                {recommendedAnime ? (
+                    <div className="flex lg:p-0 p-10 items-center gap-8 bg-[#0D0D0D] rounded-md mt-8">
+                        <div className="basis-[40%] lg:flex  hidden items-center">
                             <img
-                                className="w-full h-full object-cover"
-                                src={recommendedAnime?.thumbnail}
+                                className="xl:w-[60%] w-full object-cover h-full"
+                                src={recommendedAnime?.transparent_background}
                                 alt=""
                             />
-                        </div>
-                    </div>
-                    <div className="lg:basis-[60%] w-full text-white">
-                        <Link href="#" className="hover:underline">
-                            <h1 className="text-2xl font-bold">
-                                {recommendedAnime?.name}
-                            </h1>
-                        </Link>
-                        <div className="flex items-center gap-1 my-3">
-                            <span className="text-[#40ecf8] sm:block hidden">
-                                Series
-                            </span>
-                            <svg
-                                className="sm:block hidden"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="10"
-                                height="10"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    fill="currentColor"
-                                    d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"
+                            <div className="w-[40%] xl:block hidden h-full">
+                                <img
+                                    className="w-full h-full object-cover"
+                                    src={recommendedAnime?.thumbnail}
+                                    alt=""
                                 />
-                            </svg>
-                            <div className="flex flex-wrap gap-x-3">
-                                {recommendedAnime?.tags.map((tag, i) => (
-                                    <Tag
-                                        key={tag.id}
-                                        className={`${
-                                            recommendedAnime?.tags.length ===
-                                                1 &&
-                                            i ===
-                                                recommendedAnime.tags.length - 1
-                                                ? "border-left border-white"
-                                                : ""
-                                        } sm:px-3 !px-0`}
-                                        tag={tag}
-                                    />
-                                ))}
                             </div>
                         </div>
-                        <p className="sm:w-[95%] w-full sm:text-base text-sm">
-                            {recommendedAnime?.description}
-                        </p>
-                        <div className="mt-4 flex items-center flex-wrap sm:gap-8 gap-4">
-                            <Button
-                                className={
-                                    "!bg-[#F47521] !px-8 rounded-none !gap-1"
-                                }
-                                text={"Start Watching S1 Ep1"}
-                                href={window.route('group.anime.detail',{anime : recommendedAnime,scrollTo:'chapters'})}
-                                Icon={<Pause />}
-                            />
-                            <Button
-                                outline
-                                text={recommendedAnime.isSavedByCurrentUser ? 'Saved' : "Add To WatchList"}
-                                className={
-                                    "!px-8 rounded-none !gap-1 border-[#F47521] text-[#F47521]"
-                                }
-                                onClick={() => saveToWatchList(recommendedAnime)}
-                                type={"button"}
-                                Icon={
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="32"
-                                        height="32"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            fill="currentColor"
-                                            d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"
+                        <div className="lg:basis-[60%] w-full text-white">
+                            <Link href="#" className="hover:underline">
+                                <h1 className="text-2xl font-bold">
+                                    {recommendedAnime?.name}
+                                </h1>
+                            </Link>
+                            <div className="flex items-center gap-1 my-3">
+                                <span className="text-[#40ecf8] sm:block hidden">
+                                    Series
+                                </span>
+                                <svg
+                                    className="sm:block hidden"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="10"
+                                    height="10"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        fill="currentColor"
+                                        d="M12 .5L16 8l7.5 4l-7.5 4l-4 7.5L8 16L.5 12L8 8l4-7.5Z"
+                                    />
+                                </svg>
+                                <div className="flex flex-wrap gap-x-3">
+                                    {recommendedAnime?.tags.map((tag, i) => (
+                                        <Tag
+                                            key={tag.id}
+                                            className={`${
+                                                recommendedAnime?.tags
+                                                    .length === 1 &&
+                                                i ===
+                                                    recommendedAnime.tags
+                                                        .length -
+                                                        1
+                                                    ? "border-left border-white"
+                                                    : ""
+                                            } sm:px-3 !px-0`}
+                                            tag={tag}
                                         />
-                                    </svg>
-                                }
-                            />
+                                    ))}
+                                </div>
+                            </div>
+                            <p className="sm:w-[95%] w-full sm:text-base text-sm">
+                                {recommendedAnime?.description}
+                            </p>
+                            <div className="mt-4 flex items-center flex-wrap sm:gap-8 gap-4">
+                                <Button
+                                    className={
+                                        "!bg-[#F47521] !px-8 rounded-none !gap-1"
+                                    }
+                                    text={"Start Watching S1 Ep1"}
+                                    href={window.route("group.anime.detail", {
+                                        anime: recommendedAnime,
+                                        scrollTo: "chapters",
+                                    })}
+                                    Icon={<Pause />}
+                                />
+                                <Button
+                                    outline
+                                    text={
+                                        recommendedAnime.isSavedByCurrentUser
+                                            ? "Saved"
+                                            : "Add To WatchList"
+                                    }
+                                    className={
+                                        "!px-8 rounded-none !gap-1 border-[#F47521] text-[#F47521]"
+                                    }
+                                    onClick={() =>
+                                        saveToWatchList(recommendedAnime)
+                                    }
+                                    type={"button"}
+                                    Icon={
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="32"
+                                            height="32"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                fill="currentColor"
+                                                d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"
+                                            />
+                                        </svg>
+                                    }
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
+                ) : null}
             </SectionContainer>
             <SectionContainer className={"bg-black mt-8"} padding={false}>
                 <div className="px-10 text-white py-20">
@@ -569,7 +593,13 @@ function Index({
                                             "!bg-[#F47521] !px-8 rounded-none !gap-1"
                                         }
                                         text={"Start Watching S1 Ep1"}
-                                        href={window.route('group.anime.detail',{anime:newAnimes[0],scrollTo : 'chapters'})}
+                                        href={window.route(
+                                            "group.anime.detail",
+                                            {
+                                                anime: newAnimes[0],
+                                                scrollTo: "chapters",
+                                            }
+                                        )}
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -586,12 +616,18 @@ function Index({
                                     />
                                     <Button
                                         outline
-                                        text={newAnimes[0].isSavedByCurrentUser ? "Saved" :  "Add To WatchList"}
+                                        text={
+                                            newAnimes[0].isSavedByCurrentUser
+                                                ? "Saved"
+                                                : "Add To WatchList"
+                                        }
                                         className={
                                             "!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]"
                                         }
                                         type={"button"}
-                                        onClick={() => saveToWatchList(newAnimes[0])}
+                                        onClick={() =>
+                                            saveToWatchList(newAnimes[0])
+                                        }
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -627,7 +663,12 @@ function Index({
                                 </div>
                             </div>
                             <div className="lg:basis-[60%] w-full text-white">
-                                <Link href={window.route('group.anime.detail',{anime:trendAnimes[0]})} className="hover:underline">
+                                <Link
+                                    href={window.route("group.anime.detail", {
+                                        anime: trendAnimes[0],
+                                    })}
+                                    className="hover:underline"
+                                >
                                     <h1 className="text-2xl font-bold">
                                         {trendAnimes[0].name}
                                     </h1>
@@ -675,7 +716,13 @@ function Index({
                                         className={
                                             "!bg-[#F47521] !px-8 rounded-none !gap-1"
                                         }
-                                        href={window.route('group.anime.detail',{anime:trendAnimes[0],scrollTo : 'chapters'})}
+                                        href={window.route(
+                                            "group.anime.detail",
+                                            {
+                                                anime: trendAnimes[0],
+                                                scrollTo: "chapters",
+                                            }
+                                        )}
                                         text={"Start Watching S1 Ep1"}
                                         Icon={
                                             <svg
@@ -693,12 +740,18 @@ function Index({
                                     />
                                     <Button
                                         outline
-                                        text={trendAnimes[0].isSavedByCurrentUser ? "Saved" :  "Add To WatchList"}
+                                        text={
+                                            trendAnimes[0].isSavedByCurrentUser
+                                                ? "Saved"
+                                                : "Add To WatchList"
+                                        }
                                         className={
                                             "!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]"
                                         }
-                                        type={'button'}
-                                        onClick={() => saveToWatchList(trendAnimes[0])}
+                                        type={"button"}
+                                        onClick={() =>
+                                            saveToWatchList(trendAnimes[0])
+                                        }
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
