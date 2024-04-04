@@ -49,6 +49,8 @@ if ($isProduction) {
         });
     });
 } else {
+    Route::get('/auth-google-redirect',[AuthController::class,'redirectGoogle'])->name('redirectGoogle');
+        Route::get('/auth-google-callback',[AuthController::class,'callbackGoogle'])->name('callbackGoogle');
     Route::prefix('/{group:subdomain}')->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
@@ -146,6 +148,7 @@ if ($isProduction) {
          Route::get('/login', function () {
             return inertia('Group/Login');
         })->name('login');
+        
         Route::post('/login', [AuthController::class, 'userLogin'])->name('login');
         Route::get('/register', function () {
             return inertia('Group/Register');
