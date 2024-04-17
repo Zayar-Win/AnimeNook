@@ -49,8 +49,8 @@ if ($isProduction) {
         });
     });
 } else {
-    Route::get('/auth-google-redirect',[AuthController::class,'redirectGoogle'])->name('redirectGoogle');
-        Route::get('/auth-google-callback',[AuthController::class,'callbackGoogle'])->name('callbackGoogle');
+    Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
+    Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
     Route::prefix('/{group:subdomain}')->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
@@ -144,17 +144,18 @@ if ($isProduction) {
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
-       Route::middleware('guest')->group(function(){
-         Route::get('/login', function () {
-            return inertia('Group/Login');
-        })->name('login');
-        
-        Route::post('/login', [AuthController::class, 'userLogin'])->name('login');
-        Route::get('/register', function () {
-            return inertia('Group/Register');
-        })->name('register');
-        Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
-       });
+        Route::middleware('guest')->group(function () {
+            Route::get('/login', function () {
+                return inertia('Group/Login');
+            })->name('login');
+
+            Route::post('/login', [AuthController::class, 'userLogin'])->name('login');
+            Route::get('/register', function () {
+                return inertia('Group/Register');
+            })->name('register');
+            Route::get('/google-oauth-login', [AuthController::class, 'googleOauthLogin'])->name('google.oauth.login');
+            Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
+        });
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });
 }

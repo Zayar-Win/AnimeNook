@@ -40,34 +40,55 @@ class AuthController extends Controller
         return back()->with('success', 'See you later');
     }
 
-    public function redirectGoogle(){
+    public function redirectGoogle()
+    {
         $subdomain = request('subdomain');
         return Socialite::driver('google')->with(['state' => json_encode(['subdomain' => $subdomain])])->redirect();
     }
 
-    public function callbackGoogle(){
+    public function callbackGoogle()
+    {
         $googleUser = Socialite::driver('google')->stateless()->user();
         $state = request()->get('state');
-        $state = json_decode($state,true);
+        $state = json_decode($state, true);
         $subdomain = $state['subdomain'];
-        if($subdomain){
-            $group = Group::where('subdomain',$subdomain)->first();
+        if ($subdomain) {
+            $group = Group::where('subdomain', $subdomain)->first();
         }
-        $user = User::where('email',$googleUser->email)->where("group_id",$group->id)->first();
-        if($user){
-            auth()->login($user);
-            return redirect(route('group.home',['group' => $subdomain]));
-        }else{
+        $user = User::where('email', $googleUser->email)->where("group_id", $group->id)->first();
+        if (!$user) {
             $hashPassword = Hash::make('12345678');
             $user = User::create([
                 'name' => $googleUser->name,
                 'group_id' => $group->id,
                 'role_id' => 1,
+                'profile_picture' => $googleUser->getAvatar(),
                 'email' => $googleUser->email,
                 'password' => $hashPassword
             ]);
-            auth()->login($user);
-            return redirect(route('group.home',['group' => $subdomain]));
         }
-}
+        $token = $this->generateToken($user);
+        cache()->remember($token, now()->addSeconds(30), function () use ($user) {
+            return $user->id;
+        });
+        return redirect(route('group.google.oauth.login', ['group' => $subdomain, 'token' => $token]));
+    }
+    public function googleOauthLogin()
+    {
+        $token = request()->get('token');
+        $user = cache()->get($token);
+        if (!$user) {
+            abort(401, 'Token is not valid.');
+        }
+        $user = User::where("id", $user)->first();
+        auth()->login($user);
+        return redirect(route('group.home'));
+    }
+
+    public function generateToken($user)
+    {
+        $salt = bin2hex(random_bytes(8));
+        $data = $user->id . $salt;
+        return Hash::make($data);
+    }
 }
