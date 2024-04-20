@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LogoImg from "../../assets/logo.png";
 import SectionContainer from "./SectionContainer";
 import { Link, router, usePage } from "@inertiajs/react";
@@ -8,6 +8,7 @@ import axios from "axios";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import Modal from "./Modal";
 import Logo from "./Logo";
+import {format} from 'timeago.js';
 const Navbar = () => {
     const {
         component,
@@ -19,10 +20,21 @@ const Navbar = () => {
     const [searchModalOpen, setSearchModalOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isNotificationModalOpen,setIsNotificationModalOpen] = useState(false);
     const closeSearchModal = () => {
         setSearch("");
         setSearchModalOpen(false);
     };
+
+    const fetchNotifications = async () => {
+        const response = await axios.get(window.route('group.notis',{userId : auth.user.id}));
+        console.log(response);
+    }
+
+    useEffect(() => {
+        fetchNotifications();
+    },[])
+
     const handleClickOutside = (e) => {
         if (e.target.parentNode.classList.contains("profile-container")) return;
         setIsProfileOpen(false);
@@ -30,6 +42,20 @@ const Navbar = () => {
     const profileRef = useDetectClickOutside({
         onTriggered: handleClickOutside,
     });
+    const notificationRef = useRef();
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if(e.target.parentNode.classList.contains('notification-icon')) return;
+            if(notificationRef.current && !notificationRef.current.contains(e.target)){
+                setIsNotificationModalOpen(false);
+            }
+            return;
+        }
+        document.addEventListener('click',handleClickOutside);
+        return () => {
+            document.removeEventListener('click',handleClickOutside);
+        }
+    },[notificationRef])
     const ref = useDetectClickOutside({ onTriggered: closeSearchModal });
     const handleSearch = async () => {
         setSearchModalOpen(true);
@@ -268,17 +294,79 @@ const Navbar = () => {
             </div>
             <div className="xl:block hidden">
                 {auth.user ? (
-                    <div className="flex items-center gap-5">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="cursor-pointer"
-                            fill="white"
-                            width="25"
-                            height="25"
-                            viewBox="0 0 24 24"
-                        >
-                            <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
-                        </svg>
+                    <div className="flex items-center gap-2">
+                        <div onClick={(e) => {
+                            e.stopPropagation();
+                            setIsNotificationModalOpen(prev => !prev)
+                        }} className="relative notification-icon">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="cursor-pointer"
+                                fill="white"
+                                width="25"
+                                height="25"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
+                            </svg>
+                            
+                        </div>
+                        <div className="relative w-0 h-[20px]">
+                            <div ref={notificationRef}  className={`absolute  bg-white ${isNotificationModalOpen ? 'block' : 'hidden'} overflow-auto top-[140%] z-[100] shadow-lg rounded-lg translate-x-[20%] right-0 w-[400px] h-[400px]`}>
+                                <div>
+                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
+                                        <div className="">
+                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h1 className="font-semibold">New Episode Uploaded</h1>
+                                            <p className=" text-sm font-semibold">Naruto</p>
+                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
+                                        </div>
+                                    </div>
+                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
+                                        <div className="">
+                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h1 className="font-semibold">New Episode Uploaded</h1>
+                                            <p className=" text-sm font-semibold">Naruto</p>
+                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
+                                        </div>
+                                    </div>
+                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
+                                        <div className="">
+                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h1 className="font-semibold">New Episode Uploaded</h1>
+                                            <p className=" text-sm font-semibold">Naruto</p>
+                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
+                                        </div>
+                                    </div>
+                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
+                                        <div className="">
+                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h1 className="font-semibold">New Episode Uploaded</h1>
+                                            <p className=" text-sm font-semibold">Naruto</p>
+                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
+                                        </div>
+                                    </div>
+                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
+                                        <div className="">
+                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
+                                        </div>
+                                        <div className="">
+                                            <h1 className="font-semibold">New Episode Uploaded</h1>
+                                            <p className=" text-sm font-semibold">Naruto</p>
+                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div
                             onClick={() => {
                                 setIsProfileOpen((prev) => !prev);
