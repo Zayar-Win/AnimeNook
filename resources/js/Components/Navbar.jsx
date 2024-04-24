@@ -8,7 +8,7 @@ import axios from "axios";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import Modal from "./Modal";
 import Logo from "./Logo";
-import {format} from 'timeago.js';
+import VideoUploadNotification from "./Notifications/VideoUploadNotification";
 const Navbar = () => {
     const {
         component,
@@ -21,6 +21,7 @@ const Navbar = () => {
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotificationModalOpen,setIsNotificationModalOpen] = useState(false);
+    const [notifications,setNotifications]  = useState([]);
     const closeSearchModal = () => {
         setSearch("");
         setSearchModalOpen(false);
@@ -28,7 +29,7 @@ const Navbar = () => {
 
     const fetchNotifications = async () => {
         const response = await axios.get(window.route('group.notis',{userId : auth.user.id}));
-        console.log(response);
+        setNotifications(response.data.notifications.data)
     }
 
     useEffect(() => {
@@ -314,56 +315,17 @@ const Navbar = () => {
                         <div className="relative w-0 h-[20px]">
                             <div ref={notificationRef}  className={`absolute  bg-white ${isNotificationModalOpen ? 'block' : 'hidden'} overflow-auto top-[140%] z-[100] shadow-lg rounded-lg translate-x-[20%] right-0 w-[400px] h-[400px]`}>
                                 <div>
-                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
-                                        <div className="">
-                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
-                                        </div>
-                                        <div className="">
-                                            <h1 className="font-semibold">New Episode Uploaded</h1>
-                                            <p className=" text-sm font-semibold">Naruto</p>
-                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
-                                        </div>
+                                    <div className="flex  py-3 px-3 items-center justify-between">
+                                        <h1 className="text-xl font-bold">Notifications</h1>
+                                        <p className={'cursor-pointer hover:underline'}>Read All</p>
                                     </div>
-                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
-                                        <div className="">
-                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
-                                        </div>
-                                        <div className="">
-                                            <h1 className="font-semibold">New Episode Uploaded</h1>
-                                            <p className=" text-sm font-semibold">Naruto</p>
-                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
-                                        </div>
-                                    </div>
-                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
-                                        <div className="">
-                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
-                                        </div>
-                                        <div className="">
-                                            <h1 className="font-semibold">New Episode Uploaded</h1>
-                                            <p className=" text-sm font-semibold">Naruto</p>
-                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
-                                        </div>
-                                    </div>
-                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
-                                        <div className="">
-                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
-                                        </div>
-                                        <div className="">
-                                            <h1 className="font-semibold">New Episode Uploaded</h1>
-                                            <p className=" text-sm font-semibold">Naruto</p>
-                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
-                                        </div>
-                                    </div>
-                                    <div className={'flex items-center gap-3 cursor-pointer px-2 py-2 hover:bg-gray-200'}>
-                                        <div className="">
-                                            <img className="w-[70px] h-[70px] rounded-md object-cover" src={auth?.user?.profile_picture} alt="" />
-                                        </div>
-                                        <div className="">
-                                            <h1 className="font-semibold">New Episode Uploaded</h1>
-                                            <p className=" text-sm font-semibold">Naruto</p>
-                                            <p className="text-sm font-bold">Natuto Episode-10 {format(new Date())}</p>
-                                        </div>
-                                    </div>
+                                    {
+                                        notifications.map(notification => (
+                                            notification.notifiable_type === 'App\\Models\\User' ? 
+                                                <VideoUploadNotification key={notification.id}  notification={notification} />
+                                                : null
+                                        ))
+                                    }
                                 </div>
                             </div>
                         </div>

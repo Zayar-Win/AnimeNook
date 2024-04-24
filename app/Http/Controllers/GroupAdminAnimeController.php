@@ -128,7 +128,7 @@ class GroupAdminAnimeController extends Controller
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
         $chapter = Chapter::create($validatedData);
-        Notification::send($group->users, new NewEpisodeUpload($chapter, $group));
+        Notification::send($group->users, new NewEpisodeUpload($chapter, $group, $anime));
         return redirect(route('group.admin.animes.edit', ['anime' => $anime]))->with('success', 'Chpater created Successful.');
     }
 

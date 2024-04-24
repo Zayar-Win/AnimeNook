@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
 use Illuminate\Bus\Queueable;
@@ -16,7 +17,7 @@ class NewEpisodeUpload extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct(public Chapter $chapter, public Group $group)
+    public function __construct(public Chapter $chapter, public Group $group, public Anime $anime)
     {
         //
     }
@@ -51,6 +52,10 @@ class NewEpisodeUpload extends Notification
     {
         return [
             'chapter_id' => $this->chapter->id,
+            'name' => $this->anime->name,
+            'thumbnail' => $this->anime->thumbnail,
+            'title' => $this->chapter->title,
+            'link' => $this->chapter->chapter_link,
             'group_id' => $this->group->id
         ];
     }
