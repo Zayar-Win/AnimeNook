@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import LogoImg from "../../assets/logo.png";
 import SectionContainer from "./SectionContainer";
 import { Link, router, usePage } from "@inertiajs/react";
@@ -22,6 +22,36 @@ const Navbar = () => {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isNotificationModalOpen,setIsNotificationModalOpen] = useState(false);
     const [notifications,setNotifications]  = useState([]);
+    const [isLoading,setIsLoading]  = useState(false);
+    const [nextPageUrl,setNextPageUrl] = useState(null);
+    const [isFirstRender, setIsFirstRender] = useState(true);
+    const scrollRef = useRef(null);
+    useEffect(() => {
+        setIsFirstRender(false);
+    },[])
+    const handleCallback = useCallback((el) => {
+        if(!el){
+            if(scrollRef.current){
+                scrollRef.current.disconnect();
+            }
+            return;
+        }
+        scrollRef.current = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting && !isLoading && nextPageUrl !== null && !isFirstRender){
+                    setIsLoading(true);
+                    axios.get(nextPageUrl + '&userId=' + auth.user.id).then(res => {
+                        setNotifications(prev => [...prev,...res.data.notifications.data]);
+
+                        setNextPageUrl(res.data.notifications.next_page_url);
+                        setIsLoading(false);
+                    })
+                    
+                }
+            })
+        })
+        scrollRef.current.observe(el);
+    })
     const closeSearchModal = () => {
         setSearch("");
         setSearchModalOpen(false);
@@ -30,6 +60,7 @@ const Navbar = () => {
     const fetchNotifications = async () => {
         const response = await axios.get(window.route('group.notis',{userId : auth.user.id}));
         setNotifications(response.data.notifications.data)
+        setNextPageUrl(response.data.notifications.next_page_url)
     }
 
     useEffect(() => {
@@ -326,6 +357,7 @@ const Navbar = () => {
                                                 : null
                                         ))
                                     }
+                                    <button className="opacity-0" ref={handleCallback}>More</button>
                                 </div>
                             </div>
                         </div>
