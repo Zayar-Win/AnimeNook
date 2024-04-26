@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ViewController;
 use Illuminate\Http\Request;
@@ -28,6 +29,7 @@ if ($isProduction) {
 } else {
     Route::prefix('/{group:subdomain}')->name('group.')->group(function () {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
+        Route::get('/notis', [NotificationController::class, 'index'])->name('notis');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
     });
 }

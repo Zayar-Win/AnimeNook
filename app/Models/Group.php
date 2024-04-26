@@ -24,6 +24,11 @@ class Group extends Model
         return $this->hasMany(Subscriber::class);
     }
 
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
     public function mangas()
     {
         return $this->hasMany(Manga::class);
