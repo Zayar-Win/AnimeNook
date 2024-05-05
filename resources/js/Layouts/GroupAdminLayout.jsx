@@ -2,7 +2,7 @@ import Sidebar from "@/Components/Sidebar";
 import React from "react";
 import ToastLayout from "./ToastLayout";
 
-const AdminLayout = ({ children }) => {
+const GroupAdminLayout = ({ children }) => {
     return (
         <ToastLayout>
             <Sidebar />
@@ -11,4 +11,4 @@ const AdminLayout = ({ children }) => {
     );
 };
 
-export default AdminLayout;
+export default GroupAdminLayout;

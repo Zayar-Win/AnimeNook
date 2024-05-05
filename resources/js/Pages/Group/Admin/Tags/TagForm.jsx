@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React, { useEffect } from "react";
 
@@ -64,4 +64,4 @@ const TagForm = ({ type, tag }) => {
 
 export default TagForm;
 
-TagForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+TagForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;
