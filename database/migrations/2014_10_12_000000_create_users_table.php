@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email');
             $table->unsignedBigInteger('role_id')->default(1);
             $table->string('profile_picture')->nullable();
-            $table->unsignedBigInteger('group_id');
+            $table->unsignedBigInteger('group_id')->nullable();
             $table->string('bio')->nullable();
             $table->string('type')->default('free');
             $table->string('password');

@@ -47,6 +47,11 @@ class AppServiceProvider extends ServiceProvider
                 $subdomain = explode('.', $fullDomain)[0];
             }
         }
-        config(['session.cookie' => $subdomain ? $subdomain . '_session' : Str::slug(env('APP_NAME', 'laravel'), '_') . '_session']);
+
+        if ($subdomain === 'admin' || !$subdomain) {
+            config(['session.cookie' => Str::slug(env('APP_NAME', 'laravel'), '_') . '_session']);
+        } else {
+            config(['session.cookie' => $subdomain . '_session']);
+        }
     }
 }
