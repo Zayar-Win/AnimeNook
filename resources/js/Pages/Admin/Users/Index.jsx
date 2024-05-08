@@ -1,3 +1,4 @@
+import Button from "@/Components/Button";
 import DeleteModal from "@/Components/DeleteModal";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
@@ -47,6 +48,14 @@ const Index = ({ users }) => {
             <h1 className="text-center text-xl font-bold my-10">
                 User Management
             </h1>
+            <div className="flex justify-end">
+                <Button
+                    text={'Create User'}
+                    type={'link'}
+                    href={window.route('admin.users.create')}
+                    className={"!bg-blue-500 my-8 mr-5"}
+                />
+            </div>
             <Table datas={users} columns={columns}>
                 <TableData>{(user) => <p>{user.name}</p>}</TableData>
                 <TableData>

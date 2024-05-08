@@ -20,7 +20,7 @@ class GroupFactory extends Factory
             'name' => $this->faker->name(),
             'name' => $this->faker->name(),
             'setting_id' => $this->faker->numberBetween(1, 3),
-            'plan_id' => $this->faker->numberBetween(1, 4),
+            'plan_id' => $this->faker->numberBetween(1, 2),
             'logo' => $this->faker->image(),
         ];
     }

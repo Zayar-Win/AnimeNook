@@ -8,10 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Group extends Model
 {
     use HasFactory;
+    protected $guarded = [];
+
+    protected $with = ['plan'];
 
     public function animes()
     {
         return $this->hasMany(Anime::class);
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
     }
 
     public function users()
