@@ -79,7 +79,7 @@ const Index = ({groups}) => {
                 <TableData>
                     {(group) => <p className="capitalize">{moment(group.expire_date).format('MMM DD, YYYY hh:mm')}</p>}
                 </TableData>
-                <TableData>
+                <TableData className='min-w-[300px]'>
                     {(group) => (
                         <div className="flex items-center gap-2 text-blue-600">
                             <Link
@@ -99,6 +99,15 @@ const Index = ({groups}) => {
                             >
                                 Delete
                             </div>
+                            <div
+                                onClick={() => {
+                                    router.post(window.route('admin.groups.updateSubscription',{group}))
+                                }}
+                                className="hover:underline cursor-pointer"
+                            >
+                                Add One Month
+                            </div>
+
                         </div>
                     )}
                 </TableData>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\helpers\Uploader;
 use App\Models\Group;
 use App\Models\Plan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -78,5 +79,16 @@ class AdminGroupController extends Controller
     {
         $group->delete();
         return back()->with('success', 'Group deleted successful.');
+    }
+
+    public function updateSubscription(Group $group)
+    {
+        $start_date = Carbon::now();
+        $expire_date = Carbon::now()->addMonth(1);
+        $group->update([
+            'start_date' => $start_date,
+            'expire_date' => $expire_date
+        ]);
+        return back()->with('success', 'New subscription unlocked');
     }
 }

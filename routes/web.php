@@ -64,6 +64,7 @@ if ($isProduction) {
         Route::get('/admin/groups/{group}/edit', [AdminGroupController::class, 'edit'])->name('groups.edit');
         Route::post('/admin/groups/{group}/update', [AdminGroupController::class, 'update'])->name('groups.update');
         Route::post('/admin/groups/{group}/delete', [AdminGroupController::class, 'delete'])->name('groups.delete');
+        Route::post('/admin/groups/{group}/updateSubscription', [AdminGroupController::class, 'updateSubscription'])->name('groups.updateSubscription');
     });
     //end for admin middleware
     Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
