@@ -2,7 +2,7 @@
 export const sidebarLinks = [
     {
         name: "Dashboard",
-        routeName: "group.dashboard",
+        routeName: "group.admin.dashboard",
         icon: (
             <svg
                 xmlns="http://www.w3.org/2000/svg"

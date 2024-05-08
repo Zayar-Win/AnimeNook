@@ -17,7 +17,7 @@ const useToast = () => {
                 message = toastMessage.success;
             }
             if (toastMessage.warning) {
-                type = "waring";
+                type = "warning";
                 message = toastMessage.warning;
             }
             if (toastMessage.error) {

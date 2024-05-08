@@ -21,6 +21,7 @@ use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\GroupMiddleware;
+use App\Http\Middleware\SubscriptionMiddleware;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
@@ -112,7 +113,7 @@ if ($isProduction) {
             Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.profile');
             Route::post('/user/profile/update', [UserController::class, 'update'])->name('users.profile.update');
         });
-        Route::name('admin.')->middleware(['auth', 'admin'])->group(function () {
+        Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
             //User Routes
             Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
