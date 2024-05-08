@@ -2,7 +2,7 @@ import Button from "@/Components/Button";
 import DeleteModal from "@/Components/DeleteModal";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
-import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
+import AdminLayout from "@/Layouts/AdminLayout";
 import { Link, router } from "@inertiajs/react";
 import React, { useState } from "react";
 
@@ -11,28 +11,29 @@ const columns = [
         field: "Name",
     },
     {
-        field: "ThumbNail",
+        field: "Profile",
+        minWidth: "50px",
     },
     {
-        field: "Description",
+        field: "Email",
     },
     {
-        field: "Status",
+        field: "Role",
     },
     {
-        field: "Rating",
+        field: "Type",
     },
     {
         field: "Action",
     },
 ];
 
-const Index = ({ mangas }) => {
+const Index = ({ users }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedManga, setSelectedManga] = useState(null);
+    const [selectedUser, setSelectedUser] = useState(null);
     const deleteHandler = () => {
         router.post(
-            window.route("group.admin.mangas.delete", { manga: selectedManga }),
+            window.route("admin.users.delete", { user: selectedUser }),
             {},
             {
                 preserveScroll: true,
@@ -45,52 +46,40 @@ const Index = ({ mangas }) => {
     return (
         <div>
             <h1 className="text-center text-xl font-bold my-10">
-                Mangas Management
+                User Management
             </h1>
             <div className="flex justify-end">
                 <Button
-                    href={window.route("group.admin.mangas.create")}
-                    text={"Create Manga"}
+                    text={'Create User'}
+                    type={'link'}
+                    href={window.route('admin.users.create')}
                     className={"!bg-blue-500 my-8 mr-5"}
                 />
             </div>
-            <Table datas={mangas} columns={columns}>
-                <TableData>{(manga) => <p>{manga.name}</p>}</TableData>
+            <Table datas={users} columns={columns}>
+                <TableData>{(user) => <p>{user.name}</p>}</TableData>
                 <TableData>
-                    {(manga) => (
+                    {(user) => (
                         <img
-                            className="w-20 h-10 object-cover"
-                            src={manga.thumbnail}
-                            alt="manga ThumbNail"
+                            className="w-10 h-10 object-cover rounded-full"
+                            src={user.profile_picture}
+                            alt="Jese image"
                         ></img>
                     )}
                 </TableData>
-                <TableData className={"min-w-[300px]"}>
-                    {(manga) => (
-                        <p className="line-clamp-1">{manga.description}</p>
-                    )}
+                <TableData>{(user) => <p>{user.email}</p>}</TableData>
+                <TableData>
+                    {(user) => <p className="capitalize">{user.role.name}</p>}
                 </TableData>
                 <TableData>
-                    {(manga) => (
-                        <p className="font-extrabold">{manga?.status?.name}</p>
-                    )}
+                    {(user) => <p className="capitalize">{user.type}</p>}
                 </TableData>
                 <TableData>
-                    {(manga) => (
-                        <p className="font-extrabold">
-                            <span className="text-yellow-500 pr-3">
-                                {manga?.rating}
-                            </span>{" "}
-                            Ratings
-                        </p>
-                    )}
-                </TableData>
-                <TableData>
-                    {(manga) => (
+                    {(user) => (
                         <div className="flex items-center gap-2 text-blue-600">
                             <Link
-                                href={window.route("group.admin.mangas.edit", {
-                                    manga,
+                                href={window.route("admin.users.edit", {
+                                    user,
                                 })}
                                 className="hover:underline"
                             >
@@ -99,7 +88,7 @@ const Index = ({ mangas }) => {
                             <div
                                 onClick={() => {
                                     setIsDeleteModalOpen(true);
-                                    setSelectedManga(manga);
+                                    setSelectedUser(user);
                                 }}
                                 className="hover:underline cursor-pointer"
                             >
@@ -113,7 +102,7 @@ const Index = ({ mangas }) => {
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
                     deleteHandler={deleteHandler}
-                    title={"Are you sure want to delete this Manga."}
+                    title={"Are you sure want to delete this user."}
                 />
             )}
         </div>
@@ -121,4 +110,4 @@ const Index = ({ mangas }) => {
 };
 
 export default Index;
-Index.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;
+Index.layout = (page) => <AdminLayout>{page}</AdminLayout>;

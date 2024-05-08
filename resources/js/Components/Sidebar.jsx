@@ -2,9 +2,8 @@ import React from "react";
 import RightArrow from "@/../assets/RightArrow";
 import Dashboard from "@/../assets/Dashboard";
 import { Link, usePage } from "@inertiajs/react";
-import { sidebarLinks } from "./links";
 
-const Sidebar = () => {
+const Sidebar = ({sidebarLinks}) => {
     const { group } = usePage().props;
     return (
         <div className="fixed top-0 left-0 bottom-0 lg:w-[20%] w-[30%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300">

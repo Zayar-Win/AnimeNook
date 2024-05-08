@@ -2,7 +2,7 @@
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
-import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
+import AdminLayout from "@/Layouts/AdminLayout";
 import { useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
@@ -35,34 +35,18 @@ const UserForm = ({ type, user }) => {
         user?.profile_picture
     );
     const { data, setData, post, errors } = useForm({
-        name: "",
-        email: "",
-        profile_picture: null,
-        role_id: 1,
-        type: "free",
-        password: "",
+        name:  user?.name || "",
+        email: user?.email || "",
+        profile_picture: user?.profile_picture || null,
+        role_id: user?.role_id || 1,
+        type: user?.type || "free",
+        password: user?.password || "",
     });
     useEffect(() => {
         if (data.profile_picture && typeof data.profile_picture !== "string") {
             setProfileImageUrl(URL.createObjectURL(data.profile_picture));
         }
     }, [data.profile_picture]);
-
-    useEffect(() => {
-        if (type === "edit") {
-            setData((data) => {
-                return {
-                    ...data,
-                    name: user.name,
-                    email: user.email,
-                    profile_picture: user.profile_picture,
-                    role_id: user.role_id,
-                    type: user.type,
-                    password: user.password,
-                };
-            });
-        }
-    }, [type]);
 
     return (
         <div>
@@ -75,10 +59,10 @@ const UserForm = ({ type, user }) => {
                         e.preventDefault();
                         post(
                             type === "edit"
-                                ? window.route("group.admin.users.update", {
+                                ? window.route("admin.users.update", {
                                       user,
                                   })
-                                : window.route("group.admin.users.store"),
+                                : window.route("admin.users.store"),
                             {
                                 preserveScroll: true,
                             }
@@ -124,6 +108,9 @@ const UserForm = ({ type, user }) => {
                         <Select
                             options={roleOptions}
                             label="Role"
+                            inputProps={{ 
+                                autoComplete : 'off'
+                             }}
                             errorMessage={errors?.role_id}
                             selected={data.role_id}
                             onChange={(role) => setData("role_id", role.value)}
@@ -131,6 +118,9 @@ const UserForm = ({ type, user }) => {
                         <Select
                             label={"Type"}
                             options={typeOptions}
+                            inputProps={{ 
+                                autoComplete : 'off'
+                             }}
                             selected={data.type}
                             errorMessage={errors?.type}
                             onChange={(type) => setData("type", type.value)}
@@ -158,4 +148,4 @@ const UserForm = ({ type, user }) => {
 
 export default UserForm;
 
-UserForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;
+UserForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;

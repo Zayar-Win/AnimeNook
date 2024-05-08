@@ -3,7 +3,7 @@ import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import FilePondUploader from "@/Components/FilePondUploader";
 import InputLabel from "@/Components/InputLabel";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React from "react";
 
@@ -96,4 +96,4 @@ const ChapterForm = ({ chapter, type, manga }) => {
 };
 
 export default ChapterForm;
-ChapterForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+ChapterForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;
