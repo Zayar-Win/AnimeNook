@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             RatingSeeder::class,
             PlanSeeder::class,
+            GroupSettingSeeder::class,
         ]);
     }
 }

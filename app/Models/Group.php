@@ -10,7 +10,29 @@ class Group extends Model
     use HasFactory;
     protected $guarded = [];
 
-    protected $with = ['plan'];
+    protected $with = ['plan', 'groupSetting'];
+
+    protected static function booted()
+    {
+        static::created(function ($model) {
+            $group_setting = GroupSetting::create([
+                'primary_color' => '#F47521',
+                'social_links' => json_encode([
+                    'facebook' => '',
+                    'telegram' => '',
+                    'youtube' => '',
+                    'titok' => '',
+                ])
+            ]);
+            $model->group_setting_id = $group_setting->id;
+            $model->save();
+        });
+    }
+
+    public function groupSetting()
+    {
+        return $this->belongsTo(GroupSetting::class);
+    }
 
     public function animes()
     {
