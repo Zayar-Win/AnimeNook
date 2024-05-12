@@ -164,6 +164,8 @@ if ($isProduction) {
             Route::post('/admin/tags/{tag}/delete', [GroupAdminTagController::class, 'delete'])->name('tags.delete');
             //Setting Routes
             Route::get('/admin/setting', [GroupAdminSettingController::class, 'index'])->name('setting');
+            //Group Data Routes
+            Route::post('/admin/setting/{setting}/update', [GroupAdminSettingController::class, 'update'])->name('setting.update');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

@@ -11,8 +11,6 @@ const Index = ({group}) => {
     const {post : groupPost , data:groupData,setData:setGroupData,errors : groupErrors} = useForm({
         logo : group?.logo || '',
         name : group?.name || '',
-    });
-    const {post : groupSettingPost , data :groupSettingData,setData : setGroupSettingData}  = useForm({
         primary_color : group?.group_setting.primary_color || '',
         social_links : group?.group_setting?.social_links || {},
     });
@@ -32,16 +30,8 @@ const Index = ({group}) => {
                     onSubmit={(e) => {
                         e.preventDefault();
                         groupPost(
-                            window.route("group.admin.group.update", {
-                                group,
-                            }),
-                            {
-                                preserveScroll: true,
-                            }
-                        );
-                        groupSettingPost(
-                            window.route("group.admin.groupSetting.update", {
-                                groupSetting : group.group_setting.id,
+                            window.route("group.admin.setting.update", {
+                                setting : group.group_setting.id
                             }),
                             {
                                 preserveScroll: true,
@@ -85,13 +75,13 @@ const Index = ({group}) => {
                             <Input
                                 label="Primary Color"
                                 errorMessage={groupErrors?.name}
-                                value={groupSettingData.primary_color}
-                                onChange={(e) => setGroupSettingData("primary_color", e.target.value)}
+                                value={groupData.primary_color}
+                                onChange={(e) => setGroupData("primary_color", e.target.value)}
                             />
-                            <ColorPicker color={groupSettingData.primary_color} onChange={color => setGroupSettingData('primary_color',color.hex)} />
+                            <ColorPicker color={groupData.primary_color} onChange={color => setGroupData('primary_color',color.hex)} />
                         </div>
                         {
-                            Object.keys(groupSettingData.social_links).map(key => (
+                            Object.keys(groupData.social_links).map(key => (
                                 <div
                                     className='col-span-2'
                                     key={key}
@@ -100,11 +90,11 @@ const Index = ({group}) => {
                                     <Input
                                         label={key}
                                         type="text"
-                                        value={groupSettingData[key]}
+                                        value={groupData.social_links[key]}
                                         onChange={(e) =>{
-                                            let socialLinks = groupSettingData.social_links;
+                                            let socialLinks = groupData.social_links;
                                             socialLinks[key] = e.target.value;
-                                            setGroupSettingData("social_links",socialLinks)
+                                            setGroupData("social_links",socialLinks)
                                         }
                                         }
                                     />
@@ -116,7 +106,7 @@ const Index = ({group}) => {
                     <Button
                         type={"submit"}
                         text={'Update'}
-                        className={"!bg-blue-500 mt-8 !px-20"}
+                        className={"!bg-blue-500 mt-8 !px-20 mb-10"}
                     />
                 </form>
             </div>
