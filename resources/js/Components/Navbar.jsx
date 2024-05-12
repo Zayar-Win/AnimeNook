@@ -151,7 +151,7 @@ const Navbar = () => {
                                         setSearch("");
                                     }}
                                 >
-                                    <div className="flex gap-6 items-center cursor-pointer hover:bg-[#F47521] hover:text-white p-3 justify-between">
+                                    <div className="flex gap-6 items-center cursor-pointer hover:bg-primary hover:text-white p-3 justify-between">
                                         <div className="flex gap-2">
                                             <div className="w-12 flex-shrink-0">
                                                 <img
@@ -233,7 +233,7 @@ const Navbar = () => {
                                     </div>
                                 </Link>
                             ))}
-                            <div className="my-2 hover:text-[#F47521] text-center text-sm font-medium underline">
+                            <div className="my-2 hover:text-primary text-center text-sm font-medium underline">
                                 <Link onSuccess={() => {
                                     setSearchModalOpen(false);
                                     setSearch("");
@@ -246,18 +246,18 @@ const Navbar = () => {
             <nav className="sm:block hidden">
                 <ul className="flex items-center gap-10 font-semibold text-white">
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/Index"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
                         <Link href={window.route("group.home")}>Home</Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/List"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
@@ -266,27 +266,27 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/NewSeason"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
                         <Link href="/">New Season</Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/Popular"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
                         <Link href="/">Popular</Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/SaveList"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
@@ -383,7 +383,7 @@ const Navbar = () => {
                                                 "group.admin.dashboard"
                                             )}
                                         >
-                                            <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
+                                            <div className="flex hover:bg-gray-200 hover:text-primary items-center px-3 py-3 gap-2">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width="24"
@@ -404,7 +404,7 @@ const Navbar = () => {
                                             "group.user.profile"
                                         )}
                                     >
-                                        <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
+                                        <div className="flex hover:bg-gray-200 hover:text-primary  items-center px-3 py-3 gap-2">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 width="24"
@@ -423,7 +423,7 @@ const Navbar = () => {
                                         onClick={() =>
                                             setLogoutModalOpen((prev) => !prev)
                                         }
-                                        className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2"
+                                        className="flex hover:bg-gray-200 hover:text-primary  items-center px-3 py-3 gap-2"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -450,13 +450,13 @@ const Navbar = () => {
                     <div className=" flex items-center gap-3">
                         <Button
                             text={"Sign In"}
-                            className={"!bg-[#F47521] !px-12 !gap-1"}
+                            className={"!bg-primary !px-12 !gap-1"}
                             href={window.route("group.login")}
                         />
                         <Button
                             text={"Sign Up"}
                             className={
-                                "!border-[#F47521] !px-12 !gap-1 !text-[#F47521]"
+                                "!border-primary !px-12 !gap-1 !text-primary"
                             }
                             outline
                             href={window.route("group.register")}

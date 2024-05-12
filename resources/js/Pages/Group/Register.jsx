@@ -24,7 +24,7 @@ const Register = () => {
                     </div>
                     <div className='border-l-4 border-l-yellow-400 rounded-md py-3 pl-4'>
                         <div className='flex items-baseline gap-3'>
-                            <h1 className='text-3xl font-medium text-[#F47521]'>Konnichiwa!</h1>
+                            <h1 className='text-3xl font-medium text-primary'>Konnichiwa!</h1>
                             <span className='text-sm font-medium'>My fellow Otaku!</span>
                         </div>
                         <p className='text-gray-700 font-medium w-[60%] pt-2'>Heard you would like watching anime.Dive into the world of all animes and series.</p>

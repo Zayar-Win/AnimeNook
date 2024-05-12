@@ -148,7 +148,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                         manga?.chapters[0] &&
                         <a href={manga.chapters[0].chapter_link}>
                             <Button
-                                className={"!bg-[#F47521] !px-8 rounded-none !gap-1"}
+                                className={"!bg-primary !px-8 rounded-none !gap-1"}
                                 text={
                                     manga?.latestWatchedChapter
                                         ? `Continue Reading Ep${manga?.latestWatchedChapter.chapter_number}`
@@ -179,7 +179,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                         }
                         type={"button"}
                         onClick={saveToCollection}
-                        className={"!bg-[#F47521] !px-8 rounded-none !gap-1"}
+                        className={"!bg-primary !px-8 rounded-none !gap-1"}
                         Icon={
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -198,12 +198,12 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                         text={manga.isLikeByCurrentUser ? "Liked" : "Like"}
                         type={"button"}
                         onClick={() => likeManga()}
-                        className={"!bg-[#F47521] !px-8 rounded-none !gap-1"}
+                        className={"!bg-primary !px-8 rounded-none !gap-1"}
                         Icon={<Liked className={"text-white"} />}
                     />
                     <Button
                         text={"Share"}
-                        className={"!bg-[#F47521] !px-8 rounded-none !gap-1"}
+                        className={"!bg-primary !px-8 rounded-none !gap-1"}
                         Icon={
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

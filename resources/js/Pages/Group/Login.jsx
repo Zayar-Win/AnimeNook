@@ -29,7 +29,7 @@ const Login = () => {
                     </div>
                     <div className="border-l-4 border-l-yellow-400 rounded-md py-3 pl-4">
                         <div className="flex items-baseline gap-3">
-                            <h1 className="text-3xl font-medium text-[#F47521]">
+                            <h1 className="text-3xl font-medium text-primary">
                                 Konnichiwa!
                             </h1>
                             <span className="text-sm font-medium">
