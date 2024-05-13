@@ -98,10 +98,12 @@ const Sidebar = ({sidebarLinks}) => {
                         Account
                     </p>
                     <div className="pl-1 mb-3">
-                        <div className="flex rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] pl-5 py-4 cursor-pointer items-center gap-2">
-                            <Dashboard className="w-5 h-5" />
-                            <p className="font-semibold">Dashboard</p>
-                        </div>
+                        <Link href={window.route('group.admin.setting')}> 
+                            <div className="flex rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] pl-5 py-4 cursor-pointer items-center gap-2">
+                                <Dashboard className="w-5 h-5" />
+                                <p className="font-semibold">Setting</p>
+                            </div>
+                        </Link>
                         <div className="flex pl-5 rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] py-4 cursor-pointer items-center gap-2">
                             <Dashboard className={"w-5 h-5"} />
                             <p className="font-semibold">Dashboard</p>

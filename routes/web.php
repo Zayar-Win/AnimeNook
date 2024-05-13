@@ -13,6 +13,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
+use App\Http\Controllers\GroupAdminSettingController;
 use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminTagController;
 use App\Http\Controllers\GroupAdminUserController;
@@ -161,6 +162,10 @@ if ($isProduction) {
             Route::get('/admin/tags/{tag}/edit', [GroupAdminTagController::class, 'edit'])->name('tags.edit');
             Route::post('/admin/tags/{tag}/update', [GroupAdminTagController::class, 'update'])->name('tags.update');
             Route::post('/admin/tags/{tag}/delete', [GroupAdminTagController::class, 'delete'])->name('tags.delete');
+            //Setting Routes
+            Route::get('/admin/setting', [GroupAdminSettingController::class, 'index'])->name('setting');
+            //Group Data Routes
+            Route::post('/admin/setting/{setting}/update', [GroupAdminSettingController::class, 'update'])->name('setting.update');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

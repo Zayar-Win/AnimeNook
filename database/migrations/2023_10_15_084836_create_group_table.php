@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('subdomain');
-            $table->unsignedBigInteger('setting_id')->nullable();
+            $table->unsignedBigInteger('group_setting_id')->nullable();
             $table->string('custom_domain')->nullable();
             $table->date('renewal_date')->nullable();
             $table->unsignedBigInteger('plan_id');
