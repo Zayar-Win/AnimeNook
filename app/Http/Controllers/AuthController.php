@@ -8,6 +8,7 @@ use App\Models\Group;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
@@ -22,7 +23,7 @@ class AuthController extends Controller
                 return back()->withErrors(['password' => 'Password doesn\'t match.']);
             }
             auth()->login($user);
-            return redirect(route('group.home'))->with('success', 'Welcome back from our website');
+            return Redirect::intended(route('group.home'))->with('success', 'Welcome back from our website');
         }
     }
     public function userRegister(Group $group, RegisterRequest $request)
@@ -32,7 +33,7 @@ class AuthController extends Controller
         $data['group_id'] = $group->id;
         $user = User::create($data);
         auth()->login($user);
-        return redirect(route('group.home'))->with('success', 'Welcome from our website.');
+        return Redirect::intended(route('group.home'))->with('success', 'Welcome from our website.');
     }
     public function userLogout()
     {
@@ -82,7 +83,7 @@ class AuthController extends Controller
         }
         $user = User::where("id", $user)->first();
         auth()->login($user);
-        return redirect(route('group.home'));
+        return Redirect::intended(route('group.home'));
     }
 
     public function generateToken($user)
