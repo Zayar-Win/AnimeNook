@@ -257,7 +257,7 @@ const Navbar = () => {
                     </li>
                     <li
                         className={`hover:text-primary trasnition-all ${
-                            component === "Group/List"
+                            component === "Group/Animes"
                                 ? "text-primary"
                                 : null
                         }`}
