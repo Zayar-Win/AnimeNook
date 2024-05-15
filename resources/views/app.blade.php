@@ -7,9 +7,10 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         @php
+        use App\Models\Group;
             $group = request()->route('group');
             if(gettype($group) === 'string'){
-                $group = Group::where('subdomain',$group)->frist();
+                $group = Group::where('subdomain',$group)->first();
             }
         @endphp
         <style>
@@ -19,7 +20,6 @@
             --secondary-color: {{ $group->secondary_color ?? 'black' }};
             /* Default secondary color */
         }
-
         </style>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
