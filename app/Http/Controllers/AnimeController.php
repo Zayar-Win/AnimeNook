@@ -33,7 +33,7 @@ class AnimeController extends Controller
             })
             ->when($filters['sort'] === 'popularity', function ($query) {
                 $query->orderBy('views_count', 'desc');
-            })->paginate(10, ['*'], 'animepage');
+            })->paginate(12, ['*'], 'animepage');
         $mangas = Manga::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
                 ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
@@ -48,7 +48,7 @@ class AnimeController extends Controller
             })
             ->when($filters['sort'] === 'popularity', function ($query) {
                 $query->orderBy('views_count', 'desc');
-            })->paginate(10, ['*'], 'mangapage');
+            })->paginate(12, ['*'], 'mangapage');
 
         $data = collect($animes->items())->concat($mangas->items())->shuffle();
         if ($filters['filter'] === 'animes') {
