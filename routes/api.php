@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
@@ -31,5 +32,6 @@ if ($isProduction) {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
         Route::get('/notis', [NotificationController::class, 'index'])->name('notis');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
+        Route::get('/animes', [AnimeController::class, 'index'])->name('getAnimesAndMangas');
     });
 }
