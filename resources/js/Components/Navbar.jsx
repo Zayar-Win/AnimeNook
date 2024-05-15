@@ -52,13 +52,14 @@ const Navbar = () => {
         })
         scrollRef.current.observe(el);
     })
+    
     const closeSearchModal = () => {
         setSearch("");
         setSearchModalOpen(false);
     };
 
     const fetchNotifications = async () => {
-        const response = await axios.get(window.route('group.notis',{userId : auth.user.id}));
+        const response = await axios.get(window.route('group.notis',{userId : auth?.user?.id}));
         setNotifications(response.data.notifications.data)
         setNextPageUrl(response.data.notifications.next_page_url)
     }

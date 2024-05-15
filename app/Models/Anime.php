@@ -14,13 +14,18 @@ class Anime extends Model
     protected $with = ['status', 'tags'];
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type'];
 
     public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
+    }
+
+    public function getTypeAttribute()
+    {
+        return 'anime';
     }
 
     public function getLatestWatchedChapterAttribute()
