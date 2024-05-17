@@ -30,6 +30,9 @@ class Anime extends Model
 
     public function getLatestWatchedChapterAttribute()
     {
+        if (!auth()->check()) {
+            return null;
+        }
         $group = request()->route('group');
         if (gettype($group) !== 'object') {
             $group = Group::where('subdomain', $group)->first();

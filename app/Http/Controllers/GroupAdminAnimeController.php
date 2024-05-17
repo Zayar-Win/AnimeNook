@@ -7,8 +7,10 @@ use App\helpers\Uploader;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
+use App\Models\OuoFailLink;
 use App\Models\Status;
 use App\Notifications\NewEpisodeUpload;
+use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\UploadedFile;
 use Illuminate\Http\Request;
@@ -108,6 +110,7 @@ class GroupAdminAnimeController extends Controller
 
     public function episodeStore(Group $group, Anime $anime)
     {
+        $isOuoGenerateFail = false;
         $validatedData = request()->validate([
             'thumbnail' => ['required', 'image'],
             'title' => ['required'],
@@ -124,11 +127,22 @@ class GroupAdminAnimeController extends Controller
 
         $validatedData['type']  = 'link';
         $generator = new ShortenLinkGenerator();
-        $link = $generator->generate($validatedData['link']);
+        $link = $validatedData['link'];
+        try {
+            $link = $generator->generate($validatedData['link']);
+        } catch (Exception $e) {
+            $isOuoGenerateFail = true;
+        }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
         $chapter = Chapter::create($validatedData);
         Notification::send($group->users, new NewEpisodeUpload($chapter, $group, $anime));
+        if ($isOuoGenerateFail) {
+            OuoFailLink::create([
+                'group_id' => $group->id,
+                'chapter_id' => $chapter->id
+            ]);
+        }
         return redirect(route('group.admin.animes.edit', ['anime' => $anime]))->with('success', 'Chpater created Successful.');
     }
 
@@ -154,12 +168,23 @@ class GroupAdminAnimeController extends Controller
             $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
+        $link = $validatedData['link'];
         if ($episode->chapter_link !== $validatedData['link']) {
             $generator = new ShortenLinkGenerator();
-            $link = $generator->generate($validatedData['link']);
+            try {
+                $link = $generator->generate($link);
+            } catch (Exception $e) {
+                $failLink = OuoFailLink::where('chapter_id', $episode->id)->first();
+                if (!$failLink) {
+                    OuoFailLink::create([
+                        'group_id' => $group->id,
+                        'chapter_id' => $episode->id
+                    ]);
+                }
+            }
             $validatedData['chapter_link'] = $link;
         } else {
-            $validatedData['chapter_link'] = $validatedData['link'];
+            $validatedData['chapter_link'] = $link;
         }
         unset($validatedData['link']);
         $validatedData['chapterable_type'] = Anime::class;

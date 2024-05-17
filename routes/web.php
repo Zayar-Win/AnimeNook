@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminGroupController;
+use App\Http\Controllers\AdminOuoFailLinkController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeDetailController;
@@ -67,6 +68,11 @@ if ($isProduction) {
         Route::post('/admin/groups/{group}/update', [AdminGroupController::class, 'update'])->name('groups.update');
         Route::post('/admin/groups/{group}/delete', [AdminGroupController::class, 'delete'])->name('groups.delete');
         Route::post('/admin/groups/{group}/updateSubscription', [AdminGroupController::class, 'updateSubscription'])->name('groups.updateSubscription');
+        //Ouo fail Links
+        Route::get('/admin/ouofaillinks', [AdminOuoFailLinkController::class, 'index'])->name('ouo.fail.links');
+        Route::post('/admin/ouofaillinks/{failLink}/delete', [AdminOuoFailLinkController::class, 'delete'])->name('ouo.fail.links.delete');
+        Route::post('/admin/ouofaillinks/{failLink}/rerun', [AdminOuoFailLinkController::class, 'rerunFailLink'])->name('ouo.fail.links.rerun');
+        Route::post('/admin/ouofaillinks/rerun', [AdminOuoFailLinkController::class, 'rerunAllFailLink'])->name('ouo.fail.links.rerunAll');
     });
     //end for admin middleware
     Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
@@ -166,6 +172,7 @@ if ($isProduction) {
             Route::get('/admin/setting', [GroupAdminSettingController::class, 'index'])->name('setting');
             //Group Data Routes
             Route::post('/admin/setting/{setting}/update', [GroupAdminSettingController::class, 'update'])->name('setting.update');
+            //Ouo Fail Links
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');

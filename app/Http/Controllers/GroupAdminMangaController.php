@@ -7,56 +7,61 @@ use App\helpers\Uploader;
 use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Manga;
+use App\Models\OuoFailLink;
 use App\Models\Status;
+use Exception;
 use Illuminate\Http\Request;
 
 class GroupAdminMangaController extends Controller
 {
     public function __construct(private Uploader $uploader)
     {
-        
     }
 
-    public function index(Group $group){
+    public function index(Group $group)
+    {
         $mangas = $group->mangas()->latest()->paginate(15);
-        return inertia('Group/Admin/Mangas/Index',[
+        return inertia('Group/Admin/Mangas/Index', [
             'mangas' => $mangas
         ]);
     }
 
-    public function create(Group $group){
-        return inertia('Group/Admin/Mangas/MangaForm',[
+    public function create(Group $group)
+    {
+        return inertia('Group/Admin/Mangas/MangaForm', [
             'type' => "create",
             'statuses' => Status::all(),
         ]);
     }
 
-    public function store(Group $group){
+    public function store(Group $group)
+    {
         $validatedData = request()->validate([
-            'thumbnail' => ['required','image'],
+            'thumbnail' => ['required', 'image'],
             'background_image' => ['nullable'],
             'transparent_background' => ['nullable'],
             'name' => ['required'],
             'status_id' => ['required'],
             'description' => ['required']
         ]);
-        if(gettype($validatedData['thumbnail']) !== 'string'){
-            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'],'animes');
+        if (gettype($validatedData['thumbnail']) !== 'string') {
+            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
-        if(isset($validatedData['background_image']) && gettype($validatedData['background_image']) !== 'string'){
-            $validatedData['background_image'] = $this->uploader->upload($validatedData['background_image'],'animes');
+        if (isset($validatedData['background_image']) && gettype($validatedData['background_image']) !== 'string') {
+            $validatedData['background_image'] = $this->uploader->upload($validatedData['background_image'], 'animes');
         }
-        if(isset($validatedData['transparent_background']) && gettype($validatedData['transparent_background']) !== 'string'){
-            $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'],'animes');
+        if (isset($validatedData['transparent_background']) && gettype($validatedData['transparent_background']) !== 'string') {
+            $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
         Manga::create($validatedData);
-        return redirect(route('group.admin.mangas'))->with('success','Manga Series Created Successful.');
+        return redirect(route('group.admin.mangas'))->with('success', 'Manga Series Created Successful.');
     }
 
-    public function edit(Group $group,Manga $manga){
-        $chapters = Chapter::where('chapterable_id',$manga->id)->where("chapterable_type",Manga::class)->where('group_id',$group->id)->latest()->paginate(15);
-        return inertia('Group/Admin/Mangas/MangaForm',[
+    public function edit(Group $group, Manga $manga)
+    {
+        $chapters = Chapter::where('chapterable_id', $manga->id)->where("chapterable_type", Manga::class)->where('group_id', $group->id)->latest()->paginate(15);
+        return inertia('Group/Admin/Mangas/MangaForm', [
             'type' => 'edit',
             'manga' => $manga,
             'chapters' => $chapters,
@@ -64,7 +69,8 @@ class GroupAdminMangaController extends Controller
         ]);
     }
 
-    public function update(Group $group,Manga $manga){
+    public function update(Group $group, Manga $manga)
+    {
         $validatedData = request()->validate([
             'thumbnail' => ['required'],
             'background_image' => ['nullable'],
@@ -73,62 +79,79 @@ class GroupAdminMangaController extends Controller
             'status_id' => ['required'],
             'description' => ['required']
         ]);
-        if(gettype($validatedData['thumbnail']) !== 'string'){
-            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'],'animes');
+        if (gettype($validatedData['thumbnail']) !== 'string') {
+            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
-        if(isset($validatedData['background_image']) && gettype($validatedData['background_image']) !== 'string'){
-            $validatedData['background_image'] = $this->uploader->upload($validatedData['background_image'],'animes');
+        if (isset($validatedData['background_image']) && gettype($validatedData['background_image']) !== 'string') {
+            $validatedData['background_image'] = $this->uploader->upload($validatedData['background_image'], 'animes');
         }
-        if(isset($validatedData['transparent_background']) && gettype($validatedData['transparent_background']) !== 'string'){
-            $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'],'animes');
+        if (isset($validatedData['transparent_background']) && gettype($validatedData['transparent_background']) !== 'string') {
+            $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'], 'animes');
         }
         $manga->update($validatedData);
-        return redirect(route('group.admin.mangas'))->with('success','Manga Series updated Successful.');
+        return redirect(route('group.admin.mangas'))->with('success', 'Manga Series updated Successful.');
     }
 
-    public function delete(Group $group,Manga $manga){
+    public function delete(Group $group, Manga $manga)
+    {
         $manga->delete();
-        return back()->with('success','Manga deleted successful.');
+        return back()->with('success', 'Manga deleted successful.');
     }
 
-    public function chapterCreate(Group $group,Manga $manga){
-        return inertia('Group/Admin/Mangas/ChapterForm',[
+    public function chapterCreate(Group $group, Manga $manga)
+    {
+        return inertia('Group/Admin/Mangas/ChapterForm', [
             'manga' => $manga
         ]);
     }
-    
-    public function chapterStore(Group $group , Manga $manga){
+
+    public function chapterStore(Group $group, Manga $manga)
+    {
+        $isOuoGenerateFail = false;
         $validatedData = request()->validate([
-            'thumbnail' => ['required','image'],
+            'thumbnail' => ['required', 'image'],
             'chapter_number' => ['required'],
             'title' => ['required'],
             'link' => ['required'],
             'description' => ['nullable']
         ]);
-        if(gettype($validatedData['thumbnail']) !== 'string'){
-            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'],'animes');
+        if (gettype($validatedData['thumbnail']) !== 'string') {
+            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['type']  = 'link';
         $generator = new ShortenLinkGenerator();
-        $link = $generator->generate($validatedData['link']);
+        $link = $validatedData['link'];
+        try {
+            $link = $generator->generate($validatedData['link']);
+        } catch (Exception $e) {
+            $isOuoGenerateFail = true;
+        }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
-        Chapter::create($validatedData);
-        return redirect(route('group.admin.mangas.edit',['manga' => $manga]))->with('success','Chpater created Successful.');
+        $chapter = Chapter::create($validatedData);
+        if ($isOuoGenerateFail) {
+            OuoFailLink::create([
+                'group_id' => $group->id,
+                'chapter_id' => $chapter->id
+            ]);
+        }
+        return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chpater created Successful.');
     }
 
-    public function editChapter(Group $group,Manga $manga,Chapter $chapter){
-        return inertia('Group/Admin/Mangas/ChapterForm',[
+    public function editChapter(Group $group, Manga $manga, Chapter $chapter)
+    {
+        return inertia('Group/Admin/Mangas/ChapterForm', [
             'chapter' => $chapter,
             'type' => 'edit',
             'manga' => $manga
         ]);
     }
 
-    public function updateChapter(Group $group,Manga $manga,Chapter $chapter){
+    public function updateChapter(Group $group, Manga $manga, Chapter $chapter)
+    {
         $validatedData = request()->validate([
             'thumbnail' => ['required'],
             'chapter_number' => ['required'],
@@ -136,28 +159,40 @@ class GroupAdminMangaController extends Controller
             'description' => ['required'],
             'link' => ['required'],
         ]);
-        if(gettype($validatedData['thumbnail']) !== 'string'){
-            $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'],'animes');
+        if (gettype($validatedData['thumbnail']) !== 'string') {
+            $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
-        if($chapter->chapter_link !== $validatedData['link']){
+        $link = $validatedData['link'];
+        if ($chapter->chapter_link !== $validatedData['link']) {
             $generator = new ShortenLinkGenerator();
-            $link = $generator->generate($validatedData['link']);
+            try {
+                $link = $generator->generate($link);
+            } catch (Exception $e) {
+                $failLink = OuoFailLink::where('chapter_id', $chapter->id)->first();
+                if (!$failLink) {
+                    OuoFailLink::create([
+                        'group_id' => $group->id,
+                        'chapter_id' => $chapter->id
+                    ]);
+                }
+            }
             $validatedData['chapter_link'] = $link;
-        }else{
-            $validatedData['chapter_link'] = $validatedData['link'];
+        } else {
+            $validatedData['chapter_link'] = $link;
         }
-        $validatedData['chapter_link'] = $validatedData['link'];
+        $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['type'] = 'link';
         $chapter->update($validatedData);
-        return redirect(route('group.admin.mangas.edit',['manga' => $manga]))->with('success','Chapter udpated successful.');
+        return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chapter udpated successful.');
     }
 
-    public function deleteChapter(Group $group,Manga $manga,Chapter $chapter){
+    public function deleteChapter(Group $group, Manga $manga, Chapter $chapter)
+    {
         $chapter->delete();
-        return back()->with('success','Delete chapter Successful.');
+        return back()->with('success', 'Delete chapter Successful.');
     }
 }

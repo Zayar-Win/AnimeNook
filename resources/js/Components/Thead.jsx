@@ -32,9 +32,7 @@ const Thead = ({ theadClasses, columns }) => {
                 {columns.map((column) => (
                     <th
                         key={column.field}
-                        className={`font-bolder text-[15px] px-6 py-3 capitalize text-black text-left ${
-                            column.minWidth ?? "min-w-[180px]"
-                        }`}
+                        className={`font-bolder text-[15px] px-6 py-3 capitalize text-black text-left min-w-[180px]`}
                     >
                         {column.field}
                     </th>
