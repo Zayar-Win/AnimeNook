@@ -87,7 +87,7 @@ const AnimeForm = ({ type, statuses, anime, episodes }) => {
                     onSubmit={(e) => {
                         e.preventDefault();
                         type === "edit"
-                            ? post(window.route("group.admin.animes.update"))
+                            ? post(window.route("group.admin.animes.update",{anime}))
                             : post(window.route("group.admin.animes.store"));
                     }}
                 >
