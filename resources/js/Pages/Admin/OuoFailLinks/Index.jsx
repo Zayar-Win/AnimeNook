@@ -3,7 +3,7 @@ import DeleteModal from "@/Components/DeleteModal";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
 import AdminLayout from "@/Layouts/AdminLayout";
-import { Link, router } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import React, { useState } from "react";
 
 const columns = [
@@ -15,25 +15,24 @@ const columns = [
     },
     {
         field: "Chapter Title",
-        minWidth: "50px",
-    },
-    {
-        field: "Link",
     },
     {
         field: "View Count",
+    },
+    {
+        field: "Link",
     },
     {
         field: "Action",
     },
 ];
 
-const Index = ({ users }) => {
+const Index = ({ failLinks }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedFailLink, setSelectedFailLink] = useState(null);
     const deleteHandler = () => {
         router.post(
-            window.route("admin.users.delete", { user: selectedUser }),
+            window.route("admin.ouo.fail.links.delete", { failLink: selectedFailLink }),
             {},
             {
                 preserveScroll: true,
@@ -43,52 +42,63 @@ const Index = ({ users }) => {
             }
         );
     };
+    const runFailLink = (failLink) => {
+        router.post(
+            window.route("admin.ouo.fail.links.rerun", { failLink }),
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                },
+            }
+        );
+    }
+    const runAllFailLinks = () => {
+        router.post(window.route('admin.ouo.fail.links.rerunAll'));
+    }
     return (
         <div>
             <h1 className="text-center text-xl font-bold my-10">
-                User Management
+                Ouo Fail Links Management
             </h1>
             <div className="flex justify-end">
                 <Button
-                    text={'Create User'}
-                    type={'link'}
-                    href={window.route('admin.users.create')}
+                    text={'Run All Fail Links'}
+                    type={'button'}
+                    onClick={() => {
+                        runAllFailLinks()
+                    }}
                     className={"!bg-blue-500 my-8 mr-5"}
                 />
             </div>
-            <Table datas={users} columns={columns}>
-                <TableData>{(user) => <p>{user.name}</p>}</TableData>
-                <TableData>
-                    {(user) => (
-                        <img
-                            className="w-10 h-10 object-cover rounded-full"
-                            src={user.profile_picture}
-                            alt="Jese image"
-                        ></img>
-                    )}
-                </TableData>
-                <TableData>{(user) => <p>{user.email}</p>}</TableData>
-                <TableData>
-                    {(user) => <p className="capitalize">{user.role.name}</p>}
+            <Table datas={failLinks} columns={columns}>
+                <TableData>{(failLink) => <p>{failLink.group.name}</p>}</TableData>
+                <TableData>{(failLink) => <p className="capitalize">{failLink.chapter.type}</p>}</TableData>
+                <TableData className={'min-w-[250px] line-clamp-1'}>
+                    {(failLink) => <p>{failLink.chapter.title}</p>}
                 </TableData>
                 <TableData>
-                    {(user) => <p className="capitalize">{user.type}</p>}
+                    {(failLink) => <p>{failLink.chapter.view_count}</p>}
+                </TableData>
+                <TableData className={'min-w-[250px] line-clamp-1'}>
+                    {(failLink) => <a className="hover:underline" href={failLink.chapter.chapter_link || '#'}> {failLink.chapter.chapter_link || 'No Link'}</a>}
                 </TableData>
                 <TableData>
-                    {(user) => (
+                    {(failLink) => (
                         <div className="flex items-center gap-2 text-blue-600">
-                            <Link
-                                href={window.route("admin.users.edit", {
-                                    user,
-                                })}
-                                className="hover:underline"
+                            <div
+                                onClick={() => {
+                                    runFailLink(failLink)
+                                }}
+                                className="hover:underline cursor-pointer"
                             >
-                                Edit
-                            </Link>
+                                Run Fail Link
+                            </div>
                             <div
                                 onClick={() => {
                                     setIsDeleteModalOpen(true);
-                                    setSelectedUser(user);
+                                    setSelectedFailLink(failLink);
                                 }}
                                 className="hover:underline cursor-pointer"
                             >
@@ -102,7 +112,7 @@ const Index = ({ users }) => {
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
                     deleteHandler={deleteHandler}
-                    title={"Are you sure want to delete this user."}
+                    title={"Are you sure want to delete this fail link."}
                 />
             )}
         </div>

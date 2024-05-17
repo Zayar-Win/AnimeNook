@@ -8,11 +8,22 @@ use Illuminate\Database\Eloquent\Model;
 class Chapter extends Model
 {
     use HasFactory;
-    protected $guarded=[];
+    protected $guarded = [];
+
+    protected $appends = ['type'];
 
     public function chapterable()
     {
         return $this->morphTo();
+    }
+
+    public function getTypeAttribute()
+    {
+        if ($this->chapterable_type === 'App\Models\Anime') {
+            return 'anime';
+        } else {
+            return 'manga';
+        }
     }
 
 
