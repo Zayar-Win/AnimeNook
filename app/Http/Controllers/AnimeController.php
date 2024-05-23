@@ -6,7 +6,6 @@ use App\Models\Anime;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Rating;
-use App\Models\Tag;
 
 class AnimeController extends Controller
 {
@@ -16,7 +15,8 @@ class AnimeController extends Controller
             'search' => request()->get('search'),
             'sort' => request()->get('sort'),
             'filter' => request()->get('filter'),
-            'tags' => request()->get('tags')
+            'tags' => request()->get('tags'),
+            'isApi' => request()->get('isApi')
         ];
 
         $animes = Anime::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
@@ -33,7 +33,7 @@ class AnimeController extends Controller
             })
             ->when($filters['sort'] === 'popularity', function ($query) {
                 $query->orderBy('views_count', 'desc');
-            })->get();
+            })->paginate(12, ['*'], 'animepage');
         $mangas = Manga::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
                 ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
@@ -48,16 +48,38 @@ class AnimeController extends Controller
             })
             ->when($filters['sort'] === 'popularity', function ($query) {
                 $query->orderBy('views_count', 'desc');
-            })->get();
+            })->paginate(12, ['*'], 'mangapage');
 
-        return inertia('Group/Animes', [
-            'data' => [
-                'animes' => $filters['filter'] === 'animes' || $filters['filter'] === null ? $animes : [],
-                'mangas' => $filters['filter'] === 'mangas' || $filters['filter'] === null ? $mangas : []
+        $data = collect($animes->items())->concat($mangas->items())->shuffle();
+        if ($filters['filter'] === 'animes') {
+            $data = $animes->items();
+        }
+        if ($filters['filter'] === 'mangas') {
+            $data = $mangas->items();
+        }
+        $paginateData = [
+            'anime' => [
+                'currentPage' => $animes->currentPage(),
+                'lastPage' => $animes->lastPage()
             ],
-            'filters' => $filters,
-            'tags' => $group->tags()->get()
-        ]);
+            'manga' => [
+                'currentPage' => $mangas->currentPage(),
+                'lastPage' => $animes->lastPage()
+            ]
+        ];
+        if (!$filters['isApi']) {
+            return inertia('Group/Animes', [
+                'data' => $data,
+                'paginateData' => $paginateData,
+                'filters' => $filters,
+                'tags' => $group->tags()->get()
+            ]);
+        } else {
+            return response()->json([
+                'data' => $data,
+                'paginateData' => $paginateData,
+            ]);
+        }
     }
 
     public function likeOrUnlike(Group $group, Anime $anime)

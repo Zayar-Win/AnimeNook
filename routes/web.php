@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AdminGroupController;
+use App\Http\Controllers\AdminOuoFailLinkController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeDetailController;
 use App\Http\Controllers\AuthController;
@@ -10,24 +14,22 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
+use App\Http\Controllers\GroupAdminSettingController;
 use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminTagController;
 use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ViewController;
 use App\Http\Middleware\GroupMiddleware;
+use App\Http\Middleware\SubscriptionMiddleware;
 use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Manga;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use Ramsey\Uuid\Uuid;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +51,35 @@ if ($isProduction) {
         });
     });
 } else {
+    //need to add admin middleware
+    Route::name('admin.')->group(function () {
+        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/admin/users', [AdminUserController::class, 'index'])->name('users');
+        Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('users.create');
+        Route::post('/admin/users/store', [AdminUserController::class, 'store'])->name('users.store');
+        Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+        Route::post('/admin/users/{user}/update', [AdminUserController::class, 'update'])->name('users.update');
+        Route::post('/admin/users/{user}/delete', [AdminUserController::class, 'delete'])->name('users.delete');
+        //Group Routes
+        Route::get('/admin/groups', [AdminGroupController::class, 'index'])->name('groups');
+        Route::get('/admin/groups/create', [AdminGroupController::class, 'create'])->name('groups.create');
+        Route::post('/admin/groups/store', [AdminGroupController::class, 'store'])->name('groups.store');
+        Route::get('/admin/groups/{group}/edit', [AdminGroupController::class, 'edit'])->name('groups.edit');
+        Route::post('/admin/groups/{group}/update', [AdminGroupController::class, 'update'])->name('groups.update');
+        Route::post('/admin/groups/{group}/delete', [AdminGroupController::class, 'delete'])->name('groups.delete');
+        Route::post('/admin/groups/{group}/updateSubscription', [AdminGroupController::class, 'updateSubscription'])->name('groups.updateSubscription');
+        //Ouo fail Links
+        Route::get('/admin/ouofaillinks', [AdminOuoFailLinkController::class, 'index'])->name('ouo.fail.links');
+        Route::post('/admin/ouofaillinks/{failLink}/delete', [AdminOuoFailLinkController::class, 'delete'])->name('ouo.fail.links.delete');
+        Route::post('/admin/ouofaillinks/{failLink}/rerun', [AdminOuoFailLinkController::class, 'rerunFailLink'])->name('ouo.fail.links.rerun');
+        Route::post('/admin/ouofaillinks/rerun', [AdminOuoFailLinkController::class, 'rerunAllFailLink'])->name('ouo.fail.links.rerunAll');
+    });
+    //end for admin middleware
+    Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
+    Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
     Route::prefix('/{group:subdomain}')->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+        Route::get('/admin/dashboard', function () {
+        })->name('dashboard');
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
@@ -90,7 +120,7 @@ if ($isProduction) {
             Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.profile');
             Route::post('/user/profile/update', [UserController::class, 'update'])->name('users.profile.update');
         });
-        Route::name('admin.')->middleware(['auth', 'admin'])->group(function () {
+        Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
             //User Routes
             Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
@@ -138,35 +168,29 @@ if ($isProduction) {
             Route::get('/admin/tags/{tag}/edit', [GroupAdminTagController::class, 'edit'])->name('tags.edit');
             Route::post('/admin/tags/{tag}/update', [GroupAdminTagController::class, 'update'])->name('tags.update');
             Route::post('/admin/tags/{tag}/delete', [GroupAdminTagController::class, 'delete'])->name('tags.delete');
+            //Setting Routes
+            Route::get('/admin/setting', [GroupAdminSettingController::class, 'index'])->name('setting');
+            //Group Data Routes
+            Route::post('/admin/setting/{setting}/update', [GroupAdminSettingController::class, 'update'])->name('setting.update');
+            //Ouo Fail Links
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
-       Route::middleware('guest')->group(function(){
-         Route::get('/login', function () {
-            return inertia('Group/Login');
-        })->name('login');
-        Route::post('/login', [AuthController::class, 'userLogin'])->name('login');
-        Route::get('/register', function () {
-            return inertia('Group/Register');
-        })->name('register');
-        Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
-       });
+        Route::middleware('guest')->group(function () {
+            Route::get('/login', function () {
+                return inertia('Group/Login');
+            })->name('login');
+
+            Route::post('/login', [AuthController::class, 'userLogin'])->name('login');
+            Route::get('/register', function () {
+                return inertia('Group/Register');
+            })->name('register');
+            Route::get('/google-oauth-login', [AuthController::class, 'googleOauthLogin'])->name('google.oauth.login');
+            Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
+        });
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });
 }
-Route::get('/', function () {
-    // return Inertia::render('Group/Index');
-});
-
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
 require __DIR__ . '/auth.php';

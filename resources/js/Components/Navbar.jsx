@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import LogoImg from "../../assets/logo.png";
 import SectionContainer from "./SectionContainer";
 import { Link, router, usePage } from "@inertiajs/react";
@@ -8,6 +8,7 @@ import axios from "axios";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import Modal from "./Modal";
 import Logo from "./Logo";
+import VideoUploadNotification from "./Notifications/VideoUploadNotification";
 const Navbar = () => {
     const {
         component,
@@ -19,10 +20,54 @@ const Navbar = () => {
     const [searchModalOpen, setSearchModalOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [isNotificationModalOpen,setIsNotificationModalOpen] = useState(false);
+    const [notifications,setNotifications]  = useState([]);
+    const [isLoading,setIsLoading]  = useState(false);
+    const [nextPageUrl,setNextPageUrl] = useState(null);
+    const [isFirstRender, setIsFirstRender] = useState(true);
+    const scrollRef = useRef(null);
+    useEffect(() => {
+        setIsFirstRender(false);
+    },[])
+    const handleCallback = useCallback((el) => {
+        if(!el){
+            if(scrollRef.current){
+                scrollRef.current.disconnect();
+            }
+            return;
+        }
+        scrollRef.current = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting && !isLoading && nextPageUrl !== null && !isFirstRender){
+                    setIsLoading(true);
+                    axios.get(nextPageUrl + '&userId=' + auth.user.id).then(res => {
+                        setNotifications(prev => [...prev,...res.data.notifications.data]);
+
+                        setNextPageUrl(res.data.notifications.next_page_url);
+                        setIsLoading(false);
+                    })
+                    
+                }
+            })
+        })
+        scrollRef.current.observe(el);
+    })
+    
     const closeSearchModal = () => {
         setSearch("");
         setSearchModalOpen(false);
     };
+
+    const fetchNotifications = async () => {
+        const response = await axios.get(window.route('group.notis',{userId : auth?.user?.id}));
+        setNotifications(response.data.notifications.data)
+        setNextPageUrl(response.data.notifications.next_page_url)
+    }
+
+    useEffect(() => {
+        fetchNotifications();
+    },[])
+
     const handleClickOutside = (e) => {
         if (e.target.parentNode.classList.contains("profile-container")) return;
         setIsProfileOpen(false);
@@ -30,6 +75,20 @@ const Navbar = () => {
     const profileRef = useDetectClickOutside({
         onTriggered: handleClickOutside,
     });
+    const notificationRef = useRef();
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if(e.target.parentNode.classList.contains('notification-icon')) return;
+            if(notificationRef.current && !notificationRef.current.contains(e.target)){
+                setIsNotificationModalOpen(false);
+            }
+            return;
+        }
+        document.addEventListener('click',handleClickOutside);
+        return () => {
+            document.removeEventListener('click',handleClickOutside);
+        }
+    },[notificationRef])
     const ref = useDetectClickOutside({ onTriggered: closeSearchModal });
     const handleSearch = async () => {
         setSearchModalOpen(true);
@@ -93,7 +152,7 @@ const Navbar = () => {
                                         setSearch("");
                                     }}
                                 >
-                                    <div className="flex gap-6 items-center cursor-pointer hover:bg-[#F47521] hover:text-white p-3 justify-between">
+                                    <div className="flex gap-6 items-center cursor-pointer hover:bg-primary hover:text-white p-3 justify-between">
                                         <div className="flex gap-2">
                                             <div className="w-12 flex-shrink-0">
                                                 <img
@@ -175,7 +234,7 @@ const Navbar = () => {
                                     </div>
                                 </Link>
                             ))}
-                            <div className="my-2 hover:text-[#F47521] text-center text-sm font-medium underline">
+                            <div className="my-2 hover:text-primary text-center text-sm font-medium underline">
                                 <Link onSuccess={() => {
                                     setSearchModalOpen(false);
                                     setSearch("");
@@ -188,18 +247,18 @@ const Navbar = () => {
             <nav className="sm:block hidden">
                 <ul className="flex items-center gap-10 font-semibold text-white">
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/Index"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
                         <Link href={window.route("group.home")}>Home</Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
-                            component === "Group/List"
-                                ? "text-yellow-400"
+                        className={`hover:text-primary trasnition-all ${
+                            component === "Group/Animes"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
@@ -208,27 +267,27 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/NewSeason"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
                         <Link href="/">New Season</Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/Popular"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
                         <Link href="/">Popular</Link>
                     </li>
                     <li
-                        className={`hover:text-yellow-400 trasnition-all ${
+                        className={`hover:text-primary trasnition-all ${
                             component === "Group/SaveList"
-                                ? "text-yellow-400"
+                                ? "text-primary"
                                 : null
                         }`}
                     >
@@ -268,17 +327,41 @@ const Navbar = () => {
             </div>
             <div className="xl:block hidden">
                 {auth.user ? (
-                    <div className="flex items-center gap-5">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="cursor-pointer"
-                            fill="white"
-                            width="25"
-                            height="25"
-                            viewBox="0 0 24 24"
-                        >
-                            <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
-                        </svg>
+                    <div className="flex items-center gap-2">
+                        <div onClick={(e) => {
+                            e.stopPropagation();
+                            setIsNotificationModalOpen(prev => !prev)
+                        }} className="relative notification-icon">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="cursor-pointer"
+                                fill="white"
+                                width="25"
+                                height="25"
+                                viewBox="0 0 24 24"
+                            >
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
+                            </svg>
+                            
+                        </div>
+                        <div className="relative w-0 h-[20px]">
+                            <div ref={notificationRef}  className={`absolute  bg-white ${isNotificationModalOpen ? 'block' : 'hidden'} overflow-auto top-[140%] z-[100] shadow-lg rounded-lg translate-x-[20%] right-0 w-[400px] h-[400px]`}>
+                                <div>
+                                    <div className="flex  py-3 px-3 items-center justify-between">
+                                        <h1 className="text-xl font-bold">Notifications</h1>
+                                        <p className={'cursor-pointer hover:underline'}>Read All</p>
+                                    </div>
+                                    {
+                                        notifications.map(notification => (
+                                            notification.notifiable_type === 'App\\Models\\User' ? 
+                                                <VideoUploadNotification key={notification.id}  notification={notification} />
+                                                : null
+                                        ))
+                                    }
+                                    <button className="opacity-0" ref={handleCallback}>More</button>
+                                </div>
+                            </div>
+                        </div>
                         <div
                             onClick={() => {
                                 setIsProfileOpen((prev) => !prev);
@@ -301,7 +384,7 @@ const Navbar = () => {
                                                 "group.admin.dashboard"
                                             )}
                                         >
-                                            <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
+                                            <div className="flex hover:bg-gray-200 hover:text-primary items-center px-3 py-3 gap-2">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width="24"
@@ -322,7 +405,7 @@ const Navbar = () => {
                                             "group.user.profile"
                                         )}
                                     >
-                                        <div className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2">
+                                        <div className="flex hover:bg-gray-200 hover:text-primary  items-center px-3 py-3 gap-2">
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 width="24"
@@ -334,14 +417,14 @@ const Navbar = () => {
                                                     d="M12 11q.825 0 1.413-.588Q14 9.825 14 9t-.587-1.413Q12.825 7 12 7q-.825 0-1.412.587Q10 8.175 10 9q0 .825.588 1.412Q11.175 11 12 11Zm0 2q-1.65 0-2.825-1.175Q8 10.65 8 9q0-1.65 1.175-2.825Q10.35 5 12 5q1.65 0 2.825 1.175Q16 7.35 16 9q0 1.65-1.175 2.825Q13.65 13 12 13Zm0 11q-2.475 0-4.662-.938q-2.188-.937-3.825-2.574Q1.875 18.85.938 16.663Q0 14.475 0 12t.938-4.663q.937-2.187 2.575-3.825Q5.15 1.875 7.338.938Q9.525 0 12 0t4.663.938q2.187.937 3.825 2.574q1.637 1.638 2.574 3.825Q24 9.525 24 12t-.938 4.663q-.937 2.187-2.574 3.825q-1.638 1.637-3.825 2.574Q14.475 24 12 24Zm0-2q1.8 0 3.375-.575T18.25 19.8q-.825-.925-2.425-1.612q-1.6-.688-3.825-.688t-3.825.688q-1.6.687-2.425 1.612q1.3 1.05 2.875 1.625T12 22Zm-7.7-3.6q1.2-1.3 3.225-2.1q2.025-.8 4.475-.8q2.45 0 4.463.8q2.012.8 3.212 2.1q1.1-1.325 1.713-2.95Q22 13.825 22 12q0-2.075-.788-3.887q-.787-1.813-2.15-3.175q-1.362-1.363-3.175-2.151Q14.075 2 12 2q-2.05 0-3.875.787q-1.825.788-3.187 2.151Q3.575 6.3 2.788 8.113Q2 9.925 2 12q0 1.825.6 3.463q.6 1.637 1.7 2.937Z"
                                                 />
                                             </svg>
-                                            <Link>Profile</Link>
+                                            <p>Profile</p>
                                         </div>
                                     </Link>
                                     <div
                                         onClick={() =>
                                             setLogoutModalOpen((prev) => !prev)
                                         }
-                                        className="flex hover:bg-gray-200 hover:text-[#F47521]  items-center px-3 py-3 gap-2"
+                                        className="flex hover:bg-gray-200 hover:text-primary  items-center px-3 py-3 gap-2"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -368,13 +451,13 @@ const Navbar = () => {
                     <div className=" flex items-center gap-3">
                         <Button
                             text={"Sign In"}
-                            className={"!bg-[#F47521] !px-12 !gap-1"}
+                            className={"!bg-primary !px-12 !gap-1"}
                             href={window.route("group.login")}
                         />
                         <Button
                             text={"Sign Up"}
                             className={
-                                "!border-[#F47521] !px-12 !gap-1 !text-[#F47521]"
+                                "!border-primary !px-12 !gap-1 !text-primary"
                             }
                             outline
                             href={window.route("group.register")}

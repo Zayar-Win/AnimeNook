@@ -3,7 +3,7 @@ import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import FilePondUploader from "@/Components/FilePondUploader";
 import InputLabel from "@/Components/InputLabel";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React from "react";
 
@@ -97,4 +97,4 @@ const EpisodeForm = ({ anime, episode, type }) => {
 };
 
 export default EpisodeForm;
-EpisodeForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+EpisodeForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;

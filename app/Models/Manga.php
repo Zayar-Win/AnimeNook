@@ -15,7 +15,7 @@ class Manga extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -26,6 +26,9 @@ class Manga extends Model
 
     public function getLatestWatchedChapterAttribute()
     {
+        if (!auth()->check()) {
+            return null;
+        }
         $group = request()->route('group');
         if (gettype($group) === 'string') {
             $group = Group::where('name', $group)->first();
@@ -40,7 +43,15 @@ class Manga extends Model
 
     public function getIsSavedByCurrentUserAttribute()
     {
+        if (!auth()->check()) {
+            return false;
+        }
         return $this->collectionItems()->where('user_id', auth()->id())->exists();
+    }
+
+    public function getTypeAttribute()
+    {
+        return 'manga';
     }
 
     public function getIsLikeByCurrentUserAttribute()

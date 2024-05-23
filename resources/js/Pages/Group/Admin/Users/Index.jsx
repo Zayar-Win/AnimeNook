@@ -1,7 +1,7 @@
 import DeleteModal from "@/Components/DeleteModal";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router } from "@inertiajs/react";
 import React, { useState } from "react";
 
@@ -101,4 +101,4 @@ const Index = ({ users }) => {
 };
 
 export default Index;
-Index.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+Index.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;

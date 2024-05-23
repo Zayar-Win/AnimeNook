@@ -2,7 +2,7 @@
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
@@ -158,4 +158,4 @@ const UserForm = ({ type, user }) => {
 
 export default UserForm;
 
-UserForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+UserForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;

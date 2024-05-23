@@ -7,7 +7,7 @@ import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
@@ -87,7 +87,7 @@ const AnimeForm = ({ type, statuses, anime, episodes }) => {
                     onSubmit={(e) => {
                         e.preventDefault();
                         type === "edit"
-                            ? post(window.route("group.admin.animes.update"))
+                            ? post(window.route("group.admin.animes.update",{anime}))
                             : post(window.route("group.admin.animes.store"));
                     }}
                 >
@@ -263,4 +263,4 @@ const AnimeForm = ({ type, statuses, anime, episodes }) => {
 };
 
 export default AnimeForm;
-AnimeForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+AnimeForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;

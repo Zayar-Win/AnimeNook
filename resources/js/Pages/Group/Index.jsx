@@ -369,7 +369,7 @@ function Index({
                             <div className="mt-4 flex items-center flex-wrap sm:gap-8 gap-4">
                                 <Button
                                     className={
-                                        "!bg-[#F47521] !px-8 rounded-none !gap-1"
+                                        "!bg-primary !px-8 rounded-none !gap-1"
                                     }
                                     text={"Start Watching S1 Ep1"}
                                     href={window.route("group.anime.detail", {
@@ -386,7 +386,7 @@ function Index({
                                             : "Add To WatchList"
                                     }
                                     className={
-                                        "!px-8 rounded-none !gap-1 border-[#F47521] text-[#F47521]"
+                                        "!px-8 rounded-none !gap-1 border-primary text-primary"
                                     }
                                     onClick={() =>
                                         saveToWatchList(recommendedAnime)
@@ -443,7 +443,7 @@ function Index({
                                 </div>
                             </div>
                         ) : (
-                            <p className="pt-6 text-[#F47521]">
+                            <p className="pt-6 text-primary">
                                 No new episodes are uploaded today.
                             </p>
                         )}
@@ -462,7 +462,7 @@ function Index({
                                 </div>
                             </div>
                         ) : (
-                            <p className="pt-6 text-[#F47521]">
+                            <p className="pt-6 text-primary">
                                 No new episodes are uploaded today.
                             </p>
                         )}
@@ -590,7 +590,7 @@ function Index({
                                 <div className="mt-4 flex items-center flex-wrap sm:gap-8 gap-4">
                                     <Button
                                         className={
-                                            "!bg-[#F47521] !px-8 rounded-none !gap-1"
+                                            "!bg-primary !px-8 rounded-none !gap-1"
                                         }
                                         text={"Start Watching S1 Ep1"}
                                         href={window.route(
@@ -622,7 +622,7 @@ function Index({
                                                 : "Add To WatchList"
                                         }
                                         className={
-                                            "!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]"
+                                            "!px-8 rounded-none !gap-1 !border-primary text-primary"
                                         }
                                         type={"button"}
                                         onClick={() =>
@@ -714,7 +714,7 @@ function Index({
                                 <div className="mt-4 flex items-center flex-wrap sm:gap-8 gap-4">
                                     <Button
                                         className={
-                                            "!bg-[#F47521] !px-8 rounded-none !gap-1"
+                                            "!bg-primary !px-8 rounded-none !gap-1"
                                         }
                                         href={window.route(
                                             "group.anime.detail",
@@ -746,7 +746,7 @@ function Index({
                                                 : "Add To WatchList"
                                         }
                                         className={
-                                            "!px-8 rounded-none !gap-1 !border-[#F47521] text-[#F47521]"
+                                            "!px-8 rounded-none !gap-1 !border-primary text-primary"
                                         }
                                         type={"button"}
                                         onClick={() =>
@@ -792,13 +792,13 @@ function Index({
                         <div className="mt-6 flex items-center w-full justify-center flex-wrap gap-8">
                             <Button
                                 text={"Sign In"}
-                                className={"!bg-[#F47521] !px-12 !gap-1"}
+                                className={"!bg-primary !px-12 !gap-1"}
                                 href={window.route("group.login")}
                             />
                             <Button
                                 text={"Sign Up"}
                                 className={
-                                    "!border-[#F47521] !px-12 !gap-1 !text-[#F47521]"
+                                    "!border-primary !px-12 !gap-1 !text-primary"
                                 }
                                 outline
                                 href={window.route("group.register")}

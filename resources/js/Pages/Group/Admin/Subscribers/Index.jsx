@@ -3,7 +3,7 @@ import Table from "@/Components/Table.jsx";
 import TableData from "@/Components/TableData.jsx";
 import { Link, router } from "@inertiajs/react";
 import DeleteModal from "@/Components/DeleteModal";
-import AdminLayout from "../../../../Layouts/AdminLayout";
+import GroupAdminLayout from "../../../../Layouts/GroupAdminLayout";
 
 const columns = [
     {
@@ -76,4 +76,4 @@ const Index = ({ subscribers }) => {
 };
 
 export default Index;
-Index.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+Index.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;

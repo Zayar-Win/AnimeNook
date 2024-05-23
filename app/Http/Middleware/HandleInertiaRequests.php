@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
@@ -35,7 +36,13 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'group' => request('group'),
+            'group' => function() use($request) {
+                $group = $request->route('group');
+                if(gettype($group) === 'string'){
+                    $group = Group::where('subdomain',$group)->first();
+                }
+                return $group;
+            },
             'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
@@ -44,7 +51,8 @@ class HandleInertiaRequests extends Middleware
                 'success' => session()->get('success'),
                 'warning' => session()->get('warning'),
                 'error' => session()->get('error')
-            ]
+            ],
+            'APP_URL' => env('APP_URL')
         ];
     }
 }

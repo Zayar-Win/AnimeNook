@@ -2,6 +2,7 @@
 
 namespace App\helpers;
 
+use Exception;
 use GuzzleHttp\Client;
 
 class ShortenLinkGenerator

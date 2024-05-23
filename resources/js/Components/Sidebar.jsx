@@ -2,9 +2,8 @@ import React from "react";
 import RightArrow from "@/../assets/RightArrow";
 import Dashboard from "@/../assets/Dashboard";
 import { Link, usePage } from "@inertiajs/react";
-import { sidebarLinks } from "./links";
 
-const Sidebar = () => {
+const Sidebar = ({sidebarLinks}) => {
     const { group } = usePage().props;
     return (
         <div className="fixed top-0 left-0 bottom-0 lg:w-[20%] w-[30%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300">
@@ -99,10 +98,12 @@ const Sidebar = () => {
                         Account
                     </p>
                     <div className="pl-1 mb-3">
-                        <div className="flex rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] pl-5 py-4 cursor-pointer items-center gap-2">
-                            <Dashboard className="w-5 h-5" />
-                            <p className="font-semibold">Dashboard</p>
-                        </div>
+                        <Link href={window.route('group.admin.setting')}> 
+                            <div className="flex rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] pl-5 py-4 cursor-pointer items-center gap-2">
+                                <Dashboard className="w-5 h-5" />
+                                <p className="font-semibold">Setting</p>
+                            </div>
+                        </Link>
                         <div className="flex pl-5 rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] py-4 cursor-pointer items-center gap-2">
                             <Dashboard className={"w-5 h-5"} />
                             <p className="font-semibold">Dashboard</p>

@@ -72,6 +72,8 @@ return [
     'links' => [
         public_path('storage') => storage_path('app/public'),
         public_path('images') => storage_path('app/images'),
+        public_path('animeProfile') => storage_path('app/animeProfile'),
+        public_path('animes') => storage_path('app/animes'),
     ],
 
 ];

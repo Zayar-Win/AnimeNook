@@ -2,12 +2,15 @@ import React from 'react'
 import Logo from '../../../assets/logo.png'
 import Button from '@/Components/Button'
 import { Link, useForm } from '@inertiajs/react'
+import Google from "@/../assets/Google";
+import { usePage } from "@inertiajs/react";
 const Register = () => {
     const {data,setData,errors,post,clearErrors} = useForm({
         name:'',
         email:'',
         password:''
     });
+    const { group, APP_URL } = usePage().props;
     const handleSubmit = (e) => {
         e.preventDefault();
         post(window.route('group.register'));
@@ -21,7 +24,7 @@ const Register = () => {
                     </div>
                     <div className='border-l-4 border-l-yellow-400 rounded-md py-3 pl-4'>
                         <div className='flex items-baseline gap-3'>
-                            <h1 className='text-3xl font-medium text-[#F47521]'>Konnichiwa!</h1>
+                            <h1 className='text-3xl font-medium text-primary'>Konnichiwa!</h1>
                             <span className='text-sm font-medium'>My fellow Otaku!</span>
                         </div>
                         <p className='text-gray-700 font-medium w-[60%] pt-2'>Heard you would like watching anime.Dive into the world of all animes and series.</p>
@@ -62,6 +65,13 @@ const Register = () => {
                         </div>
                         <Button text={'Register'} type={'submit'} className={'bg-yellow-400 my-8 !px-20 inline-block'} />
                         <span className='block  text-sm text-gray-700'>You already have an account? <Link href={window.route('group.login')} className='text-blue-500 hover:underline font-semibold'>Login</Link> here.</span>
+                        <a
+                            className="cursor-pointer flex items-center gap-3 justify-center flex-grow-0 text-black px-4 py-2 border-2 border-primary mt-4 rounded-lg font-semibold"
+                            href={`${APP_URL}/auth-google-redirect?subdomain=${group.subdomain}`}
+                        >
+                            <Google />
+                            <p>Register With Google</p>
+                        </a>
                     </form>
                 </div>
                 <div className='basis-[40%]'>

@@ -14,7 +14,7 @@ class Anime extends Model
     protected $with = ['status', 'tags'];
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -23,12 +23,21 @@ class Anime extends Model
             ->saveSlugsTo('slug');
     }
 
+    public function getTypeAttribute()
+    {
+        return 'anime';
+    }
+
     public function getLatestWatchedChapterAttribute()
     {
+        if (!auth()->check()) {
+            return null;
+        }
         $group = request()->route('group');
         if (gettype($group) !== 'object') {
             $group = Group::where('subdomain', $group)->first();
         }
+        if (!$group) return null;
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)

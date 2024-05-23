@@ -31,4 +31,18 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_CLIENT_REDIRECT','http://localhost:8000/auth-google-callback')
+    ],
+
+    'slack' => [
+        'notifications' => [
+            'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),
+            'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
+        ],
+        "webhook_url" => env('SLACK_ALERT_WEBHOOK', 'https://hooks.slack.com/services/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')
+    ],
+
 ];

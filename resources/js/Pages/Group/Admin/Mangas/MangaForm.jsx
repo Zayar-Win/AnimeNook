@@ -7,7 +7,7 @@ import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
-import AdminLayout from "@/Layouts/AdminLayout";
+import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
@@ -263,4 +263,4 @@ const MangaForm = ({ type, manga, statuses, chapters }) => {
 };
 
 export default MangaForm;
-MangaForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+MangaForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;
