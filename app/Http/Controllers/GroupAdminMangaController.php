@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\helpers\ShortenLinkGenerator;
+use App\helpers\SlackNotifier;
 use App\helpers\Uploader;
 use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\OuoFailLink;
 use App\Models\Status;
+use App\Notifications\OuoFailNotification;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -128,6 +130,14 @@ class GroupAdminMangaController extends Controller
             $link = $generator->generate($validatedData['link']);
         } catch (Exception $e) {
             $isOuoGenerateFail = true;
+            $message = [
+                'group_name' => $group->name,
+                'link' => $link,
+                'message' => 'Ouo Link Generation fail.Check shortenlink api or regenerate ouo link.'
+            ];
+            SlackNotifier::send([
+                'notification' => new OuoFailNotification($message)
+            ]);
         }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
@@ -176,6 +186,14 @@ class GroupAdminMangaController extends Controller
                         'chapter_id' => $chapter->id
                     ]);
                 }
+                $message = [
+                'group_name' => $group->name,
+                'link' => $link,
+                'message' => 'Ouo Link Generation fail.Check shortenlink api or regenerate ouo link.'
+            ];
+            SlackNotifier::send([
+                'notification' => new OuoFailNotification($message)
+            ]);
             }
             $validatedData['chapter_link'] = $link;
         } else {

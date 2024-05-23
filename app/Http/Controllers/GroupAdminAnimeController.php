@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\helpers\ShortenLinkGenerator;
+use App\helpers\SlackNotifier;
 use App\helpers\Uploader;
 use App\Models\Anime;
 use App\Models\Chapter;
@@ -10,6 +11,7 @@ use App\Models\Group;
 use App\Models\OuoFailLink;
 use App\Models\Status;
 use App\Notifications\NewEpisodeUpload;
+use App\Notifications\OuoFailNotification;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\UploadedFile;
@@ -132,6 +134,14 @@ class GroupAdminAnimeController extends Controller
             $link = $generator->generate($validatedData['link']);
         } catch (Exception $e) {
             $isOuoGenerateFail = true;
+            $message = [
+                'group_name' => $group->name,
+                'link' => $link,
+                'message' => 'Ouo Link Generation fail.Check shortenlink api or regenerate ouo link.'
+            ];
+            SlackNotifier::send([
+                'notification' => new OuoFailNotification($message)
+            ]);
         }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
@@ -181,6 +191,14 @@ class GroupAdminAnimeController extends Controller
                         'chapter_id' => $episode->id
                     ]);
                 }
+                $message = [
+                'group_name' => $group->name,
+                'link' => $link,
+                'message' => 'Ouo Link Generation fail.Check shortenlink api or regenerate ouo link.'
+            ];
+            SlackNotifier::send([
+                'notification' => new OuoFailNotification($message)
+            ]);
             }
             $validatedData['chapter_link'] = $link;
         } else {

@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 
-class OuoFailNotification extends Notification
+class OuoFailNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
