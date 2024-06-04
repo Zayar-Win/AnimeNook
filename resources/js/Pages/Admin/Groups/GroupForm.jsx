@@ -1,25 +1,27 @@
-import Input from '@/Components/Admin/Input';
-import Button from '@/Components/Button';
-import InputError from '@/Components/InputError';
-import Select from '@/Components/Select';
-import AdminLayout from '@/Layouts/AdminLayout'
-import { useForm } from '@inertiajs/react';
-import React, { useEffect, useState } from 'react'
+import Input from "@/Components/Admin/Input";
+import Button from "@/Components/Button";
+import InputError from "@/Components/InputError";
+import InputLabel from "@/Components/InputLabel";
+import Select from "@/Components/Select";
+import AdminLayout from "@/Layouts/AdminLayout";
+import { useForm } from "@inertiajs/react";
+import moment from "moment";
+import React, { useEffect, useState } from "react";
+import ReactDatePicker from "react-datepicker";
 
-const GroupForm = ({group,type,plans}) => {
-    const planOptions = plans.map(plan =>  {
-        return {label : plan.name , value : plan.id}
-    })
-    const [logoUrl, setLogoUrl] = useState(
-        group?.profile_picture
-    );
-    const {data,setData,post,errors} = useForm({
-        name : group?.name || '',
-        subdomain : group?.subdomain || '',
-        logo : group?.logo || '',
-        plan_id : group?.plan_id || '',
-        start_date : group?.start_date || '',
-        end_date : group?.expire_date || ''
+const GroupForm = ({ group, type, plans }) => {
+    const planOptions = plans.map((plan) => {
+        return { label: plan.name, value: plan.id };
+    });
+    const [logoUrl, setLogoUrl] = useState(group?.profile_picture);
+    const { data, setData, post, errors } = useForm({
+        name: group?.name || "",
+        subdomain: group?.subdomain || "",
+        logo: group?.logo || "",
+        plan_id: group?.plan_id || "",
+        start_date: moment(group?.start_date).format("YYYY-MM-DDTHH:mm") || "",
+        expire_date:
+            moment(group?.expire_date).format("YYYY-MM-DDTHH:mm") || "",
     });
     useEffect(() => {
         if (data.logo && typeof data.logo !== "string") {
@@ -38,9 +40,7 @@ const GroupForm = ({group,type,plans}) => {
                         e.preventDefault();
                         post(
                             type === "edit"
-                                ? window.route("admin.groups.update", {
-                                    group,
-                                })
+                                ? window.route("admin.groups.update", { group })
                                 : window.route("admin.groups.store"),
                             {
                                 preserveScroll: true,
@@ -83,36 +83,37 @@ const GroupForm = ({group,type,plans}) => {
                             label="Subdomain"
                             errorMessage={errors?.subdomain}
                             value={data.subdomain}
-                            onChange={(e) => setData("subdomain", e.target.value)}
+                            onChange={(e) =>
+                                setData("subdomain", e.target.value)
+                            }
                         />
                         <Select
                             options={planOptions}
                             label="Plan"
-                            inputProps={{ 
-                                autoComplete : 'off'
+                            inputProps={{
+                                autoComplete: "off",
                             }}
                             errorMessage={errors?.plan_id}
                             selected={data.plan_id}
                             onChange={(plan) => setData("plan_id", plan.value)}
                         />
-                        <Input
-                            label="Start Date"
-                            type="datetime-local"
-                            vlaue={data.start_date}
-                            errorMessage={errors?.start_date}
-                            onChange={(e) =>
-                                setData("start_date", e.target.value)
-                            }
-                        />
-                        <Input
-                            label="Expire Date"
-                            type="datetime-local"
-                            vlaue={data.expire_date}
-                            errorMessage={errors?.expire_date}
-                            onChange={(e) =>
-                                setData("expire_date", e.target.value)
-                            }
-                        />
+
+                        <div>
+                            <InputLabel value={"Start Date"} />
+                            <ReactDatePicker
+                                selected={data.start_date}
+                                onChange={(date) => setData("start_date", date)}
+                            />
+                        </div>
+                        <div>
+                            <InputLabel value={"Expire Date"} />
+                            <ReactDatePicker
+                                selected={data.expire_date}
+                                onChange={(date) =>
+                                    setData("expire_date", date)
+                                }
+                            />
+                        </div>
                     </div>
                     <Button
                         type={"submit"}
@@ -122,8 +123,8 @@ const GroupForm = ({group,type,plans}) => {
                 </form>
             </div>
         </div>
-    )
-}
+    );
+};
 
-GroupForm.layout = page => <AdminLayout>{page}</AdminLayout>
-export default GroupForm
+GroupForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+export default GroupForm;

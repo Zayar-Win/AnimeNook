@@ -21,8 +21,8 @@ return new class extends Migration
             $table->date('renewal_date')->nullable();
             $table->unsignedBigInteger('plan_id');
             $table->string('logo')->default('https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg');
-            $table->timestamp('start_date')->default(Carbon::now());
-            $table->timestamp('expire_date')->default(Carbon::now()->addMonth(1));
+            $table->date('start_date')->default(Carbon::now());
+            $table->date('expire_date')->default(Carbon::now()->addMonth());
             $table->timestamps();
         });
     }

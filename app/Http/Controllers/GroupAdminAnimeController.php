@@ -126,12 +126,14 @@ class GroupAdminAnimeController extends Controller
         $validatedData['chapterable_type'] = Anime::class;
 
         $validatedData['type']  = 'link';
-        $generator = new ShortenLinkGenerator();
         $link = $validatedData['link'];
-        try {
-            $link = $generator->generate($validatedData['link']);
-        } catch (Exception $e) {
-            $isOuoGenerateFail = true;
+        if($group->plan->name !== 'premium'){
+            $generator = new ShortenLinkGenerator();
+            try {
+                $link = $generator->generate($validatedData['link']);
+            } catch (Exception $e) {
+                $isOuoGenerateFail = true;
+            }
         }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
@@ -170,16 +172,18 @@ class GroupAdminAnimeController extends Controller
         $validatedData['group_id'] = $group->id;
         $link = $validatedData['link'];
         if ($episode->chapter_link !== $validatedData['link']) {
-            $generator = new ShortenLinkGenerator();
-            try {
-                $link = $generator->generate($link);
-            } catch (Exception $e) {
-                $failLink = OuoFailLink::where('chapter_id', $episode->id)->first();
-                if (!$failLink) {
-                    OuoFailLink::create([
-                        'group_id' => $group->id,
-                        'chapter_id' => $episode->id
-                    ]);
+            if($group->plan->name !== 'premium'){
+                $generator = new ShortenLinkGenerator();
+                try {
+                    $link = $generator->generate($link);
+                } catch (Exception $e) {
+                    $failLink = OuoFailLink::where('chapter_id', $episode->id)->first();
+                    if (!$failLink) {
+                        OuoFailLink::create([
+                            'group_id' => $group->id,
+                            'chapter_id' => $episode->id
+                        ]);
+                    }
                 }
             }
             $validatedData['chapter_link'] = $link;

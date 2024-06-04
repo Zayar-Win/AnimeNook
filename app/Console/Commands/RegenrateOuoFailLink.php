@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\helpers\ShortenLinkGenerator;
 use App\Models\Chapter;
+use App\Models\Group;
 use App\Models\OuoFailLink;
 use Exception;
 use Illuminate\Console\Command;
@@ -32,13 +33,19 @@ class RegenrateOuoFailLink extends Command
         $failLinks = OuoFailLink::with('group', 'chapter')->get();
         $shortenLinkGenerator = new ShortenLinkGenerator();
         foreach ($failLinks as $failLink) {
-            try {
-                $link = $shortenLinkGenerator->generate($failLink->chapter->chapter_link);
-                Chapter::where('id', $failLink->chapter->id)->update([
-                    'chapter_link' => $link
-                ]);
+            $group = Group::where('id',$failLink->group_id)->first();
+            if($group->plan->name === 'preminum'){
                 $failLink->delete();
-            } catch (Exception $e) {
+            }else{
+                try {
+                    $link = $shortenLinkGenerator->generate($failLink->chapter->chapter_link);
+                    Chapter::where('id', $failLink->chapter->id)->update([
+                        'chapter_link' => $link
+
+                    ]);
+                    $failLink->delete();
+                } catch (Exception $e) {
+                }
             }
         }
     }
