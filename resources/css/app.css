@@ -90,6 +90,15 @@ body {
     box-shadow: none !important;
 }
 
+.react-datepicker-wrapper {
+    width: 100% !important;
+}
+.react-datepicker__input-container input {
+    width: 100% !important;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+}
+
 .swiper-pagination-bullet {
     width: 25px !important;
     height: 4px !important;
@@ -111,14 +120,12 @@ body {
     animation: shaking 0.3s linear 1;
 }
 
-
-.tags::-webkit-scrollbar{
+.tags::-webkit-scrollbar {
     display: none;
 }
 
-
-.tags{
-    scroll-snap-type:inline mandatory;
+.tags {
+    scroll-snap-type: inline mandatory;
     touch-action: pan-y;
 }
 

@@ -68,6 +68,8 @@ class AdminGroupController extends Controller
             'start_date' => ['required'],
             'expire_date' => ['required'],
         ]);
+        $validatedData['start_date'] = Carbon::parse($validatedData['start_date'])->toDateString();
+        $validatedData['expire_date'] = Carbon::parse($validatedData['expire_date'])->toDateString();
         if (gettype($validatedData['logo']) !== 'string') {
             $validatedData['logo'] = $this->uploader->upload($validatedData['logo'], 'grouplogos');
         }
@@ -83,8 +85,9 @@ class AdminGroupController extends Controller
 
     public function updateSubscription(Group $group)
     {
-        $start_date = Carbon::now();
-        $expire_date = Carbon::now()->addMonth(1);
+
+        $start_date = Carbon::parse($group->expire_date)->toDateString();
+        $expire_date = Carbon::parse($group->expire_date)->addMonth()->toDateString();
         $group->update([
             'start_date' => $start_date,
             'expire_date' => $expire_date

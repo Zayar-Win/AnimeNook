@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import { createRoot } from 'react-dom/client';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-
+import "react-datepicker/dist/react-datepicker.css";
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 export function formateDate(dateString,format={month : '2-digit',day : '2-digit', year:'numeric'},sperator='.') {

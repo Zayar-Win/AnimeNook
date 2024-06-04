@@ -122,12 +122,14 @@ class GroupAdminMangaController extends Controller
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['type']  = 'link';
-        $generator = new ShortenLinkGenerator();
-        $link = $validatedData['link'];
-        try {
-            $link = $generator->generate($validatedData['link']);
-        } catch (Exception $e) {
-            $isOuoGenerateFail = true;
+        if($group->plan->name !== 'premium'){
+            $generator = new ShortenLinkGenerator();
+            $link = $validatedData['link'];
+            try {
+                $link = $generator->generate($validatedData['link']);
+            } catch (Exception $e) {
+                $isOuoGenerateFail = true;
+            }
         }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
@@ -165,16 +167,18 @@ class GroupAdminMangaController extends Controller
         $validatedData['group_id'] = $group->id;
         $link = $validatedData['link'];
         if ($chapter->chapter_link !== $validatedData['link']) {
-            $generator = new ShortenLinkGenerator();
-            try {
-                $link = $generator->generate($link);
-            } catch (Exception $e) {
-                $failLink = OuoFailLink::where('chapter_id', $chapter->id)->first();
-                if (!$failLink) {
-                    OuoFailLink::create([
-                        'group_id' => $group->id,
-                        'chapter_id' => $chapter->id
-                    ]);
+            if($group->plan->name !== 'premium'){
+                $generator = new ShortenLinkGenerator();
+                try {
+                    $link = $generator->generate($link);
+                } catch (Exception $e) {
+                    $failLink = OuoFailLink::where('chapter_id', $chapter->id)->first();
+                    if (!$failLink) {
+                        OuoFailLink::create([
+                            'group_id' => $group->id,
+                            'chapter_id' => $chapter->id
+                        ]);
+                    }
                 }
             }
             $validatedData['chapter_link'] = $link;
