@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\GroupGetter;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Chapter extends Model
 {
-    use HasFactory;
+    use HasFactory,GroupGetter;
     protected $guarded = [];
 
     protected $appends = ['type'];
@@ -26,6 +28,14 @@ class Chapter extends Model
         }
     }
 
+    protected function getChapterLinkAttribute(){
+        $group = $this->group();
+        if($group->plan->name === 'premium'){
+            return $this->attributes['chapter_link'];
+        }else{
+            return $this->ouo_chapter_link;
+        }
+    }
 
     public function users()
     {

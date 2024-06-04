@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('title');
             $table->text('chapter_link')->nullable();
+            $table->text('ouo_chapter_link')->nullable();
             $table->text('thumbnail')->nullable();
             $table->timestamps();
         });

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('episode_number');
             $table->bigInteger('like_count');
             $table->bigInteger('view_count');
+            $table->text('ouo_episode_link');
             $table->text('episode_link');
             $table->text('name');
             $table->json('images');

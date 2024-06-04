@@ -40,7 +40,7 @@ class RegenrateOuoFailLink extends Command
                 try {
                     $link = $shortenLinkGenerator->generate($failLink->chapter->chapter_link);
                     Chapter::where('id', $failLink->chapter->id)->update([
-                        'chapter_link' => $link
+                        'ouo_chapter_link' => $link
 
                     ]);
                     $failLink->delete();
