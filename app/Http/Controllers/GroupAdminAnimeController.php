@@ -127,6 +127,7 @@ class GroupAdminAnimeController extends Controller
 
         $validatedData['type']  = 'link';
         $link = $validatedData['link'];
+        $validatedData['chapter_link'] = $link;
         if($group->plan->name !== 'premium'){
             $generator = new ShortenLinkGenerator();
             try {
@@ -135,7 +136,7 @@ class GroupAdminAnimeController extends Controller
                 $isOuoGenerateFail = true;
             }
         }
-        $validatedData['chapter_link'] = $link;
+        $validatedData['ouo_chapter_link'] = $link;
         unset($validatedData['link']);
         $chapter = Chapter::create($validatedData);
         Notification::send($group->users, new NewEpisodeUpload($chapter, $group, $anime));
@@ -171,8 +172,9 @@ class GroupAdminAnimeController extends Controller
         }
         $validatedData['group_id'] = $group->id;
         $link = $validatedData['link'];
-        if ($episode->chapter_link !== $validatedData['link']) {
-            if($group->plan->name !== 'premium'){
+        if ($episode->ouo_chapter_link !== $validatedData['link']) {
+            $validatedData['chapter_link'] = $link;
+            if($group->plan->namex !== 'premium'){
                 $generator = new ShortenLinkGenerator();
                 try {
                     $link = $generator->generate($link);
@@ -186,9 +188,9 @@ class GroupAdminAnimeController extends Controller
                     }
                 }
             }
-            $validatedData['chapter_link'] = $link;
+            $validatedData['ouo_chapter_link'] = $link;
         } else {
-            $validatedData['chapter_link'] = $link;
+            $validatedData['ouo_chapter_link'] = $link;
         }
         unset($validatedData['link']);
         $validatedData['chapterable_type'] = Anime::class;

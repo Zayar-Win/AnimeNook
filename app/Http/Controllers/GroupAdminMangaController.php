@@ -122,16 +122,17 @@ class GroupAdminMangaController extends Controller
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['type']  = 'link';
+        $link = $validatedData['link'];
+        $validatedData['chapter_link'] = $link;
         if($group->plan->name !== 'premium'){
             $generator = new ShortenLinkGenerator();
-            $link = $validatedData['link'];
             try {
                 $link = $generator->generate($validatedData['link']);
             } catch (Exception $e) {
                 $isOuoGenerateFail = true;
             }
         }
-        $validatedData['chapter_link'] = $link;
+        $validatedData['ouo_chapter_link'] = $link;
         unset($validatedData['link']);
         $chapter = Chapter::create($validatedData);
         if ($isOuoGenerateFail) {
@@ -166,7 +167,8 @@ class GroupAdminMangaController extends Controller
         }
         $validatedData['group_id'] = $group->id;
         $link = $validatedData['link'];
-        if ($chapter->chapter_link !== $validatedData['link']) {
+        if ($chapter->ouo_chapter_link !== $validatedData['link']) {
+            $validatedData['chapter_link'] = $link;
             if($group->plan->name !== 'premium'){
                 $generator = new ShortenLinkGenerator();
                 try {
@@ -181,9 +183,9 @@ class GroupAdminMangaController extends Controller
                     }
                 }
             }
-            $validatedData['chapter_link'] = $link;
+            $validatedData['ouo_chapter_link'] = $link;
         } else {
-            $validatedData['chapter_link'] = $link;
+            $validatedData['ouo_chapter_link'] = $link;
         }
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
