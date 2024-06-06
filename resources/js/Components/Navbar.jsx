@@ -107,11 +107,11 @@ const Navbar = () => {
         }
     }, [decounceSearch]);
     return (
-        <SectionContainer className="h-30 bg-[#0D0D0D] flex items-center justify-between">
+        <SectionContainer className="h-30  relative bg-[#0D0D0D] flex items-center justify-between">
             <div className="w-20 h-20 d-block shrink-0">
                 <Logo logo={LogoImg} />
             </div>
-            <div className={`absolute ${isOpenMobileNavbar ? 'translate-x-0' : 'translate-x-[2000px]'} transition-all bg-black z-[100] top-0 left-0 w-full h-full`}>
+            <div className={`fixed ${isOpenMobileNavbar ? 'translate-x-0' : 'translate-x-[2000px]'} transition-all bg-black z-[100] top-0 left-0 w-full h-[100vh]`}>
                 <div onClick={() => setIsOpenMobileNavbar(prev => !prev)} className="w-[50px] h-[50px] top-[30px] absolute right-[30px] cursor-pointer border-[1px] border-white rounded-full flex items-center justify-center">
                     <Close className={'text-white w-[40px] h-[40px]'} />
                 </div>

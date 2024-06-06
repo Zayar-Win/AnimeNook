@@ -52,14 +52,14 @@ const Animes = ({data,filters,tags,paginateData}) => {
     return (
         <SectionContainer className={'bg-black py-10'}>
             <div className='w-[80%] mx-auto'>
-                <div className=' flex mb-10 items-center justify-between'>
-                    <div className='sm:flex hidden items-center relative gap-3 p-4 xl:max-w-[500px] xl:min-w-[500px] lg:min-w-[380px] rounded-md border border-gray-300'>
+                <div className='flex md:flex-row flex-col mb-10 items-center justify-between'>
+                    <div className='flex items-center relative gap-3 p-4 xl:max-w-[500px] xl:min-w-[500px] md:min-w-[380px] w-full  rounded-md border border-gray-300'>
                         <input type="text" value={search} onChange={e => {
                             setSearch(e.target.value)
                             setIsFilter(true)
                         }} autoComplete='off' id='search' placeholder='Search Anime' className='bg-transparent text-white p-0 w-full h-full border-0 focus:ring-0 outline-none' />
                     </div>
-                    <div className='flex items-center gap-5 text-white'>
+                    <div className='flex items-center w-full md:justify-center justify-between gap-5 text-white'>
                         <div className='flex relative sort items-center gap-2 p-2 hover:bg-gray-700 transition-all cursor-pointer'>
                             <Sort />
                             <span className='uppercase font-semibold'>Newest</span>
@@ -121,7 +121,7 @@ const Animes = ({data,filters,tags,paginateData}) => {
                         animesAndMangas?.length > 0 &&
                             <div>
                                 <h1 className='text-white text-2xl font-bold my-5'>Animes</h1>
-                                <div className='grid grid-cols-6 gap-5'>
+                                <div className='grid xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 xs:grid-cols-2 grid-cols-1 gap-5'>
                                     {animesAndMangas?.map((data,i) => (
                                         data.type === 'anime' ? (
                                             <div key={i} className='text-white'>

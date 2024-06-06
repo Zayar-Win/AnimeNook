@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 body {
-    /* width:100%; */
-    /* overflow-x: hidden; */
+    overflow-x: hidden;
 }
 * {
     box-sizing: border-box !important;
