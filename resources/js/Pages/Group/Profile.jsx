@@ -26,9 +26,9 @@ const Profile = () => {
 
     return (
         <SectionContainer className={"bg-[#0D0D0D]"}>
-            <div className="flex gap-3">
-                <div className="basis-[25%] flex flex-col items-center rounded-xl p-8 pt-12  bg-[#1C1C1C]">
-                    <div className="w-[80%] aspect-square relative">
+            <div className="flex md:flex-row flex-col gap-3">
+                <div className="lg:basis-[25%] md:basis-[30%] flex flex-col items-center rounded-xl p-8 pt-12  bg-[#1C1C1C]">
+                    <div className="md:w-[80%] w-[110px] aspect-square relative">
                         <div className="absolute rounded-full flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 top-0 bg-[rgba(0,0,0,0.4)] left-0 bottom-0 right-0">
                             <input
                                 type="file"
@@ -66,7 +66,7 @@ const Profile = () => {
                         </div>
                     </div>
                 </div>
-                <div className="basis-[75%] rounded-xl p-5 bg-[#1C1C1C]">
+                <div className="lg:basis-[75%] md:basis-[70%] rounded-xl p-5 bg-[#1C1C1C]">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
@@ -74,7 +74,7 @@ const Profile = () => {
                                 preserveScroll: true,
                             });
                         }}
-                        className="w-[60%] flex flex-col gap-y-7 text-gray-300"
+                        className="lg:w-[60%] w-full flex flex-col gap-y-7 text-gray-300"
                     >
                         <div>
                             <Input
