@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 body {
-    /* width:100%; */
-    /* overflow-x: hidden; */
+    overflow-x: hidden;
 }
 * {
     box-sizing: border-box !important;
@@ -150,3 +149,12 @@ body {
         transform: translateX(0px);
     }
 }
+
+
+@media (max-width:768px) {
+    
+    .react-stars span{
+        font-size:23px !important; 
+    }
+}
+

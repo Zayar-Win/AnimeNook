@@ -28,13 +28,13 @@ const Comment = ({comment,auth,anime,manga}) => {
     return (
         <>
             <div  className='flex gap-4 mt-8 text-white'>
-                <div className='w-[60px] shrink-0'>
-                    <img className='w-full h-[60px] rounded-full object-cover ' src={comment?.user?.profile_picture} alt="" />
+                <div className='xs:w-[60px] w-[40px] shrink-0'>
+                    <img className='w-full xs:h-[60px] h-[40px] rounded-full object-cover ' src={comment?.user?.profile_picture} alt="" />
                 </div>
                 <div className={'flex flex-col grow'}>
                     <div className='flex gap-2 items-center'>
-                        <h1 className='uppercase  font-bold'>{comment?.user?.name}</h1>
-                        <span className='text-gray-400 font-medium'>{format(comment?.created_at)}</span>
+                        <h1 className='uppercase xs:text-base text-sm font-bold'>{comment?.user?.name}</h1>
+                        <span className='text-gray-400 xs:text-base text-xs font-medium'>{format(comment?.created_at)}</span>
                     </div>
                     {
                         isEditFormOpen ? <div className='pl-6 mt-5'><CommentForm anime={anime} manga={manga} onSuccess={() => setIsEditFormOpen(false)} comment={comment} focus type='update'  /></div> : 

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import LogoImg from "../../assets/logo.png";
+import Close from "../../assets/Close";
 import SectionContainer from "./SectionContainer";
 import { Link, router, usePage } from "@inertiajs/react";
 import Button from "./Button";
@@ -25,6 +26,7 @@ const Navbar = () => {
     const [isLoading,setIsLoading]  = useState(false);
     const [nextPageUrl,setNextPageUrl] = useState(null);
     const [isFirstRender, setIsFirstRender] = useState(true);
+    const [isOpenMobileNavbar,setIsOpenMobileNavbar] = useState(false);
     const scrollRef = useRef(null);
     useEffect(() => {
         setIsFirstRender(false);
@@ -105,11 +107,72 @@ const Navbar = () => {
         }
     }, [decounceSearch]);
     return (
-        <SectionContainer className="h-30 bg-[#0D0D0D] flex items-center justify-between">
+        <SectionContainer className="h-30  relative bg-[#0D0D0D] flex items-center justify-between">
             <div className="w-20 h-20 d-block shrink-0">
                 <Logo logo={LogoImg} />
             </div>
-            <div className="relative">
+            <div className={`fixed ${isOpenMobileNavbar ? 'translate-x-0' : 'translate-x-[2000px]'} transition-all bg-black z-[100] top-0 left-0 w-full h-[100vh]`}>
+                <div onClick={() => setIsOpenMobileNavbar(prev => !prev)} className="w-[50px] h-[50px] top-[30px] absolute right-[30px] cursor-pointer border-[1px] border-white rounded-full flex items-center justify-center">
+                    <Close className={'text-white w-[40px] h-[40px]'} />
+                </div>
+                <ul className="flex flex-col items-center h-full justify-center gap-10 font-semibold text-white">
+                    <li
+                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        className={`hover:text-primary trasnition-all ${
+                            component === "Group/Index"
+                                ? "text-primary"
+                                : null
+                        }`}
+                    >
+                        <Link href={window.route("group.home")}>Home</Link>
+                    </li>
+                    <li
+                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        className={`hover:text-primary trasnition-all ${
+                            component === "Group/Animes"
+                                ? "text-primary"
+                                : null
+                        }`}
+                    >
+                        <Link href={window.route("group.animes")}>
+                            Anime List
+                        </Link>
+                    </li>
+                    <li
+                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        className={`hover:text-primary trasnition-all ${
+                            component === "Group/NewSeason"
+                                ? "text-primary"
+                                : null
+                        }`}
+                    >
+                        <Link href="/">New Season</Link>
+                    </li>
+                    <li
+                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        className={`hover:text-primary trasnition-all ${
+                            component === "Group/Popular"
+                                ? "text-primary"
+                                : null
+                        }`}
+                    >
+                        <Link href="/">Popular</Link>
+                    </li>
+                    <li
+                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        className={`hover:text-primary trasnition-all ${
+                            component === "Group/SaveList"
+                                ? "text-primary"
+                                : null
+                        }`}
+                    >
+                        <Link href={window.route("group.savelist")}>
+                            SaveList
+                        </Link>
+                    </li>
+                </ul>
+            </div>
+            <div className="md:block hidden relative">
                 <label
                     htmlFor="search"
                     className="cursor-pointer absolute left-0"
@@ -244,7 +307,7 @@ const Navbar = () => {
                     </div>
                 )}
             </div>
-            <nav className="sm:block hidden">
+            <nav className="md:block hidden">
                 <ul className="flex items-center gap-10 font-semibold text-white">
                     <li
                         className={`hover:text-primary trasnition-all ${
@@ -297,7 +360,7 @@ const Navbar = () => {
                     </li>
                 </ul>
             </nav>
-            <div className="sm:hidden flex items-center gap-4">
+            <div onClick={() => setIsOpenMobileNavbar(prev => !prev)} className="md:hidden flex items-center gap-4">
                 <div>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
