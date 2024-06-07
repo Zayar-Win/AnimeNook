@@ -2,11 +2,19 @@ import React from "react";
 import RightArrow from "@/../assets/RightArrow";
 import Dashboard from "@/../assets/Dashboard";
 import { Link, usePage } from "@inertiajs/react";
+import { useDetectClickOutside } from "react-detect-click-outside";
 
-const Sidebar = ({sidebarLinks}) => {
+const Sidebar = ({sidebarLinks,isOpenMobileSidebar,setIsOpenMobileSidebar}) => {
     const { group } = usePage().props;
+    const handleClickOutside = (e) => {
+        if(e.target.parentNode.classList.contains('menu')) return;
+        setIsOpenMobileSidebar(false);
+    }
+    const sidebarRef = useDetectClickOutside({
+        onTriggered :handleClickOutside
+    });
     return (
-        <div className="fixed top-0 left-0 bottom-0 lg:w-[20%] w-[30%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300">
+        <div ref={sidebarRef} className={`fixed top-0 lg:left-0  transition-all z-[100] bg-white ${isOpenMobileSidebar ? 'left-0' : 'left-[-2000px]'} bottom-0 lg:w-[20%] w-[30%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300`}>
             <div className="flex flex-col justify-between">
                 <div>
                     <div className="flex p-5 items-center gap-4 border-b-[1px] border-b-[rgba(0,0,0,0.1)]">

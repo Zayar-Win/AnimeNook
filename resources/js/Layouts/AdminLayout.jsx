@@ -6,7 +6,7 @@ const AdminLayout = ({children}) => {
     return (
         <ToastLayout>
             <Sidebar sidebarLinks={sidebarLinks} />
-            <div className="pl-[22%]">{children}</div>
+            <div className="lg:pl-[22%]">{children}</div>
         </ToastLayout>
     )
 }
