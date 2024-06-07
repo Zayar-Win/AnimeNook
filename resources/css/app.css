@@ -149,3 +149,12 @@ body {
         transform: translateX(0px);
     }
 }
+
+
+@media (max-width:768px) {
+    
+    .react-stars span{
+        font-size:23px !important; 
+    }
+}
+
