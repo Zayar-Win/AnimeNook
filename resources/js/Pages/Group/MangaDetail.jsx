@@ -58,17 +58,17 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
     return (
         <>
             <SectionContainer>
-                <div className="flex items-start my-10">
-                    <div className="basis-[30%] flex items-center justify-center">
-                        <div className="w-[70%] ">
+                <div className="flex items-start my-10 md:flex-row flex-col">
+                    <div className="md:basis-[30%] w-full flex items-center justify-center">
+                        <div className="md:w-[70%] w-full">
                             <img
                                 src={manga.thumbnail}
-                                className="w-full rounded-lg min-h-[400px] object-cover"
+                                className="w-full rounded-lg md:min-h-[400px] h-[300px] object-cover"
                                 alt=""
                             />
                         </div>
                     </div>
-                    <div className="basis-[70%]">
+                    <div className="basis-[70%] md:mt-0 mt-8">
                         <div className="flex items-center gap-6">
                             <h1 className={"text-2xl font-extrabold"}>
                                 {manga.name}
@@ -143,12 +143,12 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                         </div>
                     </div>
                 </div>
-                <div className="flex items-center gap-5 my-4">
+                <div className="flex sm:items-center sm:flex-row flex-col lg:flex-nowrap flex-wrap gap-5 my-4">
                     {
                         manga?.chapters[0] &&
-                        <a href={manga.chapters[0].chapter_link}>
+                        <a href={manga.chapters[0].chapter_link} className="">
                             <Button
-                                className={"!bg-primary !px-8 rounded-none !gap-1"}
+                                className={"!bg-primary !px-8 rounded-none w-full !gap-1"}
                                 text={
                                     manga?.latestWatchedChapter
                                         ? `Continue Reading Ep${manga?.latestWatchedChapter.chapter_number}`
@@ -223,7 +223,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                 <h1 className="text-2xl font-bold">Eposides</h1>
                 <div>
                     {manga?.chapters.length > 0 ? (
-                        <div className="grid grid-cols-4 mt-4 gap-5 mb-5">
+                        <div className="grid lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 mt-4 gap-5 mb-5">
                             {manga?.chapters.map((chapter, i) => (
                                 <a key={i} href={chapter.chapter_link}>
                                     <div
@@ -233,7 +233,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                                         <h3 className="text-md font-semibold">
                                             {chapter?.title}
                                         </h3>
-                                        <div className="flex items-center gap-3 text-gray-600">
+                                        <div className="flex sm:mt-0 mt-3 sm:flex-nowrap flex-wrap items-center gap-3 text-gray-600">
                                             <span>
                                                 {formateDate(
                                                     chapter?.created_at,
@@ -273,8 +273,17 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                         <h1 className="text-xl font-bold">100 Comments</h1>
                     </div>
                     <div className="w-full h-[1px] bg-gray-500 my-6"></div>
-                    <div className="w-[70%]">
-                        <CommentForm manga={manga} />
+                    <div className="lg:w-[70%] w-full">
+                        <div className="flex items-start gap-5 mb-16">
+                            <div className="md:w-[60px] shrink-0 sm:block hidden w-[40px]">
+                                <img 
+                                    className="object-cover md:w-[60px] w-full md:h-[60px] h-[40px] rounded-full"
+                                    src={manga?.thumbnail}
+                                    alt=""
+                                />
+                            </div>
+                            <CommentForm manga={manga} />
+                        </div>
                         <Comments comments={manga?.comments} manga={manga} />
                     </div>
                 </div>

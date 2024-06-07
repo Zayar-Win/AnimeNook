@@ -250,7 +250,7 @@ const VideoDetail = ({ anime }) => {
                         <div className="w-full h-[1px] bg-gray-500 my-6"></div>
                         <div className="lg:w-[70%] w-full mb-10">
                             <div className="flex items-start gap-5 mb-16">
-                                <div className="md:w-[60px] sm:block hidden w-[40px]">
+                                <div className="md:w-[60px] shrink-0 sm:block hidden w-[40px]">
                                     <img
                                         className="object-cover w-full md:h-[60px] h-[40px] rounded-full"
                                         src={anime?.thumbnail}
