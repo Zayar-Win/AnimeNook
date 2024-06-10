@@ -150,11 +150,12 @@ body {
     }
 }
 
-
-@media (max-width:768px) {
-    
-    .react-stars span{
-        font-size:23px !important; 
-    }
+.swiper-wrapper {
+    align-items: stretch;
 }
 
+@media (max-width: 768px) {
+    .react-stars span {
+        font-size: 23px !important;
+    }
+}
