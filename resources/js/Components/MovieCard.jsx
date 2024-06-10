@@ -1,12 +1,14 @@
 import React from "react";
-import Tag from "./Tag";
+// import Tag from "./Tag";
+import { usePage, router, Link } from "@inertiajs/react";
 import Button from "./Button";
-import {usePage,router,Link} from '@inertiajs/react';
 const MovieCard = ({ anime }) => {
-    const {auth:{user}} = usePage().props;
+    const {
+        auth: { user },
+    } = usePage().props;
     const addToWatchList = () => {
-        if(!user){
-            return router.get(window.route('group.login'));
+        if (!user) {
+            return router.get(window.route("group.login"));
         }
         router.post(
             window.route("group.item.save", {
@@ -20,11 +22,10 @@ const MovieCard = ({ anime }) => {
                 preserveScroll: true,
             }
         );
-    }
+    };
     return (
-                    
-        <div className="bg-[#0D0D0D] movie-card transition-all text-white rounded-md cursor-pointer p-5">
-            <Link href={window.route("group.anime.detail", { anime })} >
+        <div className="bg-[#0D0D0D] movie-card transition-all h-full text-white rounded-md cursor-pointer p-5">
+            <Link href={window.route("group.anime.detail", { anime })}>
                 <div className="w-full relative h-[280px] overflow-hidden object-cover">
                     <img
                         className="rounded-md  transition-all w-full h-full object-cover"
@@ -59,10 +60,18 @@ const MovieCard = ({ anime }) => {
                                 {anime?.views_count}
                             </span>
                         </div>
-                        <div onClick={(e) => {
-                            e.preventDefault();
-                            router.get(window.route('group.anime.detail',{anime,scrollTo : 'comments'}))
-                        }} className="flex items-center gap-1 px-3 py-2 bg-black rounded-md">
+                        <div
+                            onClick={(e) => {
+                                e.preventDefault();
+                                router.get(
+                                    window.route("group.anime.detail", {
+                                        anime,
+                                        scrollTo: "comments",
+                                    })
+                                );
+                            }}
+                            className="flex items-center gap-1 px-3 py-2 bg-black rounded-md"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width="14"
@@ -84,15 +93,11 @@ const MovieCard = ({ anime }) => {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-1 mt-5">
+                {/* <div className="flex flex-wrap items-center gap-1 mt-5">
                     {anime?.tags.map((tag) => (
-                        <Tag
-                            key={tag.id}
-                            tag={tag}
-                            className="bg-[#47BE71]"
-                        />
+                        <Tag key={tag.id} tag={tag} className="bg-[#47BE71]" />
                     ))}
-                </div>
+                </div> */}
                 <div className="flex items-center mt-4 justify-between">
                     <div className="flex items-center gap-2 cursor-pointer hover:text-yellow-400 transition-all">
                         <span>{parseInt(anime?.rating).toFixed(1)}</span>
@@ -112,10 +117,15 @@ const MovieCard = ({ anime }) => {
                         </svg>
                         <span>({anime?.ratings_count})</span>
                     </div>
-                    <div onClick={(e) => {
-                        e.preventDefault();
-                        addToWatchList();
-                    }} className={`cursor-pointer hover:text-yellow-400 transition-all relative z-[10] ${anime?.isSavedByCurrentUser ? 'text-yellow-500' :''}`}>
+                    <div
+                        onClick={(e) => {
+                            e.preventDefault();
+                            addToWatchList();
+                        }}
+                        className={`cursor-pointer hover:text-yellow-400 transition-all relative z-[10] ${
+                            anime?.isSavedByCurrentUser ? "text-yellow-500" : ""
+                        }`}
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="25"
@@ -130,11 +140,13 @@ const MovieCard = ({ anime }) => {
                     </div>
                 </div>
                 <h1 className="mt-3 text-xl font-extrabold">{anime?.name}</h1>
-                <p className="font-medium text-sm pt-1">{anime?.description}</p>
+                <p className="font-medium text-sm pt-1 line-clamp-4">
+                    {anime?.description}
+                </p>
                 <Button
                     text={"Watch Now"}
                     className={
-                        "!inline-block hover:bg-primary hover:!text-white transition z-10 relative !text-black bg-white mt-3"
+                        "!inline-block hover:bg-primary hover:!text-white transition z-10 relative !text-black bg-white mt-5"
                     }
                     href={window.route("group.anime.detail", { anime })}
                 />

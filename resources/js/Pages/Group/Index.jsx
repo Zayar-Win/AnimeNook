@@ -298,10 +298,35 @@ function Index({
                         </svg>
                         <span className="text-lg">Continue Watching</span>
                     </div>
-                    <div className="grid mt-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 xl:gap-4 gap-2">
-                        {continueWatchingAnimes?.map((anime) => (
-                            <MovieCard key={anime.id} anime={anime} />
-                        ))}
+                    <div className="mt-4">
+                        <Carousel
+                            breakpoints={{
+                                640: {
+                                    slidesPerView: 2,
+                                    spaceBetween: 10,
+                                },
+                                768: {
+                                    slidesPerView: 2,
+                                    spaceBetween: 10,
+                                },
+                                1024: {
+                                    slidesPerView: 3,
+                                    spaceBetween: 10,
+                                },
+                                1440: {
+                                    slidesPerView: 4,
+                                    spaceBetween: 10,
+                                },
+                            }}
+                            pagination={false}
+                            navigation={true}
+                        >
+                            {continueWatchingAnimes?.map((anime) => (
+                                <SwiperSlide key={anime.id}>
+                                    <MovieCard key={anime.id} anime={anime} />
+                                </SwiperSlide>
+                            ))}
+                        </Carousel>
                     </div>
                 </div>
             </SectionContainer>
@@ -487,11 +512,34 @@ function Index({
                         </svg>
                         <span className="text-lg">Popular Series</span>
                     </div>
-                    <div className="grid mt-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 xl:gap-4 gap-2">
+                    <Carousel
+                        breakpoints={{
+                            640: {
+                                slidesPerView: 2,
+                                spaceBetween: 10,
+                            },
+                            768: {
+                                slidesPerView: 2,
+                                spaceBetween: 10,
+                            },
+                            1024: {
+                                slidesPerView: 3,
+                                spaceBetween: 10,
+                            },
+                            1440: {
+                                slidesPerView: 4,
+                                spaceBetween: 10,
+                            },
+                        }}
+                        pagination={false}
+                        navigation={true}
+                    >
                         {popularAnimes?.map((anime) => (
-                            <MovieCard key={anime?.id} anime={anime} />
+                            <SwiperSlide key={anime.id}>
+                                <MovieCard key={anime?.id} anime={anime} />
+                            </SwiperSlide>
                         ))}
-                    </div>
+                    </Carousel>
                 </div>
             </SectionContainer>
             <SectionContainer className={"bg-black mt-8"} padding={false}>
@@ -512,11 +560,35 @@ function Index({
                         </svg>
                         <span className="text-lg">Popular Manga</span>
                     </div>
-                    <div className="grid mt-4 xl:grid-cols-5 lg:grid-cols-3 md:grid-cols-2 gap-4">
+                    <Carousel
+                        breakpoints={{
+                            640: {
+                                slidesPerView: 2,
+                                spaceBetween: 10,
+                            },
+                            768: {
+                                slidesPerView: 3,
+                                spaceBetween: 10,
+                            },
+                            1024: {
+                                slidesPerView: 4,
+                                spaceBetween: 10,
+                            },
+                            1440: {
+                                slidesPerView: 5,
+                                spaceBetween: 10,
+                            },
+                        }}
+                        loop={false}
+                        pagination={false}
+                        navigation={true}
+                    >
                         {popularMangas?.map((manga) => (
-                            <MangaCard key={manga?.id} manga={manga} />
+                            <SwiperSlide key={manga.id}>
+                                <MangaCard key={manga?.id} manga={manga} />
+                            </SwiperSlide>
                         ))}
-                    </div>
+                    </Carousel>
                 </div>
             </SectionContainer>
             <SectionContainer
