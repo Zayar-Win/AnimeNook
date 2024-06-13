@@ -14,6 +14,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
+use App\Http\Controllers\GroupAdminSeasonController;
 use App\Http\Controllers\GroupAdminSettingController;
 use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminTagController;
@@ -173,7 +174,17 @@ if ($isProduction) {
             //Group Data Routes
             Route::post('/admin/setting/{setting}/update', [GroupAdminSettingController::class, 'update'])->name('setting.update');
             //Ouo Fail Links
-        });
+
+            // Season Routes
+            Route::get('/admin/animes/{anime:slug}/seasons/create',[GroupAdminSeasonController::class,'animeSeasonCreate'])->name('anime.seasons.create');
+            Route::post('/admin/seasons/store',[GroupAdminSeasonController::class,'store'])->name('seasons.store');
+            Route::get('/admin/animes/{anime:slug}/seasons/{season}/edit',[GroupAdminSeasonController::class,'animeSeasonEdit'])->name('anime.seasons.edit');
+            Route::post('/admin/seasons/{season}/update',[GroupAdminSeasonController::class,'seasonUpdate'])->name('seasons.update');
+            Route::post('/admin/seasons/{season}/delete',[GroupAdminSeasonController::class,'delete'])->name('seasons.delete');
+            
+            Route::get('/admin/mangas/{manga:slug}/seasons/create',[GroupAdminSeasonController::class,'mangaSeasonCreate'])->name('manga.seasons.create');
+            Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit',[GroupAdminSeasonController::class,'mangaSeasonEdit'])->name('manga.seasons.edit');
+            });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');

@@ -46,4 +46,8 @@ class Chapter extends Model
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
+
+    public function season(){
+        return $this->belongsTo(Season::class);
+        }
 }

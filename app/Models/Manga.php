@@ -116,6 +116,10 @@ class Manga extends Model
         return $this->morphMany(CollectionItems::class, 'item');
     }
 
+    public function seasons(){
+        return $this->morphMany(Season::class,'seasonable');
+    }
+
     public function views()
     {
         return $this->morphMany(View::class, 'viewable');

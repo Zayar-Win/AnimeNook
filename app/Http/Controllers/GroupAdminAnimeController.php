@@ -29,11 +29,11 @@ class GroupAdminAnimeController extends Controller
         ]);
     }
 
-    public function create(Group $group)
+    public function create(Group $group,Anime $anime)
     {
         return inertia("Group/Admin/Animes/AnimeForm", [
             'type' => 'create',
-            'statuses' => Status::all()
+            'statuses' => Status::all(),
         ]);
     }
 
@@ -68,7 +68,8 @@ class GroupAdminAnimeController extends Controller
             'anime' => $anime,
             'type' => 'edit',
             'episodes' => $episodes,
-            'statuses' => Status::all()
+            'statuses' => Status::all(),
+            'seasons' => $anime->seasons()->with('seasonable')->withCount('chapters')->paginate(15)
         ]);
     }
 

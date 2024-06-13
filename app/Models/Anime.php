@@ -100,6 +100,10 @@ class Anime extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+    public function seasons(){
+        return $this->morphMany(Season::class,'seasonable');
+    }
+
     public function ratings()
     {
         return $this->morphMany(Rating::class, 'ratingable');

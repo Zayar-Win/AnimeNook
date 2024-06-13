@@ -22,7 +22,7 @@ class GroupAdminMangaController extends Controller
     {
         $mangas = $group->mangas()->latest()->paginate(15);
         return inertia('Group/Admin/Mangas/Index', [
-            'mangas' => $mangas
+            'mangas' => $mangas,
         ]);
     }
 
@@ -65,7 +65,8 @@ class GroupAdminMangaController extends Controller
             'type' => 'edit',
             'manga' => $manga,
             'chapters' => $chapters,
-            'statuses' => Status::all()
+            'statuses' => Status::all(),
+            'seasons' => $manga->seasons()->with('seasonable')->withCount('chapters')->paginate(10)
         ]);
     }
 

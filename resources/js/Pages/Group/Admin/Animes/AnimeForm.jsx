@@ -10,6 +10,7 @@ import TableData from "@/Components/TableData";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
+import Season from "@/Pages/Group/Admin/Seasons";
 
 const columns = [
     {
@@ -38,7 +39,7 @@ const columns = [
     },
 ];
 
-const AnimeForm = ({ type, statuses, anime, episodes }) => {
+const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
     const [statusOptions, setStatusOptions] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedEpisode, setSelectedEpisode] = useState(null);
@@ -87,7 +88,11 @@ const AnimeForm = ({ type, statuses, anime, episodes }) => {
                     onSubmit={(e) => {
                         e.preventDefault();
                         type === "edit"
-                            ? post(window.route("group.admin.animes.update",{anime}))
+                            ? post(
+                                  window.route("group.admin.animes.update", {
+                                      anime,
+                                  })
+                              )
                             : post(window.route("group.admin.animes.store"));
                     }}
                 >
@@ -164,6 +169,38 @@ const AnimeForm = ({ type, statuses, anime, episodes }) => {
                         className={"!bg-blue-500 !inline-block my-8 !px-20"}
                     />
                 </form>
+
+                {type === "edit" && (
+                    <div>
+                        <h1 className="text-xl font-semibold mt-6 mb-3">
+                            Seasons
+                        </h1>
+                        <div className="flex justify-end">
+                            <Button
+                                href={window.route(
+                                    "group.admin.anime.seasons.create",
+                                    {
+                                        anime: anime.slug,
+                                    }
+                                )}
+                                text={"Create Season"}
+                                className={"!bg-blue-500 my-8 mr-5"}
+                            />
+                        </div>
+                        {seasons?.data.length > 0 ? (
+                            <Season
+                                seasons={seasons}
+                                serie={anime}
+                                type={"anime"}
+                            />
+                        ) : (
+                            <p className="text-center text-xl text-gray-500 font-medium">
+                                No Seasons are created.
+                            </p>
+                        )}
+                    </div>
+                )}
+
                 {type === "edit" && (
                     <div>
                         <h1 className="text-xl font-semibold mt-6 mb-3">

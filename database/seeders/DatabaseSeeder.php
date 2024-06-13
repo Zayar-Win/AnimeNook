@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
             RatingSeeder::class,
             PlanSeeder::class,
             GroupSettingSeeder::class,
+            SeasonSeeder::class,
         ]);
     }
 }
