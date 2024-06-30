@@ -63,7 +63,7 @@ class GroupAdminAnimeController extends Controller
 
     public function edit(Group $group, Anime $anime)
     {
-        $episodes = Chapter::where('chapterable_type', Anime::class)->where('chapterable_id', $anime->id)->paginate(10);
+        $episodes = Chapter::with('season')->where('chapterable_type', Anime::class)->where('chapterable_id', $anime->id)->paginate(10);
         return inertia('Group/Admin/Animes/AnimeForm', [
             'anime' => $anime,
             'type' => 'edit',
@@ -105,7 +105,8 @@ class GroupAdminAnimeController extends Controller
     public function episodeCreate(Group $group, Anime $anime)
     {
         return inertia('Group/Admin/Animes/EpisodeForm', [
-            'anime' => $anime
+            'anime' => $anime,
+            'seasons' => $anime->seasons,
         ]);
     }
 
@@ -117,7 +118,8 @@ class GroupAdminAnimeController extends Controller
             'title' => ['required'],
             'link' => ['required'],
             'description' => ['nullable'],
-            'chapter_number' => ['required']
+            'chapter_number' => ['required'],
+            'season_id' => ['required']
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
@@ -155,7 +157,8 @@ class GroupAdminAnimeController extends Controller
         return inertia('Group/Admin/Animes/EpisodeForm', [
             'episode' => $episode,
             'type' => 'edit',
-            'anime' => $anime
+            'anime' => $anime,
+            'seasons' => $anime->seasons
         ]);
     }
 

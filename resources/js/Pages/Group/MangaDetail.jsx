@@ -1,6 +1,6 @@
 import SectionContainer from "@/Components/SectionContainer";
 import UserLayout from "@/Layouts/UserLayout";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // import Star from '../../../assets/Star';
 import { formateDate } from "@/app";
 import Button from "@/Components/Button";
@@ -10,12 +10,14 @@ import MangaCard from "@/Components/MangaCard";
 import Tags from "@/Components/Tags";
 import Comments from "@/Components/Comments";
 import CommentForm from "@/Components/CommentForm";
-import { router, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import Rating from "@/Components/Rating";
 import Liked from "@/../assets/Liked";
-import axios from 'axios';
+import axios from "axios";
+import DownArrow from "@/../assets/DownArrow";
+import useOnClickOutside from "use-onclickoutside";
 
-const MangaDetail = ({ manga, recommendedMangas }) => {
+const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
     const {
         auth: { user },
     } = usePage().props;
@@ -25,6 +27,13 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
             preserveState: true,
         });
     };
+    const [isSeasonBoxOpen, setIsSeasonBoxOpen] = useState(false);
+    const seasonBoxRef = useRef(null);
+    useOnClickOutside(seasonBoxRef, function (e) {
+        if (e.target.parentElement.classList.contains("seasonbox-toggle"))
+            return;
+        setIsSeasonBoxOpen(false);
+    });
     const ratingHandler = (rating) => {
         router.post(
             window.route("group.manga.rating", { manga }),
@@ -47,18 +56,18 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
     };
 
     useEffect(() => {
-        const createView = async()  => {
-            await axios.post(window.route('group.views.store'),{
-                'viewable_type' : 'manga',
-                'viewable_id' : manga.id
+        const createView = async () => {
+            await axios.post(window.route("group.views.store"), {
+                viewable_type: "manga",
+                viewable_id: manga.id,
             });
-        }
+        };
         createView();
-    },[]);
+    }, []);
     return (
         <>
-            <SectionContainer>
-                <div className="flex items-start my-10 md:flex-row flex-col">
+            <SectionContainer className={"bg-black text-white"}>
+                <div className="flex items-start py-10 md:flex-row flex-col">
                     <div className="md:basis-[30%] w-full flex items-center justify-center">
                         <div className="md:w-[70%] w-full">
                             <img
@@ -125,9 +134,9 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                                 <Rating ratingHandler={ratingHandler} />
                                 <span className="inline-block h-6 mx-1 border-l-2 border-gray-500"></span>
                                 <div>
-                                    <div className="font-medium text-gray-600">
+                                    <div className="font-medium text-white">
                                         Average Rating:{" "}
-                                        <span className="text-black font-bold">
+                                        <span className="text-white font-bold">
                                             {manga?.rating}(
                                             {manga?.ratings_count})
                                         </span>
@@ -135,26 +144,28 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                                 </div>
                             </div>
                         </div>
-                        <p className="text-gray-600">{manga?.description}</p>
+                        <p className="text-white">{manga?.description}</p>
                         <div className="my-3">
-                            <p className="text-sm font-bold text-gray-600">
+                            <p className="text-sm font-bold text-white">
                                 Uploaded at : {formateDate(manga?.created_at)}
                             </p>
                         </div>
                     </div>
                 </div>
                 <div className="flex sm:items-center sm:flex-row flex-col lg:flex-nowrap flex-wrap gap-5 my-4">
-                    {
-                        manga?.chapters[0] &&
+                    {manga?.chapters[0] && (
                         <a href={manga.chapters[0].chapter_link} className="">
                             <Button
-                                className={"!bg-primary !px-8 rounded-none w-full !gap-1"}
+                                className={
+                                    "!bg-primary !px-8 rounded-none w-full !gap-1"
+                                }
                                 text={
                                     manga?.latestWatchedChapter
                                         ? `Continue Reading Ep${manga?.latestWatchedChapter.chapter_number}`
-                                        : "Start Reading " + manga.chapters[0]?.name
-                                } 
-                                type='button'
+                                        : "Start Reading " +
+                                          manga.chapters[0]?.name
+                                }
+                                type="button"
                                 Icon={
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -170,7 +181,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                                 }
                             />
                         </a>
-                    }
+                    )}
                     <Button
                         text={
                             manga.isSaveByCurrentUser
@@ -220,20 +231,78 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                     />
                 </div>
                 <div className="w-full h-[1px] bg-gray-300 my-10"></div>
-                <h1 className="text-2xl font-bold">Eposides</h1>
+                <div>
+                    {seasons.length ? (
+                        <div className="relative">
+                            <div
+                                onClick={() =>
+                                    setIsSeasonBoxOpen((prev) => !prev)
+                                }
+                                className="flex seasonbox-toggle items-center gap-2 cursor-pointer mt-6"
+                            >
+                                <DownArrow />
+                                <h1 className="text-2xl font-bold">
+                                    {manga?.name}{" "}
+                                    {manga.chapters.length
+                                        ? ` : ${manga.chapters[0].season.title}`
+                                        : ""}
+                                </h1>
+                            </div>
+                            <div
+                                ref={seasonBoxRef}
+                                className={`absolute ${
+                                    isSeasonBoxOpen
+                                        ? "opacity-1 visible"
+                                        : "opacity-0 invisible"
+                                } top-[100%] bg-gray-600 z-[10] py-[10px] w-[500px] transition-all`}
+                            >
+                                <ul>
+                                    {seasons.map((season) => {
+                                        return (
+                                            <Link
+                                                key={season.id}
+                                                href={window.route(
+                                                    "group.manga.detail",
+                                                    {
+                                                        manga: manga,
+                                                        season: season.season_number,
+                                                    }
+                                                )}
+                                                preserveScroll={true}
+                                            >
+                                                <li className="px-[15px] gap-3 py-[10px] flex justify-between !cursor-pointer hover:bg-gray-900">
+                                                    <div className="line-clamp-1">
+                                                        {manga.name} :{" "}
+                                                        {season.title}
+                                                    </div>
+                                                    <p className="shrink-0">
+                                                        {season.chapters_count}{" "}
+                                                        episodes
+                                                    </p>
+                                                </li>
+                                            </Link>
+                                        );
+                                    })}
+                                </ul>
+                            </div>
+                        </div>
+                    ) : (
+                        <h1 className="text-2xl font-bold mt-6">
+                            {manga?.name}
+                        </h1>
+                    )}
+                </div>
+                <h1 className="text-2xl font-bold mt-3">Eposides</h1>
                 <div>
                     {manga?.chapters.length > 0 ? (
-                        <div className="grid lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 mt-4 gap-5 mb-5">
+                        <div className="grid lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 mt-4 gap-5 pb-5">
                             {manga?.chapters.map((chapter, i) => (
                                 <a key={i} href={chapter.chapter_link}>
-                                    <div
-                                        
-                                        className="bg-gray-100 cursor-pointer px-5 py-4 rounded-lg"
-                                    >
-                                        <h3 className="text-md font-semibold">
+                                    <div className="bg-gray-100 cursor-pointer px-5 py-4 rounded-lg">
+                                        <h3 className="text-md text-black font-semibold">
                                             {chapter?.title}
                                         </h3>
-                                        <div className="flex sm:mt-0 mt-3 sm:flex-nowrap flex-wrap items-center gap-3 text-gray-600">
+                                        <div className="flex sm:mt-0 mt-3 sm:flex-nowrap flex-wrap items-center gap-3 text-black">
                                             <span>
                                                 {formateDate(
                                                     chapter?.created_at,
@@ -247,10 +316,14 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                                             </span>
                                             <div className="flex items-center gap-1">
                                                 <Heart className={"w-5 h-5"} />
-                                                <span>{chapter?.like_count}</span>
+                                                <span>
+                                                    {chapter?.like_count}
+                                                </span>
                                             </div>
                                             <div className="flex items-center gap-2">
-                                                <Comment className={"w-5 h-5"} />
+                                                <Comment
+                                                    className={"w-5 h-5"}
+                                                />
                                                 <span>
                                                     {chapter?.comments_count}
                                                 </span>
@@ -261,14 +334,14 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center h-[400px] flex items-center justify-center text-xl font-semibold text-gray-400">
+                        <div className="text-center h-[400px] flex items-center justify-center text-xl font-semibold text-whites">
                             <p>Currently No Eposides Are Uploaded.</p>
                         </div>
                     )}
                 </div>
             </SectionContainer>
             <SectionContainer className={"bg-[#0D0D0D]"}>
-                <div className="mt-10">
+                <div>
                     <div>
                         <h1 className="text-xl font-bold">100 Comments</h1>
                     </div>
@@ -276,7 +349,7 @@ const MangaDetail = ({ manga, recommendedMangas }) => {
                     <div className="lg:w-[70%] w-full">
                         <div className="flex items-start gap-5 mb-16">
                             <div className="md:w-[60px] shrink-0 sm:block hidden w-[40px]">
-                                <img 
+                                <img
                                     className="object-cover md:w-[60px] w-full md:h-[60px] h-[40px] rounded-full"
                                     src={manga?.thumbnail}
                                     alt=""

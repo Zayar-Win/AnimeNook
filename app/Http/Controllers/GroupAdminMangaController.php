@@ -60,7 +60,7 @@ class GroupAdminMangaController extends Controller
 
     public function edit(Group $group, Manga $manga)
     {
-        $chapters = Chapter::where('chapterable_id', $manga->id)->where("chapterable_type", Manga::class)->where('group_id', $group->id)->latest()->paginate(15);
+        $chapters = Chapter::with('season')->where('chapterable_id', $manga->id)->where("chapterable_type", Manga::class)->where('group_id', $group->id)->latest()->paginate(15);
         return inertia('Group/Admin/Mangas/MangaForm', [
             'type' => 'edit',
             'manga' => $manga,
@@ -102,7 +102,8 @@ class GroupAdminMangaController extends Controller
     public function chapterCreate(Group $group, Manga $manga)
     {
         return inertia('Group/Admin/Mangas/ChapterForm', [
-            'manga' => $manga
+            'manga' => $manga,
+            'seasons' => $manga->seasons,
         ]);
     }
 
@@ -114,7 +115,8 @@ class GroupAdminMangaController extends Controller
             'chapter_number' => ['required'],
             'title' => ['required'],
             'link' => ['required'],
-            'description' => ['nullable']
+            'description' => ['nullable'],
+            'season_id' => ['required']
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
@@ -150,7 +152,8 @@ class GroupAdminMangaController extends Controller
         return inertia('Group/Admin/Mangas/ChapterForm', [
             'chapter' => $chapter,
             'type' => 'edit',
-            'manga' => $manga
+            'manga' => $manga,
+            'seasons' => $manga->seasons,
         ]);
     }
 
@@ -162,6 +165,7 @@ class GroupAdminMangaController extends Controller
             'title' => ['required'],
             'description' => ['required'],
             'link' => ['required'],
+            'season_id' => ['required']
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'], 'animes');

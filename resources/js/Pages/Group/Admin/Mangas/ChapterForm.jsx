@@ -3,18 +3,28 @@ import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import FilePondUploader from "@/Components/FilePondUploader";
 import InputLabel from "@/Components/InputLabel";
+import Select from "@/Components/Select";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React from "react";
 
-const ChapterForm = ({ chapter, type, manga }) => {
+const ChapterForm = ({ chapter, type, manga, seasons }) => {
     const { data, setData, post, errors } = useForm({
         thumbnail: chapter?.thumbnail ?? null,
         chapter_number: chapter?.chapter_number ?? "",
         title: chapter?.title ?? "",
         link: chapter?.chapter_link ?? "",
         description: chapter?.description ?? "",
+        season_id: chapter?.season_id ?? null,
     });
+
+    const seasonOptions = seasons.map((season) => {
+        return {
+            label: season.title,
+            value: season.id,
+        };
+    });
+
     return (
         <div className="w-[90%] mx-auto mb-10">
             <h1 className="text-xl font-semibold my-6">
@@ -71,6 +81,17 @@ const ChapterForm = ({ chapter, type, manga }) => {
                             label="Episode Link"
                             value={data.link}
                             onChange={(e) => setData("link", e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <InputLabel value="Season" />
+                        <Select
+                            onChange={(option) =>
+                                setData("season_id", option.value)
+                            }
+                            selected={data.season_id}
+                            options={seasonOptions}
+                            isDisabled={!seasonOptions.length}
                         />
                     </div>
                     <div className="col-span-2">

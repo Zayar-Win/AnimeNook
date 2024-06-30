@@ -17,6 +17,9 @@ const columns = [
         field: "Chapter Number",
     },
     {
+        field: "Season",
+    },
+    {
         field: "Title",
     },
     {
@@ -219,6 +222,9 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
                         <Table datas={episodes} columns={columns}>
                             <TableData>
                                 {(episode) => <p>{episode?.chapter_number}</p>}
+                            </TableData>
+                            <TableData>
+                                {(episode) => <p>{episode?.season.title}</p>}
                             </TableData>
                             <TableData>
                                 {(episode) => <p>{episode?.title}</p>}

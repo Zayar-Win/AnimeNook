@@ -17,6 +17,9 @@ const columns = [
         field: "Chapter Number",
     },
     {
+        field: "Season",
+    },
+    {
         field: "Title",
     },
     {
@@ -215,6 +218,9 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons }) => {
                         <Table datas={chapters} columns={columns}>
                             <TableData>
                                 {(chapter) => <p>{chapter?.chapter_number}</p>}
+                            </TableData>
+                            <TableData>
+                                {(chapter) => <p>{chapter?.season?.title}</p>}
                             </TableData>
                             <TableData>
                                 {(chapter) => <p>{chapter?.title}</p>}

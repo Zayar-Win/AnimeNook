@@ -1,26 +1,37 @@
 import SectionContainer from "@/Components/SectionContainer";
 import UserLayout from "@/Layouts/UserLayout";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Share from "@/../assets/Share";
 import Tags from "@/Components/Tags";
 // import Star from '@/../assets/Star';
 import Button from "@/Components/Button";
 import BookMark from "@/../assets/BookMark";
 import Pause from "@/../assets/Pause";
-import { router, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import Comments from "@/Components/Comments";
 import Liked from "@/../assets/Liked";
 import CommentForm from "@/Components/CommentForm";
 import Rating from "@/Components/Rating";
 import { getQueryParam } from "@/helpers/getQueryParams";
 import Saved from "@/../assets/Saved";
-import axios from 'axios';
+import axios from "axios";
+import DownArrow from "@/../assets/DownArrow";
+import useOnClickOutside from "use-onclickoutside";
 
-const VideoDetail = ({ anime }) => {
+const VideoDetail = ({ anime, seasons }) => {
     const {
-        props:{auth: { user }},
-        url
+        props: {
+            auth: { user },
+        },
+        url,
     } = usePage();
+    const [isSeasonBoxOpen, setIsSeasonBoxOpen] = useState(false);
+    const seasonBoxRef = useRef(null);
+    useOnClickOutside(seasonBoxRef, function (e) {
+        if (e.target.parentElement.classList.contains("seasonbox-toggle"))
+            return;
+        setIsSeasonBoxOpen(false);
+    });
     // const [isFirst,setIsFirst]  = useState(true);
     const likeAnime = () => {
         router.post(
@@ -42,8 +53,8 @@ const VideoDetail = ({ anime }) => {
         );
     };
     const saveToWatchList = () => {
-        if(!user){
-            return router.get(window.route('group.login'));
+        if (!user) {
+            return router.get(window.route("group.login"));
         }
         router.post(
             window.route("group.item.save", {
@@ -59,23 +70,23 @@ const VideoDetail = ({ anime }) => {
         );
     };
     useEffect(() => {
-        const scrollTo = getQueryParam(url,'scrollTo');
-        if(scrollTo){
+        const scrollTo = getQueryParam(url, "scrollTo");
+        if (scrollTo) {
             document.getElementById(scrollTo).scrollIntoView({
-                behavior:'smooth'
-            })
-        }
-    },[]);
-
-    useEffect(() => {
-        const createView = async()  => {
-            await axios.post(window.route('group.views.store'),{
-                'viewable_type' : 'anime',
-                'viewable_id' : anime.id
+                behavior: "smooth",
             });
         }
+    }, []);
+
+    useEffect(() => {
+        const createView = async () => {
+            await axios.post(window.route("group.views.store"), {
+                viewable_type: "anime",
+                viewable_id: anime.id,
+            });
+        };
         createView();
-    },[]);
+    }, []);
     return (
         <>
             <div className="md:h-[350px] xs:h-[260px] h-[200px] relative ">
@@ -141,7 +152,13 @@ const VideoDetail = ({ anime }) => {
                                     className={
                                         "border-primary rounded-none !text-primary uppercase my-5"
                                     }
-                                    Icon={anime.isSavedByCurrentUser ? <Saved /> : <BookMark />}
+                                    Icon={
+                                        anime.isSavedByCurrentUser ? (
+                                            <Saved />
+                                        ) : (
+                                            <BookMark />
+                                        )
+                                    }
                                 />
                                 <Button
                                     text={
@@ -169,40 +186,105 @@ const VideoDetail = ({ anime }) => {
                             <p className="my-5">{anime?.description}</p>
                         </div>
                         <div className="md:basis-[30%] w-full">
-                            {
-                                anime?.chapters[0] &&
-                            <div>
-                                <div className="relative">
-                                    <div className="w-12 cursor-pointer absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] h-12 rounded-full flex items-center justify-center bg-[#0006]">
-                                        <Pause />
+                            {anime?.chapters[0] && (
+                                <div>
+                                    <div className="relative">
+                                        <div className="w-12 cursor-pointer absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] h-12 rounded-full flex items-center justify-center bg-[#0006]">
+                                            <Pause />
+                                        </div>
+                                        <img
+                                            src={
+                                                anime?.chapters[0]?.thumbnail ??
+                                                anime?.thumbnail
+                                            }
+                                            className="w-full lg:h-[180px] h-[230px] object-cover"
+                                            alt="Epsodie 1 Thumbnail"
+                                        />
                                     </div>
-                                    <img
-                                        src={
-                                            anime?.chapters[0]?.thumbnail ??
-                                            anime?.thumbnail
+                                    <Button
+                                        text={`Start Watching ${anime?.chapters[0]?.name}`}
+                                        className={
+                                            "bg-primary rounded-none mt-3 justify-center"
                                         }
-                                        className="w-full lg:h-[180px] h-[230px] object-cover"
-                                        alt="Epsodie 1 Thumbnail"
+                                        href={anime?.chapters[0]?.chapter_link}
+                                        Icon={<Pause />}
                                     />
                                 </div>
-                                <Button
-                                    text={`Start Watching ${anime?.chapters[0]?.name}`}
-                                    className={
-                                        "bg-primary rounded-none mt-3 justify-center"
-                                    }
-                                    href={anime?.chapters[0]?.chapter_link}
-                                    Icon={<Pause />}
-                                />
-                            </div>
-                            }
+                            )}
                         </div>
                     </div>
-                    <h1 className="text-2xl font-bold mt-6">{anime?.name}</h1>
-                    <div id='chapters' className="mt-4">
+                    <div>
+                        {seasons.length ? (
+                            <div className="relative">
+                                <div
+                                    onClick={() =>
+                                        setIsSeasonBoxOpen((prev) => !prev)
+                                    }
+                                    className="flex seasonbox-toggle items-center gap-2 cursor-pointer mt-6"
+                                >
+                                    <DownArrow />
+                                    <h1 className="text-2xl font-bold">
+                                        {anime?.name}{" "}
+                                        {anime.chapters.length
+                                            ? ` : ${anime.chapters[0].season.title}`
+                                            : ""}
+                                    </h1>
+                                </div>
+                                <div
+                                    ref={seasonBoxRef}
+                                    className={`absolute ${
+                                        isSeasonBoxOpen
+                                            ? "opacity-1 visible"
+                                            : "opacity-0 invisible"
+                                    } top-[100%] bg-gray-600 z-[10] py-[10px] w-[500px] transition-all`}
+                                >
+                                    <ul>
+                                        {seasons.map((season) => {
+                                            return (
+                                                <Link
+                                                    key={season.id}
+                                                    href={window.route(
+                                                        "group.anime.detail",
+                                                        {
+                                                            anime: anime,
+                                                            season: season.season_number,
+                                                        }
+                                                    )}
+                                                    preserveScroll={true}
+                                                >
+                                                    <li className="px-[15px] gap-3 py-[10px] flex justify-between !cursor-pointer hover:bg-gray-900">
+                                                        <div className="line-clamp-1">
+                                                            {anime.name} :{" "}
+                                                            {season.title}
+                                                        </div>
+                                                        <p className="shrink-0">
+                                                            {
+                                                                season.chapters_count
+                                                            }{" "}
+                                                            episodes
+                                                        </p>
+                                                    </li>
+                                                </Link>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            </div>
+                        ) : (
+                            <h1 className="text-2xl font-bold mt-6">
+                                {anime?.name}
+                            </h1>
+                        )}
+                    </div>
+
+                    <div id="chapters" className="mt-4">
                         {anime?.chapters.length > 0 ? (
                             <div className="grid lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 gap-5">
                                 {anime?.chapters?.map((chapter, i) => (
-                                    <a href={chapter.chapter_link || ''} key={i}>
+                                    <a
+                                        href={chapter.chapter_link || ""}
+                                        key={i}
+                                    >
                                         <div>
                                             <div className="md:h-[150px] xs:h-[100px] h-[140px] object-cover relative">
                                                 <img
@@ -238,7 +320,7 @@ const VideoDetail = ({ anime }) => {
                             </div>
                         )}
                     </div>
-                    <div className="mt-10" id='comments'>
+                    <div className="mt-10" id="comments">
                         <div>
                             <h1 className="text-xl font-bold">
                                 {anime?.comments_count}{" "}

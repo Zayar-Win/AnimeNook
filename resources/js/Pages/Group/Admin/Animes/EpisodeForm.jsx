@@ -3,17 +3,26 @@ import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import FilePondUploader from "@/Components/FilePondUploader";
 import InputLabel from "@/Components/InputLabel";
+import Select from "@/Components/Select";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React from "react";
 
-const EpisodeForm = ({ anime, episode, type }) => {
+const EpisodeForm = ({ anime, episode, type, seasons }) => {
     const { data, setData, post, errors } = useForm({
         thumbnail: episode?.thumbnail ?? null,
         chapter_number: episode?.chapter_number ?? "",
         title: episode?.title ?? "",
         link: episode?.chapter_link ?? "",
         description: episode?.description ?? "",
+        season_id: episode?.season_id ?? null,
+    });
+
+    const seasonOptions = seasons.map((season) => {
+        return {
+            label: season.title,
+            value: season.id,
+        };
     });
 
     return (
@@ -72,6 +81,17 @@ const EpisodeForm = ({ anime, episode, type }) => {
                             label="Episode Link"
                             value={data.link}
                             onChange={(e) => setData("link", e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <InputLabel value="Season" />
+                        <Select
+                            onChange={(option) =>
+                                setData("season_id", option.value)
+                            }
+                            selected={data.season_id}
+                            options={seasonOptions}
+                            isDisabled={!seasonOptions.length}
                         />
                     </div>
                     <div className="col-span-2">
