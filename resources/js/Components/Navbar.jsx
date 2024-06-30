@@ -21,54 +21,68 @@ const Navbar = () => {
     const [searchModalOpen, setSearchModalOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const [isNotificationModalOpen,setIsNotificationModalOpen] = useState(false);
-    const [notifications,setNotifications]  = useState([]);
-    const [isLoading,setIsLoading]  = useState(false);
-    const [nextPageUrl,setNextPageUrl] = useState(null);
+    const [isNotificationModalOpen, setIsNotificationModalOpen] =
+        useState(false);
+    const [notifications, setNotifications] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [nextPageUrl, setNextPageUrl] = useState(null);
     const [isFirstRender, setIsFirstRender] = useState(true);
-    const [isOpenMobileNavbar,setIsOpenMobileNavbar] = useState(false);
+    const [isOpenMobileNavbar, setIsOpenMobileNavbar] = useState(false);
     const scrollRef = useRef(null);
     useEffect(() => {
         setIsFirstRender(false);
-    },[])
+    }, []);
     const handleCallback = useCallback((el) => {
-        if(!el){
-            if(scrollRef.current){
+        if (!el) {
+            if (scrollRef.current) {
                 scrollRef.current.disconnect();
             }
             return;
         }
         scrollRef.current = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting && !isLoading && nextPageUrl !== null && !isFirstRender){
+            entries.forEach((entry) => {
+                if (
+                    entry.isIntersecting &&
+                    !isLoading &&
+                    nextPageUrl !== null &&
+                    !isFirstRender
+                ) {
                     setIsLoading(true);
-                    axios.get(nextPageUrl + '&userId=' + auth.user.id).then(res => {
-                        setNotifications(prev => [...prev,...res.data.notifications.data]);
+                    axios
+                        .get(nextPageUrl + "&userId=" + auth.user.id)
+                        .then((res) => {
+                            setNotifications((prev) => [
+                                ...prev,
+                                ...res.data.notifications.data,
+                            ]);
 
-                        setNextPageUrl(res.data.notifications.next_page_url);
-                        setIsLoading(false);
-                    })
-                    
+                            setNextPageUrl(
+                                res.data.notifications.next_page_url
+                            );
+                            setIsLoading(false);
+                        });
                 }
-            })
-        })
+            });
+        });
         scrollRef.current.observe(el);
-    })
-    
+    });
+
     const closeSearchModal = () => {
         setSearch("");
         setSearchModalOpen(false);
     };
 
     const fetchNotifications = async () => {
-        const response = await axios.get(window.route('group.notis',{userId : auth?.user?.id}));
-        setNotifications(response.data.notifications.data)
-        setNextPageUrl(response.data.notifications.next_page_url)
-    }
+        const response = await axios.get(
+            window.route("group.notis", { userId: auth?.user?.id })
+        );
+        setNotifications(response.data.notifications.data);
+        setNextPageUrl(response.data.notifications.next_page_url);
+    };
 
     useEffect(() => {
         fetchNotifications();
-    },[])
+    }, []);
 
     const handleClickOutside = (e) => {
         if (e.target.parentNode.classList.contains("profile-container")) return;
@@ -80,17 +94,21 @@ const Navbar = () => {
     const notificationRef = useRef();
     useEffect(() => {
         const handleClickOutside = (e) => {
-            if(e.target.parentNode.classList.contains('notification-icon')) return;
-            if(notificationRef.current && !notificationRef.current.contains(e.target)){
+            if (e.target.parentNode.classList.contains("notification-icon"))
+                return;
+            if (
+                notificationRef.current &&
+                !notificationRef.current.contains(e.target)
+            ) {
                 setIsNotificationModalOpen(false);
             }
             return;
-        }
-        document.addEventListener('click',handleClickOutside);
+        };
+        document.addEventListener("click", handleClickOutside);
         return () => {
-            document.removeEventListener('click',handleClickOutside);
-        }
-    },[notificationRef])
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [notificationRef]);
     const ref = useDetectClickOutside({ onTriggered: closeSearchModal });
     const handleSearch = async () => {
         setSearchModalOpen(true);
@@ -111,27 +129,36 @@ const Navbar = () => {
             <div className="w-20 h-20 d-block shrink-0">
                 <Logo logo={LogoImg} />
             </div>
-            <div className={`fixed ${isOpenMobileNavbar ? 'translate-x-0' : 'translate-x-[2000px]'} transition-all bg-black z-[100] top-0 left-0 w-full h-[100vh]`}>
-                <div onClick={() => setIsOpenMobileNavbar(prev => !prev)} className="w-[50px] h-[50px] top-[30px] absolute right-[30px] cursor-pointer border-[1px] border-white rounded-full flex items-center justify-center">
-                    <Close className={'text-white w-[40px] h-[40px]'} />
+            <div
+                className={`fixed ${
+                    isOpenMobileNavbar
+                        ? "translate-x-0"
+                        : "translate-x-[2000px]"
+                } transition-all bg-black z-[100] top-0 left-0 w-full h-[100vh]`}
+            >
+                <div
+                    onClick={() => setIsOpenMobileNavbar((prev) => !prev)}
+                    className="w-[50px] h-[50px] top-[30px] absolute right-[30px] cursor-pointer border-[1px] border-white rounded-full flex items-center justify-center"
+                >
+                    <Close className={"text-white w-[40px] h-[40px]"} />
                 </div>
                 <ul className="flex flex-col items-center h-full justify-center gap-10 font-semibold text-white">
                     <li
-                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        onClick={() =>
+                            setIsOpenMobileNavbar(!isOpenMobileNavbar)
+                        }
                         className={`hover:text-primary trasnition-all ${
-                            component === "Group/Index"
-                                ? "text-primary"
-                                : null
+                            component === "Group/Index" ? "text-primary" : null
                         }`}
                     >
                         <Link href={window.route("group.home")}>Home</Link>
                     </li>
                     <li
-                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        onClick={() =>
+                            setIsOpenMobileNavbar(!isOpenMobileNavbar)
+                        }
                         className={`hover:text-primary trasnition-all ${
-                            component === "Group/Animes"
-                                ? "text-primary"
-                                : null
+                            component === "Group/Animes" ? "text-primary" : null
                         }`}
                     >
                         <Link href={window.route("group.animes")}>
@@ -139,7 +166,9 @@ const Navbar = () => {
                         </Link>
                     </li>
                     <li
-                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        onClick={() =>
+                            setIsOpenMobileNavbar(!isOpenMobileNavbar)
+                        }
                         className={`hover:text-primary trasnition-all ${
                             component === "Group/NewSeason"
                                 ? "text-primary"
@@ -149,7 +178,9 @@ const Navbar = () => {
                         <Link href="/">New Season</Link>
                     </li>
                     <li
-                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        onClick={() =>
+                            setIsOpenMobileNavbar(!isOpenMobileNavbar)
+                        }
                         className={`hover:text-primary trasnition-all ${
                             component === "Group/Popular"
                                 ? "text-primary"
@@ -159,7 +190,9 @@ const Navbar = () => {
                         <Link href="/">Popular</Link>
                     </li>
                     <li
-                        onClick={() => setIsOpenMobileNavbar(!isOpenMobileNavbar)}
+                        onClick={() =>
+                            setIsOpenMobileNavbar(!isOpenMobileNavbar)
+                        }
                         className={`hover:text-primary trasnition-all ${
                             component === "Group/SaveList"
                                 ? "text-primary"
@@ -298,10 +331,15 @@ const Navbar = () => {
                                 </Link>
                             ))}
                             <div className="my-2 hover:text-primary text-center text-sm font-medium underline">
-                                <Link onSuccess={() => {
-                                    setSearchModalOpen(false);
-                                    setSearch("");
-                                }} href={window.route('group.animes')}>Show More...</Link>
+                                <Link
+                                    onSuccess={() => {
+                                        setSearchModalOpen(false);
+                                        setSearch("");
+                                    }}
+                                    href={window.route("group.animes")}
+                                >
+                                    Show More...
+                                </Link>
                             </div>
                         </>
                     </div>
@@ -311,25 +349,21 @@ const Navbar = () => {
                 <ul className="flex items-center gap-10 font-semibold text-white">
                     <li
                         className={`hover:text-primary trasnition-all ${
-                            component === "Group/Index"
-                                ? "text-primary"
-                                : null
+                            component === "Group/Index" ? "text-primary" : null
                         }`}
                     >
                         <Link href={window.route("group.home")}>Home</Link>
                     </li>
                     <li
                         className={`hover:text-primary trasnition-all ${
-                            component === "Group/Animes"
-                                ? "text-primary"
-                                : null
+                            component === "Group/Animes" ? "text-primary" : null
                         }`}
                     >
                         <Link href={window.route("group.animes")}>
                             Anime List
                         </Link>
                     </li>
-                    <li
+                    {/* <li
                         className={`hover:text-primary trasnition-all ${
                             component === "Group/NewSeason"
                                 ? "text-primary"
@@ -346,7 +380,7 @@ const Navbar = () => {
                         }`}
                     >
                         <Link href="/">Popular</Link>
-                    </li>
+                    </li> */}
                     <li
                         className={`hover:text-primary trasnition-all ${
                             component === "Group/SaveList"
@@ -360,7 +394,10 @@ const Navbar = () => {
                     </li>
                 </ul>
             </nav>
-            <div onClick={() => setIsOpenMobileNavbar(prev => !prev)} className="md:hidden flex items-center gap-4">
+            <div
+                onClick={() => setIsOpenMobileNavbar((prev) => !prev)}
+                className="md:hidden flex items-center gap-4"
+            >
                 <div>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -391,10 +428,13 @@ const Navbar = () => {
             <div className="xl:block hidden">
                 {auth.user ? (
                     <div className="flex items-center gap-2">
-                        <div onClick={(e) => {
-                            e.stopPropagation();
-                            setIsNotificationModalOpen(prev => !prev)
-                        }} className="relative notification-icon">
+                        <div
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsNotificationModalOpen((prev) => !prev);
+                            }}
+                            className="relative notification-icon"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="cursor-pointer"
@@ -405,23 +445,42 @@ const Navbar = () => {
                             >
                                 <path d="M12 22c1.1 0 2-.9 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"></path>
                             </svg>
-                            
                         </div>
                         <div className="relative w-0 h-[20px]">
-                            <div ref={notificationRef}  className={`absolute  bg-white ${isNotificationModalOpen ? 'block' : 'hidden'} overflow-auto top-[140%] z-[100] shadow-lg rounded-lg translate-x-[20%] right-0 w-[400px] h-[400px]`}>
+                            <div
+                                ref={notificationRef}
+                                className={`absolute  bg-white ${
+                                    isNotificationModalOpen ? "block" : "hidden"
+                                } overflow-auto top-[140%] z-[100] shadow-lg rounded-lg translate-x-[20%] right-0 w-[400px] h-[400px]`}
+                            >
                                 <div>
                                     <div className="flex  py-3 px-3 items-center justify-between">
-                                        <h1 className="text-xl font-bold">Notifications</h1>
-                                        <p className={'cursor-pointer hover:underline'}>Read All</p>
+                                        <h1 className="text-xl font-bold">
+                                            Notifications
+                                        </h1>
+                                        <p
+                                            className={
+                                                "cursor-pointer hover:underline"
+                                            }
+                                        >
+                                            Read All
+                                        </p>
                                     </div>
-                                    {
-                                        notifications.map(notification => (
-                                            notification.notifiable_type === 'App\\Models\\User' ? 
-                                                <VideoUploadNotification key={notification.id}  notification={notification} />
-                                                : null
-                                        ))
-                                    }
-                                    <button className="opacity-0" ref={handleCallback}>More</button>
+                                    {notifications.map((notification) =>
+                                        notification.notifiable_type ===
+                                        "App\\Models\\User" ? (
+                                            <VideoUploadNotification
+                                                key={notification.id}
+                                                notification={notification}
+                                            />
+                                        ) : null
+                                    )}
+                                    <button
+                                        className="opacity-0"
+                                        ref={handleCallback}
+                                    >
+                                        More
+                                    </button>
                                 </div>
                             </div>
                         </div>
