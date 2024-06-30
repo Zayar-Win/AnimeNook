@@ -7,16 +7,19 @@
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         @php
+        use App\Models\Group;
             $group = request()->route('group');
+            if(gettype($group) === 'string'){
+                $group = Group::where('subdomain',$group)->first();
+            }
         @endphp
         <style>
             :root {
-            --primary-color: {{ $agency->primary_color ?? '#ED6400' }};
+            --primary-color: {{ $group->groupSetting->primary_color ?? '#ED6400' }};
             /* Default primary color */
             --secondary-color: {{ $group->secondary_color ?? 'black' }};
             /* Default secondary color */
         }
-
         </style>
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

@@ -25,25 +25,25 @@ const SaveList = ({collections}) => {
                 <SaveListIcon className={'w-8 h-8 text-white'} />
                 <h1 className='text-3xl font-medium'>My Lists</h1>
             </div>
-            <div className='w-[70%]'>
+            <div className='xl:w-[70%] w-[95%]'>
                 <div className='border-b-2 text-white border-b-gray-500'> 
-                    <div className='flex items-center justify-center'>
+                    <div className='flex items-center xs:gap-0 gap-3 justify-center'>
                         {
                             collections.map(collection => (
                                 <Link href={window.route('group.savelist',{tab:collection.name})} key={collection.id}>
-                                    <div className={`px-12 py-4 hover:bg-gray-900 border-b-[3px] ${activeTab === collection.name ? 'border-b-primary' : 'border-b-transparent'}  cursor-pointer uppercase font-bold`}>{collection.name}</div>
+                                    <div className={`sm:px-12 xs:px-8 px-2 py-4 hover:bg-gray-900 border-b-[3px] ${activeTab === collection.name ? 'border-b-primary' : 'border-b-transparent'}  cursor-pointer uppercase font-bold`}>{collection.name}</div>
                                 </Link>
                             ))
                         }
                         <Link href={window.route('group.savelist',{tab:'history'})}>
-                            <div  className={`px-12 py-4 hover:bg-gray-900 border-b-[3px] ${activeTab === 'history' ? 'border-b-primary' : 'border-b-transparent'} cursor-pointer uppercase font-bold`}>History</div>
+                            <div  className={`sm:px-12 xs:px-8 px-4 py-4 hover:bg-gray-900 border-b-[3px] ${activeTab === 'history' ? 'border-b-primary' : 'border-b-transparent'} cursor-pointer uppercase font-bold`}>History</div>
                         </Link>
                     </div>
                 </div>
                 <div>
                     {
                         collectionItems.length > 0 ?
-                            <div className='grid grid-cols-3 gap-5 mt-10'>
+                            <div className='grid md:grid-cols-3 sms:grid-cols-2 gap-5 mt-10'>
                                 {
                                     collectionItems.map(item => (
                                         <SaveItemCard itemId={item.id} collectionId={collection.id} type={item?.item_type === 'App\\Models\\Anime' ? 'anime' : 'manga'} key={item.id} item={item.item} />

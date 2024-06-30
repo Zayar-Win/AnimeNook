@@ -15,28 +15,71 @@ class AnimeController extends Controller
             'search' => request()->get('search'),
             'sort' => request()->get('sort'),
             'filter' => request()->get('filter'),
+            'tags' => request()->get('tags'),
+            'isApi' => request()->get('isApi')
         ];
+
         $animes = Anime::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
                 ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
         })->when($filters['sort'] === 'newest', function ($query) {
             $query->orderBy('created_at', 'desc');
         })
+            ->when($filters['tags'] ?? null, function ($query, $tags) {
+                $tags = explode(',', $tags);
+                $query->whereHas('tags', function ($query) use ($tags) {
+                    $query->whereIn('name', $tags);
+                });
+            })
             ->when($filters['sort'] === 'popularity', function ($query) {
                 $query->orderBy('views_count', 'desc');
-            })->get();
+            })->paginate(12, ['*'], 'animepage');
         $mangas = Manga::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
                 ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
-        })->get();
+        })->when($filters['sort'] === 'newest', function ($query) {
+            $query->orderBy('created_at', 'desc');
+        })
+            ->when($filters['tags'] ?? null, function ($query, $tags) {
+                $tags = explode(',', $tags);
+                $query->whereHas('tags', function ($query) use ($tags) {
+                    $query->whereIn('name', $tags);
+                });
+            })
+            ->when($filters['sort'] === 'popularity', function ($query) {
+                $query->orderBy('views_count', 'desc');
+            })->paginate(12, ['*'], 'mangapage');
 
-        return inertia('Group/Animes', [
-            'data' => [
-                'animes' => $filters['filter'] === 'animes' || $filters['filter'] === null ? $animes : [],
-                'mangas' => $filters['filter'] === 'mangas' || $filters['filter'] === null ? $mangas : []
+        $data = collect($animes->items())->concat($mangas->items())->shuffle();
+        if ($filters['filter'] === 'animes') {
+            $data = $animes->items();
+        }
+        if ($filters['filter'] === 'mangas') {
+            $data = $mangas->items();
+        }
+        $paginateData = [
+            'anime' => [
+                'currentPage' => $animes->currentPage(),
+                'lastPage' => $animes->lastPage()
             ],
-            'filters' => $filters,
-        ]);
+            'manga' => [
+                'currentPage' => $mangas->currentPage(),
+                'lastPage' => $animes->lastPage()
+            ]
+        ];
+        if (!$filters['isApi']) {
+            return inertia('Group/Animes', [
+                'data' => $data,
+                'paginateData' => $paginateData,
+                'filters' => $filters,
+                'tags' => $group->tags()->get()
+            ]);
+        } else {
+            return response()->json([
+                'data' => $data,
+                'paginateData' => $paginateData,
+            ]);
+        }
     }
 
     public function likeOrUnlike(Group $group, Anime $anime)

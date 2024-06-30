@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('group_id');
+            $table->unsignedBigInteger('comment_id')->nullable();
             $table->bigInteger('likes_count')->default(0);
             $table->text('body');
             $table->unsignedBigInteger('commentable_id');

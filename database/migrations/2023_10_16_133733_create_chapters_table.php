@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('group_id');
             $table->unsignedBigInteger('chapterable_id');
+            $table->unsignedBigInteger('season_id')->nullable();
             $table->string('chapterable_type');
             $table->bigInteger('chapter_number');
             $table->enum('type', ['link', 'pdf']);
@@ -23,6 +24,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->text('title');
             $table->text('chapter_link')->nullable();
+            $table->text('ouo_chapter_link')->nullable();
             $table->text('thumbnail')->nullable();
             $table->timestamps();
         });

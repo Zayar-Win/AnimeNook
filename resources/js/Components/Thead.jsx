@@ -18,7 +18,7 @@ const Thead = ({ theadClasses, columns }) => {
                                 //     (datas.data.length || datas.length)
                                 // }
                                 // onChange={selectAllOrCancel}
-                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500  focus:ring-2 "
                             />
                             <label
                                 htmlFor="checkbox-all-search"
@@ -32,9 +32,7 @@ const Thead = ({ theadClasses, columns }) => {
                 {columns.map((column) => (
                     <th
                         key={column.field}
-                        className={`font-bolder text-[15px] px-6 py-3 capitalize text-black text-left ${
-                            column.minWidth ?? "min-w-[180px]"
-                        }`}
+                        className={`font-bolder text-[15px] px-6 py-3 capitalize text-black text-left min-w-[180px]`}
                     >
                         {column.field}
                     </th>

@@ -3,7 +3,6 @@
 namespace App\helpers;
 
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 

@@ -31,7 +31,10 @@ class DatabaseSeeder extends Seeder
             UserChapterSeeder::class,
             CommentSeeder::class,
             StatusSeeder::class,
-            RatingSeeder::class
+            RatingSeeder::class,
+            PlanSeeder::class,
+            GroupSettingSeeder::class,
+            SeasonSeeder::class,
         ]);
     }
 }

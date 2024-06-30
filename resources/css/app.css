@@ -3,8 +3,7 @@
 @tailwind utilities;
 
 body {
-    /* width:100%; */
-    /* overflow-x: hidden; */
+    overflow-x: hidden;
 }
 * {
     box-sizing: border-box !important;
@@ -90,6 +89,15 @@ body {
     box-shadow: none !important;
 }
 
+.react-datepicker-wrapper {
+    width: 100% !important;
+}
+.react-datepicker__input-container input {
+    width: 100% !important;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.5rem;
+}
+
 .swiper-pagination-bullet {
     width: 25px !important;
     height: 4px !important;
@@ -111,6 +119,19 @@ body {
     animation: shaking 0.3s linear 1;
 }
 
+.tags::-webkit-scrollbar {
+    display: none;
+}
+
+.tags {
+    scroll-snap-type: inline mandatory;
+    touch-action: pan-y;
+}
+
+.tags > * {
+    scroll-snap-align: start;
+}
+
 @keyframes shaking {
     0% {
         transform: translateX(0px);
@@ -126,5 +147,15 @@ body {
     }
     100% {
         transform: translateX(0px);
+    }
+}
+
+.swiper-wrapper {
+    align-items: stretch;
+}
+
+@media (max-width: 768px) {
+    .react-stars span {
+        font-size: 23px !important;
     }
 }

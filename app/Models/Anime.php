@@ -14,7 +14,7 @@ class Anime extends Model
     protected $with = ['status', 'tags'];
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSaveByCurrentUser'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -23,12 +23,21 @@ class Anime extends Model
             ->saveSlugsTo('slug');
     }
 
+    public function getTypeAttribute()
+    {
+        return 'anime';
+    }
+
     public function getLatestWatchedChapterAttribute()
     {
+        if (!auth()->check()) {
+            return null;
+        }
         $group = request()->route('group');
         if (gettype($group) !== 'object') {
             $group = Group::where('subdomain', $group)->first();
         }
+        if (!$group) return null;
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)
@@ -39,7 +48,22 @@ class Anime extends Model
         return $latestWatchedChapter;
     }
 
-    public function getIsSaveByCurrentUserAttribute()
+    public function isViewedByCurrentUser()
+    {
+        if (auth()->check()) {
+            return $this->views()->where('user_id', auth()->id())->exists();
+        } else {
+            $anonymous_identifier = session()->get('anonymous_identifier');
+            if ($anonymous_identifier) {
+
+                return $this->views()->where('anonymous_identifier', $anonymous_identifier)->exists();
+            } else {
+                return false;
+            }
+        }
+    }
+
+    public function getIsSavedByCurrentUserAttribute()
     {
         if (!auth()->check()) {
             return false;
@@ -76,6 +100,10 @@ class Anime extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
+    public function seasons(){
+        return $this->morphMany(Season::class,'seasonable');
+    }
+
     public function ratings()
     {
         return $this->morphMany(Rating::class, 'ratingable');
@@ -94,5 +122,10 @@ class Anime extends Model
     public function collectionItems()
     {
         return $this->morphMany(CollectionItems::class, 'item');
+    }
+
+    public function views()
+    {
+        return $this->morphMany(View::class, 'viewable');
     }
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import AdminLayout from "../../../../Layouts/AdminLayout";
+import GroupAdminLayout from "../../../../Layouts/GroupAdminLayout";
 import Input from "@/Components/Admin/Input.jsx";
 import Button from "@/Components/Button";
 import { useForm } from "@inertiajs/react";
@@ -45,4 +45,4 @@ const SubscriberForm = ({ subscriber }) => {
 
 export default SubscriberForm;
 
-SubscriberForm.layout = (page) => <AdminLayout>{page}</AdminLayout>;
+SubscriberForm.layout = (page) => <GroupAdminLayout>{page}</GroupAdminLayout>;
