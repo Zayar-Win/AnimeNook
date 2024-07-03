@@ -45,6 +45,9 @@ use Illuminate\Support\Facades\Route;
 
 $isProduction = config('app.env') === 'production';
 // URL::defaults(['group' => 'delta']);
+Route::get('/',function(){
+    return inertia('Home');
+});
 if ($isProduction) {
     Route::domain('{group:subdomain}' . config('app.url'))->name('group')->group(function () {
         Route::get('/', function () {

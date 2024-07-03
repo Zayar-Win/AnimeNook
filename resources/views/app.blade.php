@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'AnimeNook') }}</title>
 
         @php
         use App\Models\Group;
@@ -22,6 +22,7 @@
         }
         </style>
         <!-- Fonts -->
+         <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSE3eqXFJ5p0I63-LffwzHVorIJob3GgUMSjQ&usqp=CAU" type="image/x-icon">
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
