@@ -282,7 +282,11 @@ const VideoDetail = ({ anime, seasons }) => {
                             <div className="grid lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 gap-5">
                                 {anime?.chapters?.map((chapter, i) => (
                                     <a
-                                        href={chapter.chapter_link || ""}
+                                        href={
+                                            user.type === "free"
+                                                ? chapter.ouo_chapter_link
+                                                : chapter.chapter_link || ""
+                                        }
                                         key={i}
                                     >
                                         <div>

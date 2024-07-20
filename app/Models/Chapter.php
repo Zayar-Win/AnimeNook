@@ -14,6 +14,8 @@ class Chapter extends Model
 
     protected $appends = ['type'];
 
+    protected $hidden =[];
+
     public function chapterable()
     {
         return $this->morphTo();
@@ -30,7 +32,7 @@ class Chapter extends Model
 
     protected function getChapterLinkAttribute(){
         $group = $this->group();
-        if($group->plan->name === 'premium'){
+        if($group && $group->plan->name === 'premium'){
             return $this->attributes['chapter_link'];
         }else{
             return $this->ouo_chapter_link;
@@ -49,5 +51,6 @@ class Chapter extends Model
 
     public function season(){
         return $this->belongsTo(Season::class);
-        }
+    }
+
 }
