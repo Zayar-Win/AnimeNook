@@ -50,7 +50,7 @@ class Uploader
             Storage::delete($path);
         }
     }
-
+ 
     public function changeUrlToPath($url)
     {
         return parse_url($url)['path'];

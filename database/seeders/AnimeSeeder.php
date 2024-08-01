@@ -29,10 +29,13 @@ class AnimeSeeder extends Seeder
     {
         Anime::factory()->create([
             'is_trending' => true,
+            'thumbnail' => 'https://m.media-amazon.com/images/M/MV5BMjcxMDg4MDUtMmQ2NC00ZDIyLTkyMjEtMDBiY2NiOTA2NWVmXkEyXkFqcGdeQWpybA@@._V1_.jpg',
             'background_image' => 'https://1.bp.blogspot.com/-x9pSUkrvOo8/YTEZrYf4f_I/AAAAAAAAKVE/q4S1kjbvATMQyuGBzuTx-QQxIYfBZRDkgCPcBGAsYHg/w919/my-hero-academia-battle-4k-uhdpaper.com-1001.0_b-thumbnail.jpg'
         ]);
+
         Anime::factory()->create([
             'is_trending' => true,
+            'thumbnail' => 'https://staticg.sportskeeda.com/editor/2023/09/97d5f-16951446392189.png?w=640',
             'background_image' => 'https://wallpapercg.com/download/ichigo-kurosaki-3840x2160-14945.jpeg'
         ]);
         Anime::factory()->create([

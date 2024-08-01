@@ -4,7 +4,7 @@ import MovieCard from "@/Components/MovieCard";
 import NewEpisodeCard from "@/Components/NewEpisodeCard";
 import SectionContainer from "@/Components/SectionContainer";
 // import Tag from '@/Components/Tag'
-import { Link, router } from "@inertiajs/react";
+import { Link, router, useForm } from "@inertiajs/react";
 import React from "react";
 import UserLayout from "@/Layouts/UserLayout";
 import Carousel from "@/Components/Carousel/Index";
@@ -42,6 +42,10 @@ function Index({
             }
         );
     };
+
+    const {data,setData,post,reset} = useForm({
+        email : ''
+    })
     return (
         <>
             <SectionContainer>
@@ -877,6 +881,21 @@ function Index({
                             />
                         </div>
                     </div>
+                </div>
+            </SectionContainer>
+            <SectionContainer className={"bg-[#0D0D0D] text-white py-32 text-center "}>
+                <h1 className="text-4xl font-black">Subscribe Our Latest Updates</h1>
+                <p className="pt-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Iusto, tempore amet. Sequi explicabo aperiam aliquid praesentium fugiat porro, voluptates a.</p>
+                <div className="w-[40%] shadow-md flex bg-white rounded-md mx-auto mt-10 py-1 px-3" >
+                    <input placeholder="Enter your email address" type="text" value={data.email} onChange={(e) => setData('email',e.target.value)} className="w-full focus:ring-0 outline-none text-black border-none" />
+                    <button onClick={() => {
+                        post(window.route('group.subscriber.store'),{
+                            preserveScroll : true,
+                            onSuccess : () => {
+                                reset();
+                            }
+                        });
+                    }} className="bg-primary py-3 px-8 rounded-md">Subscribe</button>
                 </div>
             </SectionContainer>
         </>

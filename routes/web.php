@@ -22,6 +22,7 @@ use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
+use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\GroupMiddleware;
 use App\Http\Middleware\SubscriptionMiddleware;
@@ -45,7 +46,7 @@ use Illuminate\Support\Facades\Route;
 
 $isProduction = config('app.env') === 'production';
 // URL::defaults(['group' => 'delta']);
-Route::get('/',function(){
+Route::get('/', function () {
     return inertia('Home');
 });
 if ($isProduction) {
@@ -109,6 +110,7 @@ if ($isProduction) {
             ]);
         })->name('home');
         Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
+        Route::post('/subscriber/store', [SubscriberController::class,'store'])->name('subscriber.store');
         Route::middleware('auth')->group(function () {
             Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
             Route::post('/comments/update', [CommentController::class, 'update'])->name('comment.update');
@@ -179,15 +181,15 @@ if ($isProduction) {
             //Ouo Fail Links
 
             // Season Routes
-            Route::get('/admin/animes/{anime:slug}/seasons/create',[GroupAdminSeasonController::class,'animeSeasonCreate'])->name('anime.seasons.create');
-            Route::post('/admin/seasons/store',[GroupAdminSeasonController::class,'store'])->name('seasons.store');
-            Route::get('/admin/animes/{anime:slug}/seasons/{season}/edit',[GroupAdminSeasonController::class,'animeSeasonEdit'])->name('anime.seasons.edit');
-            Route::post('/admin/seasons/{season}/update',[GroupAdminSeasonController::class,'seasonUpdate'])->name('seasons.update');
-            Route::post('/admin/seasons/{season}/delete',[GroupAdminSeasonController::class,'delete'])->name('seasons.delete');
-            
-            Route::get('/admin/mangas/{manga:slug}/seasons/create',[GroupAdminSeasonController::class,'mangaSeasonCreate'])->name('manga.seasons.create');
-            Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit',[GroupAdminSeasonController::class,'mangaSeasonEdit'])->name('manga.seasons.edit');
-            });
+            Route::get('/admin/animes/{anime:slug}/seasons/create', [GroupAdminSeasonController::class, 'animeSeasonCreate'])->name('anime.seasons.create');
+            Route::post('/admin/seasons/store', [GroupAdminSeasonController::class, 'store'])->name('seasons.store');
+            Route::get('/admin/animes/{anime:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'animeSeasonEdit'])->name('anime.seasons.edit');
+            Route::post('/admin/seasons/{season}/update', [GroupAdminSeasonController::class, 'seasonUpdate'])->name('seasons.update');
+            Route::post('/admin/seasons/{season}/delete', [GroupAdminSeasonController::class, 'delete'])->name('seasons.delete');
+
+            Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
+            Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
+        });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');

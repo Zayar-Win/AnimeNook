@@ -12,8 +12,10 @@ const Index = ({group}) => {
         logo : group?.logo || '',
         name : group?.name || '',
         primary_color : group?.group_setting.primary_color || '',
-        social_links : group?.group_setting?.social_links || {},
+        social_links :typeof group?.group_setting?.social_links === 'string' ? JSON.parse(group?.group_setting?.social_links) : group?.group_setting?.social_links || {},
     });
+
+
     const [logoUrl,setLogoUrl] = useState(group?.logo);
     useEffect(() => {
         if(groupData.logo && typeof groupData.logo !== 'string'){
