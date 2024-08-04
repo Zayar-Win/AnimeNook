@@ -90,18 +90,20 @@ class Anime extends Model
         return $this->morphMany(Chapter::class, 'chapterable');
     }
 
-    public function tags()
-    {
-        return $this->morphToMany(Tag::class, 'taggables');
-    }
 
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function seasons(){
-        return $this->morphMany(Season::class,'seasonable');
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function seasons()
+    {
+        return $this->morphMany(Season::class, 'seasonable');
     }
 
     public function ratings()

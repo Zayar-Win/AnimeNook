@@ -202,7 +202,7 @@ const VideoDetail = ({ anime, seasons }) => {
                                         />
                                     </div>
                                     <Button
-                                        text={`Start Watching ${anime?.chapters[0]?.name}`}
+                                        text={`Start Watching Episode 1`}
                                         className={
                                             "bg-primary rounded-none mt-3 justify-center"
                                         }
@@ -283,9 +283,9 @@ const VideoDetail = ({ anime, seasons }) => {
                                 {anime?.chapters?.map((chapter, i) => (
                                     <a
                                         href={
-                                            user.type === "free"
+                                            user &&  user?.type === "free"
                                                 ? chapter.ouo_chapter_link
-                                                : chapter.chapter_link || ""
+                                                : chapter.chapter_link || chapter.ouo_chapter_link
                                         }
                                         key={i}
                                     >

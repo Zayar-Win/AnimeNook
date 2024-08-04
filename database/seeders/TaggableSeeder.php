@@ -16,10 +16,10 @@ class TaggableSeeder extends Seeder
     public function run(): void
     {
         Taggable::factory(10)->create([
-            'taggables_type' => Anime::class,
+            'taggable_type' => Anime::class,
         ]);
         Taggable::factory(10)->create([
-            'taggables_type' => Manga::class,
+            'taggable_type' => Manga::class,
         ]);
     }
 }

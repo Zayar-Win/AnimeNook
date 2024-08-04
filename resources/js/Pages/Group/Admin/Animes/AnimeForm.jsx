@@ -42,7 +42,7 @@ const columns = [
     },
 ];
 
-const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
+const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
     const [statusOptions, setStatusOptions] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedEpisode, setSelectedEpisode] = useState(null);
@@ -53,7 +53,16 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
         name: anime?.name ?? "",
         status_id: anime?.status_id ?? 1,
         description: anime?.description ?? "",
+        tag_ids:
+            anime?.tags?.map((tag) => {
+                return {
+                    value: tag.id,
+                    label: tag.name,
+                };
+            }) ?? [],
     });
+
+    const [tagOptions, setTagOptions] = useState([]);
     const deleteHandler = () => {
         router.post(
             window.route("group.admin.animes.episodes.delete", {
@@ -78,6 +87,17 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
                 };
             });
             setStatusOptions(options);
+        }
+    }, []);
+    useEffect(() => {
+        if (tags.length > 0) {
+            const options = tags.map((tag) => {
+                return {
+                    label: tag.name,
+                    value: tag.id,
+                };
+            });
+            setTagOptions(options);
         }
     }, []);
     return (
@@ -152,6 +172,18 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
                                     setData("status_id", status.value)
                                 }
                                 errorMessage={errors.status}
+                            />
+                        </div>
+                        <div>
+                            <Select
+                                label={"Tags"}
+                                isMulti={true}
+                                options={tagOptions}
+                                selected={data.tag_ids}
+                                onChange={(option) =>
+                                    setData("tag_ids", [...option])
+                                }
+                                errorMessage={errors.tag}
                             />
                         </div>
                         <div className="col-span-2">

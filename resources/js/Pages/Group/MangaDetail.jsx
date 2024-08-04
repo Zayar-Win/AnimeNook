@@ -162,8 +162,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 text={
                                     manga?.latestWatchedChapter
                                         ? `Continue Reading Ep${manga?.latestWatchedChapter.chapter_number}`
-                                        : "Start Reading " +
-                                          manga.chapters[0]?.name
+                                        : "Start Reading Chpapter One"
                                 }
                                 type="button"
                                 Icon={
@@ -297,7 +296,15 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                     {manga?.chapters.length > 0 ? (
                         <div className="grid lg:grid-cols-4 md:grid-cols-3 xs:grid-cols-2 grid-cols-1 mt-4 gap-5 pb-5">
                             {manga?.chapters.map((chapter, i) => (
-                                <a key={i} href={chapter.chapter_link}>
+                                <a
+                                    key={i}
+                                    href={
+                                        user && user?.type === "free"
+                                            ? chapter.ouo_chapter_link
+                                            : chapter.chapter_link ||
+                                              chapter.ouo_chapter_link
+                                    }
+                                >
                                     <div className="bg-gray-100 cursor-pointer px-5 py-4 rounded-lg">
                                         <h3 className="text-md text-black font-semibold">
                                             {chapter?.title}

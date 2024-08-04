@@ -70,7 +70,7 @@ class Manga extends Model
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, 'taggables');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
     public function comments()
     {
@@ -117,8 +117,9 @@ class Manga extends Model
         return $this->morphMany(CollectionItems::class, 'item');
     }
 
-    public function seasons(){
-        return $this->morphMany(Season::class,'seasonable');
+    public function seasons()
+    {
+        return $this->morphMany(Season::class, 'seasonable');
     }
 
     public function views()

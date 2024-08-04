@@ -9,6 +9,8 @@ use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\OuoFailLink;
 use App\Models\Status;
+use App\Models\Tag;
+use App\Models\Taggable;
 use App\Notifications\NewEpisodeUpload;
 use Exception;
 use GuzzleHttp\Client;
@@ -29,11 +31,12 @@ class GroupAdminAnimeController extends Controller
         ]);
     }
 
-    public function create(Group $group,Anime $anime)
+    public function create(Group $group, Anime $anime)
     {
         return inertia("Group/Admin/Animes/AnimeForm", [
             'type' => 'create',
             'statuses' => Status::all(),
+            'tags' => Tag::all()
         ]);
     }
 
@@ -45,11 +48,17 @@ class GroupAdminAnimeController extends Controller
             'transparent_background' => ['nullable'],
             'name' => ['required'],
             'status_id' => ['required'],
-            'description' => ['required']
+            'description' => ['required'],
+            'tag_ids' => ['required']
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
+        $tag_ids = collect($validatedData['tag_ids'])->map(function ($tag) {
+            return $tag['value'];
+        });
+
+        unset($validatedData['tag_ids']);
         if (isset($validatedData['background_image']) && gettype($validatedData['background_image']) !== 'string') {
             $validatedData['background_image'] = $this->uploader->upload($validatedData['background_image'], 'animes');
         }
@@ -57,19 +66,30 @@ class GroupAdminAnimeController extends Controller
             $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
-        Anime::create($validatedData);
+        $anime = Anime::create($validatedData);
+        if ($tag_ids->count()) {
+            foreach ($tag_ids as $id) {
+                Taggable::firstOrCreate([
+                    'taggable_id' => $anime->id,
+                    'taggable_type' => Anime::class,
+                    'tag_id' => $id
+                ]);
+            }
+        }
         return redirect(route('group.admin.animes'))->with('success', 'Anime Series Created Successful.');
     }
 
     public function edit(Group $group, Anime $anime)
     {
         $episodes = Chapter::with('season')->where('chapterable_type', Anime::class)->where('chapterable_id', $anime->id)->paginate(10);
+        $anime = Anime::where('id', $anime->id)->with(['tags'])->first();
         return inertia('Group/Admin/Animes/AnimeForm', [
             'anime' => $anime,
             'type' => 'edit',
             'episodes' => $episodes,
             'statuses' => Status::all(),
-            'seasons' => $anime->seasons()->with('seasonable')->withCount('chapters')->paginate(15)
+            'seasons' => $anime->seasons()->with('seasonable')->withCount('chapters')->paginate(15),
+            'tags' => Tag::all()
         ]);
     }
 
@@ -81,11 +101,25 @@ class GroupAdminAnimeController extends Controller
             'transparent_background' => ['nullable'],
             'name' => ['required'],
             'status_id' => ['required'],
+            'tag_ids' => ['required'],
             'description' => ['required']
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
+        $tag_ids = collect($validatedData['tag_ids'])->map(function ($tag) {
+            return $tag['value'];
+        });
+        if ($tag_ids->count()) {
+            foreach ($tag_ids as $id) {
+                Taggable::firstOrCreate([
+                    'taggable_id' => $anime->id,
+                    'taggable_type' => Anime::class,
+                    'tag_id' => $id
+                ]);
+            }
+        }
+        unset($validatedData['tag_ids']);
         if (isset($validatedData['background_image']) && gettype($validatedData['background_image']) !== 'string') {
             $validatedData['background_image'] = $this->uploader->upload($validatedData['background_image'], 'animes');
         }
@@ -131,7 +165,7 @@ class GroupAdminAnimeController extends Controller
         $validatedData['type']  = 'link';
         $link = $validatedData['link'];
         $validatedData['chapter_link'] = $link;
-        if($group->plan->name !== 'premium'){
+        if ($group->plan->name !== 'premium') {
             $generator = new ShortenLinkGenerator();
             try {
                 $link = $generator->generate($validatedData['link']);
@@ -178,7 +212,7 @@ class GroupAdminAnimeController extends Controller
         $link = $validatedData['link'];
         if ($episode->ouo_chapter_link !== $validatedData['link']) {
             $validatedData['chapter_link'] = $link;
-            if($group->plan->namex !== 'premium'){
+            if ($group->plan->namex !== 'premium') {
                 $generator = new ShortenLinkGenerator();
                 try {
                     $link = $generator->generate($link);

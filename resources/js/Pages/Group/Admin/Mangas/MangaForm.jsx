@@ -42,7 +42,7 @@ const columns = [
     },
 ];
 
-const MangaForm = ({ type, manga, statuses, chapters, seasons }) => {
+const MangaForm = ({ type, manga, statuses, chapters, seasons, tags }) => {
     const [statusOptions, setStatusOptions] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
@@ -53,7 +53,15 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons }) => {
         name: manga?.name ?? "",
         status_id: manga?.status_id ?? 1,
         description: manga?.description ?? "",
+        tag_ids:
+            manga?.tags?.map((tag) => {
+                return {
+                    value: tag.id,
+                    label: tag.name,
+                };
+            }) ?? [],
     });
+    const [tagOptions, setTagOptions] = useState([]);
     const deleteHandler = () => {
         router.post(
             window.route("group.admin.mangas.chapters.delete", {
@@ -80,6 +88,17 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons }) => {
             setStatusOptions(options);
         }
     }, []);
+    useEffect(() => {
+        if (tags.length > 0) {
+            const options = tags.map((tag) => {
+                return {
+                    label: tag.name,
+                    value: tag.id,
+                };
+            });
+            setTagOptions(options);
+        }
+    }, []);
     return (
         <div>
             <div className="w-[90%] mx-auto">
@@ -91,7 +110,11 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons }) => {
                     onSubmit={(e) => {
                         e.preventDefault();
                         type === "edit"
-                            ? post(window.route("group.admin.mangas.update"))
+                            ? post(
+                                  window.route("group.admin.mangas.update", {
+                                      manga,
+                                  })
+                              )
                             : post(window.route("group.admin.mangas.store"));
                     }}
                 >
@@ -148,6 +171,18 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons }) => {
                                     setData("status_id", status.value)
                                 }
                                 errorMessage={errors.status}
+                            />
+                        </div>
+                        <div>
+                            <Select
+                                label={"Tags"}
+                                isMulti={true}
+                                options={tagOptions}
+                                selected={data.tag_ids}
+                                onChange={(option) =>
+                                    setData("tag_ids", [...option])
+                                }
+                                errorMessage={errors.tag}
                             />
                         </div>
                         <div className="col-span-2">

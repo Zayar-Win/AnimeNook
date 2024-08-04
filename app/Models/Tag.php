@@ -21,10 +21,10 @@ class Tag extends Model
 
     public function animes()
     {
-        return $this->morphedByMany(Anime::class, 'taggables');
+        return $this->morphedByMany(Anime::class, 'taggable');
     }
     public function mangas()
     {
-        return $this->morphedByMany(Manga::class, 'taggables');
+        return $this->morphedByMany(Manga::class, 'taggable');
     }
 }
