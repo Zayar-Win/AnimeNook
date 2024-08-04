@@ -78,7 +78,7 @@ class GroupAdminMangaController extends Controller
 
     public function edit(Group $group, Manga $manga)
     {
-        $chapters = Chapter::with('season')->where('chapterable_id', $manga->id)->where("chapterable_type", Manga::class)->where('group_id', $group->id)->latest()->paginate(15);
+        $chapters = Chapter::with('season')->where('chapterable_id', $manga->id)->where("chapterable_type", Manga::class)->where('group_id', $group->id)->latest()->paginate(20);
         $manga = Manga::where('id', $manga->id)->with(['tags'])->first();
         return inertia('Group/Admin/Mangas/MangaForm', [
             'type' => 'edit',

@@ -81,7 +81,7 @@ class GroupAdminAnimeController extends Controller
 
     public function edit(Group $group, Anime $anime)
     {
-        $episodes = Chapter::with('season')->where('chapterable_type', Anime::class)->where('chapterable_id', $anime->id)->paginate(10);
+        $episodes = Chapter::with('season')->where('chapterable_type', Anime::class)->where('chapterable_id', $anime->id)->paginate(20);
         $anime = Anime::where('id', $anime->id)->with(['tags'])->first();
         return inertia('Group/Admin/Animes/AnimeForm', [
             'anime' => $anime,
