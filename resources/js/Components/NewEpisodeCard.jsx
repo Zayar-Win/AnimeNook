@@ -4,7 +4,7 @@ import React from "react";
 const NewEpisodeCard = ({ episode }) => {
     return (
         <a href={episode.chapter_link} target="_blank" rel="noreferrer">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center lg:flex-row flex-col gap-4">
                 <div className="basis-[40%]">
                     <div className="w-[85%] translate-y-2 relative">
                         <img
@@ -23,16 +23,16 @@ const NewEpisodeCard = ({ episode }) => {
                             {episode?.chapterable?.title}
                         </h1>
                         <span className="text-gray-500 font-medium">
-                        Episode {episode?.chapter_number}
+                            Episode {episode?.chapter_number}
                         </span>
                         <span className="block font-bold line-clamp-2">
                             {episode?.title}
                         </span>
                         {episode?.chapterable?.tags.length ? (
                             <p className="font-semibold flex items-center text-gray-500">
-                            Sub{" "}
+                                Sub{" "}
                                 <span className="inline-block h-4 mx-1 border-l-2 border-gray-500"></span>
-                            Dub
+                                Dub
                             </p>
                         ) : null}
                     </div>
