@@ -16,9 +16,7 @@ use Illuminate\Http\Request;
 
 class GroupAdminMangaController extends Controller
 {
-    public function __construct(private Uploader $uploader)
-    {
-    }
+    public function __construct(private Uploader $uploader) {}
 
     public function index(Group $group)
     {
@@ -160,15 +158,14 @@ class GroupAdminMangaController extends Controller
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['type']  = 'link';
         $link = $validatedData['link'];
-        $validatedData['chapter_link'] = $link;
-        if ($group->plan->name !== 'premium') {
-            $generator = new ShortenLinkGenerator();
-            try {
-                $link = $generator->generate($validatedData['link']);
-            } catch (Exception $e) {
-                $isOuoGenerateFail = true;
-            }
-        }
+        // if ($group->plan->name !== 'premium') {
+        //     $generator = new ShortenLinkGenerator();
+        //     try {
+        //         $link = $generator->generate($validatedData['link']);
+        //     } catch (Exception $e) {
+        //         $isOuoGenerateFail = true;
+        //     }
+        // }
         $validatedData['ouo_chapter_link'] = $link;
         unset($validatedData['link']);
         $chapter = Chapter::create($validatedData);
@@ -206,26 +203,27 @@ class GroupAdminMangaController extends Controller
         }
         $validatedData['group_id'] = $group->id;
         $link = $validatedData['link'];
-        if ($chapter->ouo_chapter_link !== $validatedData['link']) {
-            $validatedData['chapter_link'] = $link;
-            if ($group->plan->name !== 'premium') {
-                $generator = new ShortenLinkGenerator();
-                try {
-                    $link = $generator->generate($link);
-                } catch (Exception $e) {
-                    $failLink = OuoFailLink::where('chapter_id', $chapter->id)->first();
-                    if (!$failLink) {
-                        OuoFailLink::create([
-                            'group_id' => $group->id,
-                            'chapter_id' => $chapter->id
-                        ]);
-                    }
-                }
-            }
-            $validatedData['ouo_chapter_link'] = $link;
-        } else {
-            $validatedData['ouo_chapter_link'] = $link;
-        }
+        // if ($chapter->ouo_chapter_link !== $validatedData['link']) {
+        //     $validatedData['chapter_link'] = $link;
+        //     if ($group->plan->name !== 'premium') {
+        //         $generator = new ShortenLinkGenerator();
+        //         try {
+        //             $link = $generator->generate($link);
+        //         } catch (Exception $e) {
+        //             $failLink = OuoFailLink::where('chapter_id', $chapter->id)->first();
+        //             if (!$failLink) {
+        //                 OuoFailLink::create([
+        //                     'group_id' => $group->id,
+        //                     'chapter_id' => $chapter->id
+        //                 ]);
+        //             }
+        //         }
+        //     }
+        //     $validatedData['ouo_chapter_link'] = $link;
+        // } else {
+        //     $validatedData['ouo_chapter_link'] = $link;
+        // }
+        $validatedData['ouo_chapter_link'] = $link;
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
         $validatedData['chapterable_type'] = Manga::class;

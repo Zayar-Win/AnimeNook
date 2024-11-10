@@ -13,7 +13,8 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
         thumbnail: chapter?.thumbnail ?? null,
         chapter_number: chapter?.chapter_number ?? "",
         title: chapter?.title ?? "",
-        link: chapter?.chapter_link ?? "",
+        link: chapter?.ouo_chapter_link ?? "",
+        chapter_link: chapter?.chapter_link ?? "",
         description: chapter?.description ?? "",
         season_id: chapter?.season_id ?? null,
     });
@@ -81,6 +82,16 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
                             label="Episode Link"
                             value={data.link}
                             onChange={(e) => setData("link", e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            errorMessage={errors.link}
+                            label="Preminum Episode Link"
+                            value={data.chapter_link}
+                            onChange={(e) =>
+                                setData("chapter_link", e.target.value)
+                            }
                         />
                     </div>
                     <div>
