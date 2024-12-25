@@ -81,7 +81,9 @@ const Navbar = () => {
     };
 
     useEffect(() => {
-        fetchNotifications();
+        if (auth.user) {
+            fetchNotifications();
+        }
     }, []);
 
     const handleClickOutside = (e) => {
@@ -359,9 +361,7 @@ const Navbar = () => {
                             component === "Group/Animes" ? "text-primary" : null
                         }`}
                     >
-                        <Link href={window.route("group.animes")}>
-                            Anime List
-                        </Link>
+                        <Link href={window.route("group.animes")}>Animes</Link>
                     </li>
                     {/* <li
                         className={`hover:text-primary trasnition-all ${

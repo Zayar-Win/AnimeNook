@@ -92,6 +92,11 @@ class Manga extends Model
         return $this->morphMany(Likeable::class, 'likeable');
     }
 
+    public function banner()
+    {
+        return $this->morphOne(Banner::class, 'bannerable');
+    }
+
 
     public function isLikeByUser()
     {

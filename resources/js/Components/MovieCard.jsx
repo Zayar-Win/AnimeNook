@@ -3,7 +3,6 @@ import React from "react";
 import { usePage, router, Link } from "@inertiajs/react";
 import Button from "./Button";
 const MovieCard = ({ anime }) => {
-    console.log(anime.thumbnail)
     const {
         auth: { user },
     } = usePage().props;

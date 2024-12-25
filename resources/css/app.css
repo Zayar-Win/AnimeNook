@@ -109,6 +109,10 @@ body {
     width: 40px !important;
 }
 
+.swiper-slide {
+    height: auto !important;
+}
+
 .animate-input:focus ~ .animate-label,
 .animate-label.active {
     transform: translateY(-20px);

@@ -32,6 +32,6 @@ if ($isProduction) {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
         Route::get('/notis', [NotificationController::class, 'index'])->name('notis');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
-        Route::get('/animes', [AnimeController::class, 'index'])->name('getAnimesAndMangas');
+        Route::get('/animes-api', [AnimeController::class, 'index'])->name('getAnimesAndMangas');
     });
 }

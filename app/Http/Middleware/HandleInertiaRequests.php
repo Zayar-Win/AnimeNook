@@ -36,18 +36,18 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'group' => function() use($request) {
+            'group' => function () use ($request) {
                 $group = $request->route('group');
-                if(gettype($group) === 'string'){
-                    $group = Group::where('subdomain',$group)->first();
+                if (gettype($group) === 'string') {
+                    $group = Group::where('subdomain', $group)->first();
                 }
                 return $group;
             },
-            'ziggy' => fn () => [
+            'ziggy' => fn() => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
-            'toastMessage' => fn () => [
+            'toastMessage' => fn() => [
                 'success' => session()->get('success'),
                 'warning' => session()->get('warning'),
                 'error' => session()->get('error')

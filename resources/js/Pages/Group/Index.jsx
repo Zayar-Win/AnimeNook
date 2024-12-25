@@ -14,13 +14,14 @@ import Pause from "@/../assets/Pause";
 import { usePage } from "@inertiajs/react";
 
 function Index({
-    trendAnimes,
+    banners,
     newAnimes,
     recommendedAnime,
     continueWatchingAnimes,
     popularAnimes,
     popularMangas,
     newEpisodes,
+    trendAnimes,
 }) {
     const {
         auth: { user },
@@ -79,8 +80,8 @@ function Index({
                             <p className="font-semibold">News</p>
                         </div>
                         <div className="h-[500px]">
-                            <Carousel>
-                                {trendAnimes?.map((anime, i) => (
+                            <Carousel id={"banner-swiper"}>
+                                {banners?.map((banner, i) => (
                                     <SwiperSlide
                                         key={i}
                                         className="w-full h-full"
@@ -88,25 +89,29 @@ function Index({
                                         <div className="relative w-full h-full  overflow-hidden text-white">
                                             <img
                                                 className="absolute z-10 top-0 left-0  right-0 bottom-0 w-full h-full object-cover"
-                                                src={anime?.background_image}
+                                                src={
+                                                    banner?.bannerable
+                                                        ?.background_image
+                                                }
                                                 alt=""
                                             />
                                             <div className="relative z-20 pt-40 sm:pl-10 p-4 pb-12">
-                                                <p className="font-semibold flex items-center">
-                                                    Home{" "}
-                                                    <span className="inline-block h-4 mx-1 border-l-2 border-white"></span>
-                                                    TV
-                                                </p>
                                                 <h1 className="text-4xl font-extrabold mt-4">
-                                                    {anime.name}
+                                                    {banner?.bannerable?.name}
                                                 </h1>
                                                 <p className="flex items-center mt-3 mb-3">
-                                                    Ep 24{" "}
-                                                    <span className="block w-1 h-1 rounded-full bg-white mx-1"></span>
-                                                    24m
+                                                    Total Ep -{" "}
+                                                    <span className="text-primary font-bold px-2">
+                                                        {
+                                                            banner?.bannerable
+                                                                ?.totalChaptersCount
+                                                        }
+                                                    </span>{" "}
+                                                    Episodes
+                                                    {/* <span className="block w-1 h-1 rounded-full bg-white mx-1"></span> */}
                                                 </p>
                                                 <div className="flex flex-wrap items-center gap-2">
-                                                    {anime?.tags.map(
+                                                    {banner?.bannerable?.tags.map(
                                                         (tag, i) => (
                                                             <Tag
                                                                 key={i}
@@ -116,16 +121,11 @@ function Index({
                                                         )
                                                     )}
                                                 </div>
-                                                <p className="lg:w-[40%] sm:w-[70%] w-full mt-3 font-semibold">
-                                                    Lorem ipsum dolor sit, amet
-                                                    consectetur adipisicing
-                                                    elit. Aspernatur,
-                                                    repudiandae quas nam
-                                                    pariatur ullam optio
-                                                    provident, esse at quam sunt
-                                                    eum voluptates nisi quis
-                                                    autem velit harum, voluptate
-                                                    hic voluptatem.
+                                                <p className="lg:w-[40%] line-clamp-5 sm:w-[70%] w-full mt-3 font-semibold">
+                                                    {
+                                                        banner?.bannerable
+                                                            .description
+                                                    }
                                                 </p>
                                             </div>
                                         </div>
@@ -535,6 +535,7 @@ function Index({
                                 spaceBetween: 10,
                             },
                         }}
+                        id="popular-series"
                         pagination={false}
                         navigation={true}
                     >
@@ -565,6 +566,7 @@ function Index({
                         <span className="text-lg">Popular Manga</span>
                     </div>
                     <Carousel
+                        id="popular-manga"
                         breakpoints={{
                             640: {
                                 slidesPerView: 2,

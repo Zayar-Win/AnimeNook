@@ -9,7 +9,6 @@ export default {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.jsx',
     ],
-
     theme: {
         screens:{
             '2xl' : '1536px',
@@ -25,7 +24,9 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors:{
-                'primary' : 'var(--primary-color)'
+                'primary' : {
+                    DEFAULT : 'var(--primary-color)'
+                }
             },
             screens:{
                 'xxs' : '330px'

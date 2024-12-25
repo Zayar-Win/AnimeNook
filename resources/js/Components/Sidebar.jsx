@@ -22,7 +22,7 @@ const Sidebar = ({
             ref={sidebarRef}
             className={`fixed top-0 lg:left-0  transition-all z-[100] bg-white ${
                 isOpenMobileSidebar ? "left-0" : "left-[-2000px]"
-            } bottom-0 lg:w-[20%] w-[30%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300`}
+            } bottom-0 lg:w-[20%] w-[60%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300`}
         >
             <div className="flex flex-col justify-between">
                 <div>
