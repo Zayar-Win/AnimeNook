@@ -81,6 +81,5 @@ Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::clas
 
 
     //Banners
-    Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
-    Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
+
 });

@@ -12,6 +12,7 @@ use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
+use App\Http\Controllers\GroupAdminBannerController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
 use App\Http\Controllers\GroupAdminSeasonController;
@@ -311,6 +312,8 @@ if ($isProduction) {
 
             Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
             Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
+            Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
+            Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
