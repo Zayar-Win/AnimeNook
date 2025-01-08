@@ -33,6 +33,7 @@ class Manga extends Model
         if (gettype($group) === 'string') {
             $group = Group::where('name', $group)->first();
         }
+        if (!$group) return null;
         $latestWatchedChapter = $this->chapters()->join('user_chapters', function ($query) use ($group) {
             $query->on('chapters.id', '=', 'user_chapters.chapter_id')
                 ->where('user_chapters.group_id', $group->id)
@@ -69,7 +70,7 @@ class Manga extends Model
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class, 'taggables');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
     public function comments()
     {
@@ -89,6 +90,11 @@ class Manga extends Model
     public function likes()
     {
         return $this->morphMany(Likeable::class, 'likeable');
+    }
+
+    public function banner()
+    {
+        return $this->morphOne(Banner::class, 'bannerable');
     }
 
 
@@ -116,8 +122,9 @@ class Manga extends Model
         return $this->morphMany(CollectionItems::class, 'item');
     }
 
-    public function seasons(){
-        return $this->morphMany(Season::class,'seasonable');
+    public function seasons()
+    {
+        return $this->morphMany(Season::class, 'seasonable');
     }
 
     public function views()

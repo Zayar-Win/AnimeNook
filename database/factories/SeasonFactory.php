@@ -18,7 +18,8 @@ class SeasonFactory extends Factory
     {
         return [
             'group_id' => 1,
-            
+            'title' => 'Season One',
+            'season_number' => 1
         ];
     }
 }

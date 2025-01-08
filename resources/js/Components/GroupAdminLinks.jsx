@@ -63,6 +63,45 @@ export const sidebarLinks = [
         ),
     },
     {
+        name: "Banners",
+        routeName: "group.admin.banners",
+        icon: (
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 36 36"
+            >
+                <path
+                    fill="currentColor"
+                    d="M32.12 10H3.88A1.88 1.88 0 0 0 2 11.88v18.24A1.88 1.88 0 0 0 3.88 32h28.24A1.88 1.88 0 0 0 34 30.12V11.88A1.88 1.88 0 0 0 32.12 10M32 30H4V12h28Z"
+                    className="clr-i-outline clr-i-outline-path-1"
+                />
+                <path
+                    fill="currentColor"
+                    d="M8.56 19.45a3 3 0 1 0-3-3a3 3 0 0 0 3 3m0-4.6A1.6 1.6 0 1 1 7 16.45a1.6 1.6 0 0 1 1.56-1.6"
+                    className="clr-i-outline clr-i-outline-path-2"
+                />
+                <path
+                    fill="currentColor"
+                    d="m7.9 28l6-6l3.18 3.18L14.26 28h2l7.46-7.46L30 26.77v-2L24.2 19a.71.71 0 0 0-1 0l-5.16 5.16l-3.67-3.66a.71.71 0 0 0-1 0L5.92 28Z"
+                    className="clr-i-outline clr-i-outline-path-3"
+                />
+                <path
+                    fill="currentColor"
+                    d="M30.14 3a1 1 0 0 0-1-1h-22a1 1 0 0 0-1 1v1h24Z"
+                    className="clr-i-outline clr-i-outline-path-4"
+                />
+                <path
+                    fill="currentColor"
+                    d="M32.12 7a1 1 0 0 0-1-1h-26a1 1 0 0 0-1 1v1h28Z"
+                    className="clr-i-outline clr-i-outline-path-5"
+                />
+                <path fill="none" d="M0 0h36v36H0z" />
+            </svg>
+        ),
+    },
+    {
         name: "Mangas",
         routeName: "group.admin.mangas",
         icon: (
@@ -100,7 +139,28 @@ export const sidebarLinks = [
         name: "Tags",
         routeName: "group.admin.tags",
         icon: (
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4.728 16.137c-1.545-1.546-2.318-2.318-2.605-3.321c-.288-1.003-.042-2.068.45-4.197l.283-1.228c.413-1.792.62-2.688 1.233-3.302c.614-.613 1.51-.82 3.302-1.233l1.228-.284c2.13-.491 3.194-.737 4.197-.45c1.003.288 1.775 1.061 3.32 2.606l1.83 1.83C20.657 9.248 22 10.592 22 12.262c0 1.671-1.344 3.015-4.033 5.704c-2.69 2.69-4.034 4.034-5.705 4.034c-1.67 0-3.015-1.344-5.704-4.033z"/><circle cx="8.607" cy="8.879" r="2" opacity=".5" transform="rotate(-45 8.607 8.879)"/><path strokeLinecap="round" d="m11.542 18.5l6.979-6.98" opacity=".5"/></g></svg>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+            >
+                <g fill="none" stroke="currentColor" strokeWidth="1.5">
+                    <path d="M4.728 16.137c-1.545-1.546-2.318-2.318-2.605-3.321c-.288-1.003-.042-2.068.45-4.197l.283-1.228c.413-1.792.62-2.688 1.233-3.302c.614-.613 1.51-.82 3.302-1.233l1.228-.284c2.13-.491 3.194-.737 4.197-.45c1.003.288 1.775 1.061 3.32 2.606l1.83 1.83C20.657 9.248 22 10.592 22 12.262c0 1.671-1.344 3.015-4.033 5.704c-2.69 2.69-4.034 4.034-5.705 4.034c-1.67 0-3.015-1.344-5.704-4.033z" />
+                    <circle
+                        cx="8.607"
+                        cy="8.879"
+                        r="2"
+                        opacity=".5"
+                        transform="rotate(-45 8.607 8.879)"
+                    />
+                    <path
+                        strokeLinecap="round"
+                        d="m11.542 18.5l6.979-6.98"
+                        opacity=".5"
+                    />
+                </g>
+            </svg>
         ),
     },
 ];

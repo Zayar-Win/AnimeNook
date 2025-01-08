@@ -6,6 +6,7 @@ use App\Models\Anime;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Rating;
+use Inertia\Inertia;
 
 class AnimeController extends Controller
 {
@@ -18,6 +19,7 @@ class AnimeController extends Controller
             'tags' => request()->get('tags'),
             'isApi' => request()->get('isApi')
         ];
+
 
         $animes = Anime::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
             $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
@@ -68,7 +70,7 @@ class AnimeController extends Controller
             ]
         ];
         if (!$filters['isApi']) {
-            return inertia('Group/Animes', [
+            return Inertia::render('Group/Animes', [
                 'data' => $data,
                 'paginateData' => $paginateData,
                 'filters' => $filters,

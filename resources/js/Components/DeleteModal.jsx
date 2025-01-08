@@ -10,7 +10,7 @@ const DeleteModal = ({
 }) => {
     return (
         <div className="fixed flex z-[1000] items-center justify-center top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.4)]">
-            <div className="w-[40%] rounded-lg gap-3 py-8 flex flex-col items-center text-black bg-white">
+            <div className="lg:w-[40%] md:w-[60%] w-[95%] rounded-lg gap-3 py-8 flex flex-col items-center text-black bg-white">
                 <DeleteWarn className={"text-red-500 w-10 h-10"} />
                 <h1 className="text-[20px] font-bold">{title}</h1>
                 <p className="text-gray-600 text-[18px]">

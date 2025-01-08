@@ -30,7 +30,7 @@ class UserController extends Controller
         ]);
 
         $user = auth()->user();
-        if (gettype($validatedData['profile_picture']) !== 'string') {
+        if (gettype($validatedData['profile_picture']) !== 'string'&& gettype($validatedData['profile_picture'] !== '')) {
             $validatedData['profile_picture'] = $this->uploader->upload($validatedData['profile_picture'], 'amineProfile');
         }
         $user->update($validatedData);

@@ -18,7 +18,7 @@ class TaggableFactory extends Factory
     {
         return [
             'tag_id' => $this->faker->numberBetween(1, 10),
-            'taggables_id' => $this->faker->numberBetween(1, 10),
+            'taggable_id' => $this->faker->numberBetween(1, 10),
         ];
     }
 }

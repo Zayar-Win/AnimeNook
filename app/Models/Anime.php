@@ -14,7 +14,7 @@ class Anime extends Model
     protected $with = ['status', 'tags'];
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type', 'totalChaptersCount'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -90,18 +90,25 @@ class Anime extends Model
         return $this->morphMany(Chapter::class, 'chapterable');
     }
 
-    public function tags()
+    public function getTotalChaptersCountAttribute()
     {
-        return $this->morphToMany(Tag::class, 'taggables');
+        return $this->chapters()->count();
     }
+
 
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function seasons(){
-        return $this->morphMany(Season::class,'seasonable');
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function seasons()
+    {
+        return $this->morphMany(Season::class, 'seasonable');
     }
 
     public function ratings()
@@ -117,6 +124,11 @@ class Anime extends Model
     public function likeUsers()
     {
         return $this->morphToMany(User::class, 'likeable');
+    }
+
+    public function banner()
+    {
+        return $this->morphOne(Banner::class, 'bannerable');
     }
 
     public function collectionItems()

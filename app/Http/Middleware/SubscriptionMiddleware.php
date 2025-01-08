@@ -19,7 +19,7 @@ class SubscriptionMiddleware
     {
 
         $group = request()->route('group');
-        if (gettype($group) === 'string') {
+        if (gettype($group) === 'string') { 
             $group = Group::where('subdomain', $group)->first();
         }
         $expire_date = Carbon::parse($group->expire_date);

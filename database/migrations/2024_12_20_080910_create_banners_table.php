@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('taggables', function (Blueprint $table) {
+        Schema::create('banners', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tag_id');
-            $table->unsignedBigInteger('taggable_id');
-            $table->text('taggable_type');
+            $table->unsignedBigInteger('group_id');
+            $table->unsignedBigInteger('bannerable_id');
+            $table->unsignedBigInteger('order');
+            $table->string('bannerable_type');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('taggables');
+        Schema::dropIfExists('banners');
     }
 };

@@ -4,36 +4,47 @@ import Dashboard from "@/../assets/Dashboard";
 import { Link, usePage } from "@inertiajs/react";
 import { useDetectClickOutside } from "react-detect-click-outside";
 
-const Sidebar = ({sidebarLinks,isOpenMobileSidebar,setIsOpenMobileSidebar}) => {
+const Sidebar = ({
+    sidebarLinks,
+    isOpenMobileSidebar,
+    setIsOpenMobileSidebar,
+}) => {
     const { group } = usePage().props;
     const handleClickOutside = (e) => {
-        if(e.target.parentNode.classList.contains('menu')) return;
+        if (e.target.parentNode.classList.contains("menu")) return;
         setIsOpenMobileSidebar(false);
-    }
+    };
     const sidebarRef = useDetectClickOutside({
-        onTriggered :handleClickOutside
+        onTriggered: handleClickOutside,
     });
     return (
-        <div ref={sidebarRef} className={`fixed top-0 lg:left-0  transition-all z-[100] bg-white ${isOpenMobileSidebar ? 'left-0' : 'left-[-2000px]'} bottom-0 lg:w-[20%] w-[30%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300`}>
+        <div
+            ref={sidebarRef}
+            className={`fixed top-0 lg:left-0  transition-all z-[100] bg-white ${
+                isOpenMobileSidebar ? "left-0" : "left-[-2000px]"
+            } bottom-0 lg:w-[20%] w-[60%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300`}
+        >
             <div className="flex flex-col justify-between">
                 <div>
-                    <div className="flex p-5 items-center gap-4 border-b-[1px] border-b-[rgba(0,0,0,0.1)]">
-                        <div className="w-[50px] h-[50px]">
-                            <img
-                                src={group?.logo}
-                                className="w-full h-full object-cover"
-                                alt=""
-                            />
+                    <Link href={window.route("group.home")}>
+                        <div className="flex p-5 items-center gap-4 border-b-[1px] border-b-[rgba(0,0,0,0.1)]">
+                            <div className="w-[50px] h-[50px]">
+                                <img
+                                    src={group?.logo}
+                                    className="w-full h-full object-cover"
+                                    alt=""
+                                />
+                            </div>
+                            <div>
+                                <h2 className="text-lg font-medium">
+                                    {group?.name}
+                                </h2>
+                                <p className="text-gray-500 text-sm font-medium">
+                                    Group
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 className="text-lg font-medium">
-                                {group?.name}
-                            </h2>
-                            <p className="text-gray-500 text-sm font-medium">
-                                Group
-                            </p>
-                        </div>
-                    </div>
+                    </Link>
                     <div className="border-b-[1px] pb-5 border-b-[rgba(0,0,0,0.1)]">
                         <div className="">
                             <p className="text-gray-600 py-5 pl-5 font-semibold text-xs uppercase">
@@ -106,7 +117,7 @@ const Sidebar = ({sidebarLinks,isOpenMobileSidebar,setIsOpenMobileSidebar}) => {
                         Account
                     </p>
                     <div className="pl-1 mb-3">
-                        <Link href={window.route('group.admin.setting')}> 
+                        <Link href={window.route("group.admin.setting")}>
                             <div className="flex rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] pl-5 py-4 cursor-pointer items-center gap-2">
                                 <Dashboard className="w-5 h-5" />
                                 <p className="font-semibold">Setting</p>

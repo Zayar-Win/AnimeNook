@@ -18,10 +18,9 @@ class GroupFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'name' => $this->faker->name(),
             'group_setting_id' => '1',
             'plan_id' => $this->faker->numberBetween(1, 2),
-            'logo' => $this->faker->image(),
+            'logo' => '/images/logo.jpg',
         ];
     }
 }

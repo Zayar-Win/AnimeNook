@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Taggable extends Model
+
+class Banner extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    // public function tag()
-    // {
-    //     return $this->belongsTo(Tag::class);
-    // }
+    public function bannerable()
+    {
+        return $this->morphTo();
+    }
 }

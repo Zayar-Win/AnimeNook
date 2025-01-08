@@ -13,7 +13,8 @@ const EpisodeForm = ({ anime, episode, type, seasons }) => {
         thumbnail: episode?.thumbnail ?? null,
         chapter_number: episode?.chapter_number ?? "",
         title: episode?.title ?? "",
-        link: episode?.chapter_link ?? "",
+        link: episode?.ouo_chapter_link ?? "",
+        chapter_link: episode?.chapter_link ?? "",
         description: episode?.description ?? "",
         season_id: episode?.season_id ?? null,
     });
@@ -81,6 +82,16 @@ const EpisodeForm = ({ anime, episode, type, seasons }) => {
                             label="Episode Link"
                             value={data.link}
                             onChange={(e) => setData("link", e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <Input
+                            errorMessage={errors.link}
+                            label="Preminum Episode Link"
+                            value={data.chapter_link}
+                            onChange={(e) =>
+                                setData("chapter_link", e.target.value)
+                            }
                         />
                     </div>
                     <div>

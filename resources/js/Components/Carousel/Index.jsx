@@ -1,21 +1,27 @@
 import React, { useMemo } from "react";
 import { Swiper } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+
 // import Tag from '../Tag';
 const Index = ({
     children,
     slidesPerView = 1,
     loop = true,
+    id,
     pagination = true,
     breakpoints = {},
     className = "",
     navigation = false,
+    autoPlay = {
+        delay: 2000,
+        disableOnInteraction: false,
+    },
 }) => {
     const config = useMemo(() => {
         const config = {
-            modules: [],
+            modules: [Autoplay],
         };
         if (pagination) {
             config.modules = [...config.modules, Pagination];
@@ -31,6 +37,7 @@ const Index = ({
             <Swiper
                 loop={loop}
                 {...config}
+                autoplay={autoPlay}
                 breakpoints={breakpoints}
                 style={{
                     "--swiper-navigation-color": "#fff",
@@ -38,7 +45,9 @@ const Index = ({
                 }}
                 slidesPerView={slidesPerView}
                 navigation={navigation}
-                className={`my-swiper w-[100%] h-full rounded-md ${className}`}
+                className={`${
+                    id ? id : "my-swiper"
+                } w-[100%] h-full rounded-md ${className}`}
             >
                 {children}
             </Swiper>

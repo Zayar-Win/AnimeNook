@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anime;
+use App\Models\Chapter;
 use App\Models\Group;
 
 class AnimeDetailController extends Controller
@@ -10,6 +11,7 @@ class AnimeDetailController extends Controller
     public function index(Group $group, Anime $anime)
     {
         $seasonNumber = request()->get('season') ?? 1;
+
         $anime = Anime::with(['chapters' => function($query) use($seasonNumber) {
             $query->with('season')->whereHas('season',function($query) use($seasonNumber) {
                 $query->where('season_number',$seasonNumber);

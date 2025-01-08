@@ -42,7 +42,7 @@ const columns = [
     },
 ];
 
-const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
+const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
     const [statusOptions, setStatusOptions] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedEpisode, setSelectedEpisode] = useState(null);
@@ -53,7 +53,16 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
         name: anime?.name ?? "",
         status_id: anime?.status_id ?? 1,
         description: anime?.description ?? "",
+        tag_ids:
+            anime?.tags?.map((tag) => {
+                return {
+                    value: tag.id,
+                    label: tag.name,
+                };
+            }) ?? [],
     });
+
+    const [tagOptions, setTagOptions] = useState([]);
     const deleteHandler = () => {
         router.post(
             window.route("group.admin.animes.episodes.delete", {
@@ -80,12 +89,41 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
             setStatusOptions(options);
         }
     }, []);
+    useEffect(() => {
+        if (tags.length > 0) {
+            const options = tags.map((tag) => {
+                return {
+                    label: tag.name,
+                    value: tag.id,
+                };
+            });
+            setTagOptions(options);
+        }
+    }, []);
     return (
         <div>
             <div className="w-[90%] mx-auto">
                 <h1 className="text-xl font-semibold my-6">
-                    {type === "eidt" ? "Edit" : "Create New"} Anime
+                    {type === "edit" ? "Edit" : "Create New"} Anime
                 </h1>
+
+                <div className="flex items-center justify-end gap-3">
+                    <Button
+                        href={window.route("group.admin.anime.seasons.create", {
+                            anime: anime.slug,
+                        })}
+                        text={"Create Season"}
+                        className={"!bg-blue-500  "}
+                    />
+                    <Button
+                        href={window.route(
+                            "group.admin.animes.episodes.create",
+                            { anime }
+                        )}
+                        text={"Create Eposide"}
+                        className={"!bg-blue-500 "}
+                    />
+                </div>
 
                 <form
                     onSubmit={(e) => {
@@ -154,6 +192,18 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
                                 errorMessage={errors.status}
                             />
                         </div>
+                        <div>
+                            <Select
+                                label={"Tags"}
+                                isMulti={true}
+                                options={tagOptions}
+                                selected={data.tag_ids}
+                                onChange={(option) =>
+                                    setData("tag_ids", [...option])
+                                }
+                                errorMessage={errors.tag}
+                            />
+                        </div>
                         <div className="col-span-2">
                             <Input
                                 textarea
@@ -178,18 +228,7 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
                         <h1 className="text-xl font-semibold mt-6 mb-3">
                             Seasons
                         </h1>
-                        <div className="flex justify-end">
-                            <Button
-                                href={window.route(
-                                    "group.admin.anime.seasons.create",
-                                    {
-                                        anime: anime.slug,
-                                    }
-                                )}
-                                text={"Create Season"}
-                                className={"!bg-blue-500 my-8 mr-5"}
-                            />
-                        </div>
+                        <div className="flex justify-end"></div>
                         {seasons?.data.length > 0 ? (
                             <Season
                                 seasons={seasons}
@@ -209,16 +248,7 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons }) => {
                         <h1 className="text-xl font-semibold mt-6 mb-3">
                             Episodes
                         </h1>
-                        <div className="flex justify-end">
-                            <Button
-                                href={window.route(
-                                    "group.admin.animes.episodes.create",
-                                    { anime }
-                                )}
-                                text={"Create Eposide"}
-                                className={"!bg-blue-500 my-8 mr-5"}
-                            />
-                        </div>
+                        <div className="flex justify-end"></div>
                         <Table datas={episodes} columns={columns}>
                             <TableData>
                                 {(episode) => <p>{episode?.chapter_number}</p>}
