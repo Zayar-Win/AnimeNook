@@ -10,7 +10,7 @@ import TableData from "@/Components/TableData";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
-import Season from "@/Pages/Group/Admin/Seasons";
+import Season from "@/Pages/Group/Admin/Seasons/Index";
 
 const columns = [
     {
