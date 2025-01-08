@@ -48,9 +48,7 @@ use Illuminate\Support\Facades\Route;
 
 $isProduction = config('app.env') === 'production';
 // URL::defaults(['group' => 'delta']);
-Route::get('/', function () {
-    return inertia('Home');
-});
+
 Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 Route::name('admin.')->group(function () {
@@ -333,5 +331,9 @@ if ($isProduction) {
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });
 }
+
+Route::get('/', function () {
+    return inertia('Home');
+});
 
 require __DIR__ . '/auth.php';
