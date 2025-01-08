@@ -74,7 +74,7 @@ Route::name('admin.')->group(function () {
     Route::post('/admin/ouofaillinks/rerun', [AdminOuoFailLinkController::class, 'rerunAllFailLink'])->name('ouo.fail.links.rerunAll');
 });
 if ($isProduction) {
-    Route::domain('{group:subdomain}' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
