@@ -35,3 +35,5 @@ if ($isProduction) {
         Route::get('/animes-api', [AnimeController::class, 'index'])->name('getAnimesAndMangas');
     });
 }
+
+Route::post('/images/store', [ImageController::class, 'store'])->name('images.store');

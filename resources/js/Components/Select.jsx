@@ -9,11 +9,13 @@ const Select = ({
     onChange,
     selected,
     isDisabled = false,
-    isMulti=false
+    isMulti = false,
 }) => {
     if (Array.isArray(selected)) {
-        defaultValue = options.filter(option => selected.some(select => select.value === option.value))
-    }else{
+        defaultValue = options.filter((option) =>
+            selected.some((select) => select.value === option.value)
+        );
+    } else {
         defaultValue = options?.find(
             (option) => option.id === selected || option.value === selected
         );

@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\helpers\Uploader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
+
+    public Uploader $uploader;
+    public function __construct(Uploader $uploader)
+    {
+        $this->uploader = $uploader;
+    }
     public function removeBg(Request $request)
     {
         $request->validate([
@@ -30,5 +37,17 @@ class ImageController extends Controller
             ]
         ]);
         dd($res);
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Adjust the validation rules as needed
+        ]);
+        $image  =  $this->uploader->upload($request->image, 'images');
+
+        return response()->json([
+            'image' => $image
+        ]);
     }
 }

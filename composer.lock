@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2ccd417166f003ee189a3d7bf8ed7cc7",
+    "content-hash": "9ca99b5364751f8ed3acc73dc63d6efd",
     "packages": [
         {
             "name": "aws/aws-crt-php",
@@ -3966,26 +3966,26 @@
         },
         {
             "name": "spatie/laravel-sluggable",
-            "version": "3.7.1",
+            "version": "3.7.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-sluggable.git",
-                "reference": "23dcb4cb9306f235a1eb20f170978afde82d0221"
+                "reference": "bd320144bc5d473ebc41da927bd1c0bae2cb169c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-sluggable/zipball/23dcb4cb9306f235a1eb20f170978afde82d0221",
-                "reference": "23dcb4cb9306f235a1eb20f170978afde82d0221",
+                "url": "https://api.github.com/repos/spatie/laravel-sluggable/zipball/bd320144bc5d473ebc41da927bd1c0bae2cb169c",
+                "reference": "bd320144bc5d473ebc41da927bd1c0bae2cb169c",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^8.0|^9.0|^10.0|^11.0",
-                "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
+                "illuminate/database": "^8.0|^9.0|^10.0|^11.0|^12.0",
+                "illuminate/support": "^8.0|^9.0|^10.0|^11.0|^12.0",
                 "php": "^8.0"
             },
             "require-dev": {
-                "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0",
-                "pestphp/pest": "^1.20|^2.0",
+                "orchestra/testbench": "^6.23|^7.0|^8.0|^9.0|^10.0",
+                "pestphp/pest": "^1.20|^2.0|^3.7",
                 "spatie/laravel-translatable": "^5.0|^6.0"
             },
             "type": "library",
@@ -4013,7 +4013,7 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-sluggable/tree/3.7.1"
+                "source": "https://github.com/spatie/laravel-sluggable/tree/3.7.4"
             },
             "funding": [
                 {
@@ -4021,7 +4021,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-23T09:54:10+00:00"
+            "time": "2025-02-28T13:41:46+00:00"
         },
         {
             "name": "symfony/console",
@@ -9961,12 +9961,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
