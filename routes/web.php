@@ -85,34 +85,38 @@ Route::name('admin.')->group(function () {
 if ($isProduction) {
     // Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
     Route::get('/admin/dashboard', function () {})->name('dashboard');
-    Route::get('/', function (Group $group) {
-        $group = Group::where('subdomain', 'delta')->first();
-        $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
-        $banners = Banner::with('bannerable')->get();
-        $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
-        $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
-        $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
-        $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
-        $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
-        $today = Carbon::today()->toDateString();
-        $yesterday =  Carbon::yesterday()->toDateString();
-        $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
-        $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
-        return inertia('Group/Index', [
-            'trendAnimes' => $trendAnimes,
-            'banners' => $banners,
-            'newAnimes' => $newAnimes,
-            'recommendedAnime' => $recommendedAnime,
-            'continueWatchingAnimes' => $continueWatchingAnimes,
-            'popularAnimes' => $popularAnimes,
-            'popularMangas' => $popularMangas,
-            'newEpisodes' => [
-                'today' => $todayNewEpisodes,
-                'yesterday' => $yesterdayNewEpisodes
-            ],
-        ]);
-    })->name('home');
+    // Route::get('/', function (Group $group) {
+
+    //     $group = Group::where('subdomain', 'delta')->first();
+    //     $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
+    //     $banners = Banner::with('bannerable')->get();
+    //     $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
+    //     $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
+    //     $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
+    //     $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
+    //     $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
+    //     $today = Carbon::today()->toDateString();
+    //     $yesterday =  Carbon::yesterday()->toDateString();
+    //     $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
+    //     $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+    //     return inertia('Group/Index', [
+    //         'trendAnimes' => $trendAnimes,
+    //         'banners' => $banners,
+    //         'newAnimes' => $newAnimes,
+    //         'recommendedAnime' => $recommendedAnime,
+    //         'continueWatchingAnimes' => $continueWatchingAnimes,
+    //         'popularAnimes' => $popularAnimes,
+    //         'popularMangas' => $popularMangas,
+    //         'newEpisodes' => [
+    //             'today' => $todayNewEpisodes,
+    //             'yesterday' => $yesterdayNewEpisodes
+    //         ],
+    //     ]);
+    // })->name('home');
     Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
+    Route::get('/', function () {
+        return inertia('BlogHome');
+    })->name('home');
     Route::post('/subscriber/store', [SubscriberController::class, 'store'])->name('subscriber.store');
     Route::middleware('auth')->group(function () {
         Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
@@ -343,7 +347,7 @@ if ($isProduction) {
 }
 
 Route::get('/', function () {
-    return inertia('Home');
+    return inertia('BlogHome');
 });
 
 require __DIR__ . '/auth.php';
