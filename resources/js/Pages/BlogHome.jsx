@@ -14,10 +14,15 @@ const BlogHome = () => {
                             <Link href="/">Home</Link>
                         </li>
                         <li className="hover:underline transition-all">
-                            <Link classID="/about">About</Link>
+                            <Link href="/about">About</Link>
                         </li>
                         <li className="hover:underline transition-all">
-                            <Link classID="/contact-us">Contact Us</Link>
+                            <Link href="/contact-us">Contact Us</Link>
+                        </li>
+                        <li className="hover:underline transition-all">
+                            <Link href="/privacy-and-policy">
+                                Privacy And Policy
+                            </Link>
                         </li>
                     </ul>
                 </nav>
@@ -25,7 +30,7 @@ const BlogHome = () => {
             <div>
                 <Carousel
                     id="blog-swiper"
-                    className="h-[90vh] rounded-none"
+                    className="!h-[90vh] rounded-none"
                     autoPlay={{
                         delay: 6000,
                         disableOnInteraction: false,
@@ -626,6 +631,11 @@ const BlogHome = () => {
                             </li>
                             <li>
                                 <Link href="/contact-us">Contact Us</Link>
+                            </li>
+                            <li>
+                                <Link href="/privacy-and-policy">
+                                    Privacy And Policy
+                                </Link>
                             </li>
                         </ul>
                     </div>

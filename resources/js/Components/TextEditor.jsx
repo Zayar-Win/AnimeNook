@@ -24,6 +24,15 @@ const imageHandler = () => {
                 const quill = window.quillRef;
                 const range = quill.getSelection();
                 quill.insertEmbed(range.index, "image", data.image);
+                const img = quill.root.querySelector(
+                    `img[src="${data.image}"]`
+                );
+                if (img) {
+                    img.style.maxWidth = "100%";
+                    img.style.height = "auto";
+                    img.style.display = "block";
+                    img.style.margin = "10px auto";
+                }
             }
         }
     };

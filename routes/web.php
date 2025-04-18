@@ -49,7 +49,16 @@ use Illuminate\Support\Facades\Route;
 
 $isProduction = config('app.env') === 'production';
 // URL::defaults(['group' => 'delta']);
+Route::get('/about', function () {
+    return inertia('About');
+});
+Route::get('/privacy-and-policy', function () {
+    return inertia('PrivacyAndPolicy');
+});
 
+Route::get('/contact-us', function () {
+    return inertia('ContactUs');
+});
 Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 Route::name('admin.')->group(function () {
@@ -349,5 +358,12 @@ if ($isProduction) {
 Route::get('/', function () {
     return inertia('BlogHome');
 });
+
+
+
+Route::get('/blogs/{blog:slug}', function () {
+    return inertia('BlogDetail');
+})->name('blogs.show');
+
 
 require __DIR__ . '/auth.php';
