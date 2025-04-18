@@ -163,3 +163,13 @@ body {
         font-size: 23px !important;
     }
 }
+
+.ql-toolbar {
+    z-index: 1000 !important;
+    overflow: visible;
+    background: white;
+}
+
+.parent-container {
+    overflow: visible !important;
+}
