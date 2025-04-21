@@ -30,9 +30,11 @@ use App\Http\Middleware\GroupMiddleware;
 use App\Http\Middleware\SubscriptionMiddleware;
 use App\Models\Anime;
 use App\Models\Banner;
+use App\Models\Blog;
 use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Manga;
+use App\Models\Tag;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
@@ -356,13 +358,73 @@ if ($isProduction) {
 }
 
 Route::get('/', function () {
-    return inertia('BlogHome');
+    $sliderBlogs = Blog::with('tags', 'author')->take(3)->get();
+    $randomBlogs = Blog::with('tags', 'author')
+        ->inRandomOrder()
+        ->take(3)
+        ->get();
+    $randomGridBlogs = Blog::with('tags', 'author')
+        ->inRandomOrder()
+        ->take(4)
+        ->get();
+    $popularBlogs = Blog::with('tags', 'author')
+        ->orderBy('views', 'desc')
+        ->take(4)
+        ->get();
+    $tagsWithBlogs = Tag::with(['blogs' => function ($q) {
+        return $q->orderBy('created_at', 'desc')->limit(3);
+    }])->get()->map(function ($tag) {
+        // Get all blogs for this tag first
+        // Load blogs with their associated tags
+        $tag->load(['blogs' => function ($query) {
+            $query->with('tags');
+        }]);
+
+        // Set the blogs relation with tags included
+        $tag->setRelation('blogs', $tag->blogs->take(3));
+        return $tag;
+    })->filter(function ($tag) {
+        return $tag->blogs->isNotEmpty();
+    })->take(3);
+    return inertia('BlogHome', [
+        'sliderBlogs' => $sliderBlogs,
+        'randomBlogs' => $randomBlogs,
+        'randomGridBlogs' => $randomGridBlogs,
+        'popularBlogs' => $popularBlogs,
+        'tagsWithBlogs' => $tagsWithBlogs
+    ]);
 });
 
 
 
-Route::get('/blogs/{blog:slug}', function () {
-    return inertia('BlogDetail');
+Route::get('/blogs/{blog:slug}', function (Blog $blog) {
+    $blog = Blog::with('tags', 'author')->find($blog->id);
+    $blogKey = 'viewed_blog_' . $blog->id;
+
+    if (!session()->has($blogKey)) {
+        $blog->update(['views' => $blog->views + 1]);
+        session()->put($blogKey, true);
+    }
+
+    $popularBlogs = Blog::with('tags', 'author')
+        ->orderBy('views', 'desc')
+        ->take(3)
+        ->get();
+
+    $tags = Tag::all();
+    $relatedBlogs = Blog::where('id', '!=', $blog->id)->with('tags')
+        ->whereHas('tags', function ($query) use ($blog) {
+            $query->whereIn('tags.id', $blog->tags->pluck('id'));
+        })
+        ->take(3)
+        ->get();
+
+    return inertia('BlogDetail', [
+        'blog' => $blog,
+        'popularBlogs' => $popularBlogs,
+        'tags' => $tags,
+        'relatedBlogs' => $relatedBlogs
+    ]);
 })->name('blogs.show');
 
 

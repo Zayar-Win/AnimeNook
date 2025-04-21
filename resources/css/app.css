@@ -9,6 +9,20 @@ body {
     box-sizing: border-box !important;
 }
 
+@layer utilities {
+    .blog-content h1 {
+        @apply text-3xl font-bold;
+    }
+
+    .blog-content h2 {
+        @apply text-2xl font-bold;
+    }
+
+    .blog-content h3 {
+        @apply text-xl font-bold;
+    }
+}
+
 .sort:hover .sort-options,
 .filter:hover .filter-options {
     display: block;

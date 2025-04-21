@@ -13,6 +13,10 @@ class BlogSeeder extends Seeder
      */
     public function run(): void
     {
-        Blog::factory(10)->create();
+        Blog::factory()->create([
+            'image' => 'https://cdn.prod.website-files.com/65b0e179d4655faa9e6eedab/67866a4de4e06de6fadb1926_image%2030-p-1600.webp',
+            'title' => 'The 4 Best Copywriting Blogs to Follow',
+            'content' => ''
+        ]);
     }
 }

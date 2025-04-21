@@ -17,10 +17,11 @@ class BlogFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => $this->faker->sentence,
+            'title' => $this->faker->realText(30),
             'slug' => $this->faker->slug,
-            'image' => $this->faker->imageUrl(),
-            'content' => $this->faker->paragraph,
+            'image' => 'https://source.unsplash.com/random/800x600?blog,' . rand(1, 100),
+            'content' => $this->faker->realText(2000),
+            'views' => $this->faker->numberBetween(0, 100),
             'author_id' => $this->faker->numberBetween(1, 10),
         ];
     }

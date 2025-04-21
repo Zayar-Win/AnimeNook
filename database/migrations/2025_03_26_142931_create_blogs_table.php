@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('image')->nullable();
             $table->text('content');
+            $table->unsignedBigInteger('views')->default(0);
             $table->unsignedBigInteger('author_id');
             $table->timestamps();
         });

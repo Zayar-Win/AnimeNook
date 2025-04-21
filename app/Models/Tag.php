@@ -27,4 +27,9 @@ class Tag extends Model
     {
         return $this->morphedByMany(Manga::class, 'taggable');
     }
+
+    public function blogs()
+    {
+        return $this->morphedByMany(Blog::class, 'taggable');
+    }
 }
