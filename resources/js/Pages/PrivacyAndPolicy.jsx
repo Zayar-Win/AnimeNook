@@ -5,7 +5,7 @@ const PrivacyAndPolicy = () => {
     return (
         <div>
             <div>
-                <div className="max-w-4xl mx-auto px-4 py-8">
+                <div className="xl:px-[100px]  md:px-[50px] px-[20px] py-8">
                     <h1 className="text-3xl font-bold mb-6">Privacy Policy</h1>
 
                     <section className="mb-8">

@@ -6,8 +6,8 @@ import React from "react";
 const BlogDetail = ({ blog, popularBlogs, tags, relatedBlogs }) => {
     return (
         <div>
-            <div className="flex gap-10 mx-[100px] mt-[60px]">
-                <div className="w-[65%]">
+            <div className="flex lg:flex-row flex-col gap-10 xl:mx-[100px] lg:mx-[50px] mx-[20px] mt-[60px]">
+                <div className="lg:w-[65%]">
                     <h1 className="text-4xl font-bold  mb-6">{blog?.title}</h1>
                     <img
                         src={blog?.image}
@@ -19,7 +19,7 @@ const BlogDetail = ({ blog, popularBlogs, tags, relatedBlogs }) => {
                         />
                     </div>
                 </div>
-                <div className="w-[35%]">
+                <div className="lg:w-[35%]">
                     <div>
                         <h1 className="text-lg font-bold mb-4">
                             Popular Posts
@@ -106,9 +106,9 @@ const BlogDetail = ({ blog, popularBlogs, tags, relatedBlogs }) => {
                     </div>
                 </div>
             </div>
-            <div className="mx-[100px] mt-[60px]">
+            <div className="xl:mx-[100px] lg:mx-[50px] mx-[20px] mt-[60px]">
                 <h1 className="text-3xl font-medium">Related Posts</h1>
-                <div className="grid grid-cols-3 gap-5 mt-[50px]">
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 gap-5 mt-[50px]">
                     {relatedBlogs?.map((blog, index) => (
                         <Link
                             key={index}

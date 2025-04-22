@@ -1,14 +1,15 @@
 import { Link } from "@inertiajs/react";
+import { MenuIcon } from "lucide-react";
 import React from "react";
 
 const BlogLayout = ({ children }) => {
     return (
         <div>
-            <div className="flex items-center border-b-[1px] shadow-md justify-between px-16 py-4">
+            <div className="flex items-center border-b-[1px] shadow-md justify-between xl:px-16 md:px-[50px] px-[20px] py-4">
                 <Link href="/">
                     <p className="text-3xl font-bold ">AnimeNook</p>
                 </Link>
-                <nav>
+                <nav className="md:block hidden">
                     <ul className="flex  items-center gap-5 text-base font-semibold">
                         <li className="hover:underline transition-all">
                             <Link href="/">Home</Link>
@@ -26,11 +27,13 @@ const BlogLayout = ({ children }) => {
                         </li>
                     </ul>
                 </nav>
+                <div className="md:hidden block cursor-pointer">
+                    <MenuIcon />
+                </div>
             </div>
             {children}
-
-            <div className="bg-black/80 mt-[100px] py-10 px-[100px]">
-                <div className="grid text-white grid-cols-3 gap-5">
+            <div className="bg-black/80 mt-[100px] py-10 xl:px-[100px] md:px-[50px] px-[20px]">
+                <div className="grid text-white md:grid-cols-3 gap-5">
                     <div>
                         <h1 className="text-lg font-semibold">About us</h1>
                         <p className="mt-5 text-white/50">
@@ -43,7 +46,7 @@ const BlogLayout = ({ children }) => {
                             wonderful world of Japanese animation.
                         </p>
                     </div>
-                    <div className="w-full flex items-center flex-col">
+                    <div className="w-full flex md:items-center flex-col">
                         <h1 className="text-lg font-semibold">Quick Menu</h1>
                         <ul className="flex mt-5 flex-col gap-3 text-white/50">
                             <li>

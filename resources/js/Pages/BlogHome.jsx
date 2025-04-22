@@ -34,7 +34,7 @@ const BlogHome = ({
                                     }}
                                 >
                                     <div className="absolute top-0 left-0 z-[1] right-0 bottom-0 w-full h-full bg-[rgba(0,0,0,0.5)]"></div>
-                                    <div className="relative flex flex-col gap-5 w-[40%] z-[10] ml-[150px]">
+                                    <div className="relative flex flex-col gap-5 lg:w-[40%] md:w-[60%] w-full z-[10] md:ml-[150px] ml-[40px]">
                                         <div className="uppercase text-xs font-semibold bg-[#8BC24A] text-white px-3 tracking-widest py-1 rounded-md w-max ">
                                             {blog?.tags[0]?.name}
                                         </div>
@@ -43,7 +43,7 @@ const BlogHome = ({
                                                 blog,
                                             })}
                                         >
-                                            <p className="text-white text-5xl font-medium leading-[1.2]">
+                                            <p className="text-white md:text-5xl text-4xl font-medium leading-[1.2]">
                                                 {blog?.title}
                                             </p>
                                         </Link>
@@ -63,7 +63,7 @@ const BlogHome = ({
                     })}
                 </Carousel>
             </div>
-            <div className="border-[1px] border-black/10 grid mt-16 grid-cols-3 gap-5 p-5 mx-[100px] rounded-lg">
+            <div className="border-[1px] border-black/10 grid mt-16 xl:grid-cols-3 lg:grid-cols-2 grid-cols-1 gap-5 p-5 xl:mx-[100px] md:mx-[50px] mx-[20px] rounded-lg">
                 {randomBlogs.map((blog, index) => {
                     return (
                         <Link key={index} href={blog?.slug}>
@@ -84,15 +84,15 @@ const BlogHome = ({
                     );
                 })}
             </div>
-            <div className="mt-[100px] grid grid-cols-7 grid-rows-2 gap-5 mx-[100px]">
+            <div className="mt-[100px] grid lg:grid-cols-7 grid-cols-1 lg:grid-rows-2 gap-5 xl:mx-[100px] md:mx-[50px] mx-[20px]">
                 <Link
-                    className="col-span-3 row-span-2"
+                    className="lg:col-span-3 lg:row-span-2"
                     href={window.route("blogs.show", {
                         blog: randomGridBlogs[0],
                     })}
                 >
                     <div
-                        className=" relative h-full   px-5 py-5 bg-cover bg-center  "
+                        className=" relative lg:h-full h-[300px]   px-5 py-5 bg-cover bg-center  "
                         style={{
                             backgroundImage: `url(${randomGridBlogs[0]?.image})`,
                         }}
@@ -103,7 +103,7 @@ const BlogHome = ({
                                 {randomGridBlogs[0]?.tags[0]?.name}
                             </div>
                             <div className="text-white">
-                                <p className="text-2xl font-medium w-[60%]">
+                                <p className="text-2xl font-medium md:w-[60%]">
                                     {randomGridBlogs[0]?.title}
                                 </p>
                                 <p className="mt-1">
@@ -116,7 +116,7 @@ const BlogHome = ({
                     </div>
                 </Link>
                 <Link
-                    className="col-span-4"
+                    className="lg:col-span-4"
                     href={window.route("blogs.show", {
                         blog: randomGridBlogs[1],
                     })}
@@ -133,7 +133,7 @@ const BlogHome = ({
                                 {randomGridBlogs[1]?.tags[0]?.name}
                             </div>
                             <div className="text-white">
-                                <p className="text-xl font-medium w-[60%]">
+                                <p className="text-xl font-medium md:w-[60%]">
                                     {randomGridBlogs[1]?.title}
                                 </p>
                                 <p className="mt-1">
@@ -149,7 +149,7 @@ const BlogHome = ({
                     href={window.route("blogs.show", {
                         blog: randomGridBlogs[2],
                     })}
-                    className="col-span-2 col-start-4"
+                    className="lg:col-span-2 lg:col-start-4"
                 >
                     <div
                         className="flex flex-col relative h-[300px] px-5 py-5 justify-between "
@@ -179,7 +179,7 @@ const BlogHome = ({
                     href={window.route("blogs.show", {
                         blog: randomGridBlogs[3],
                     })}
-                    className="col-span-2"
+                    className="lg:col-span-2"
                 >
                     <div
                         className="flex flex-col relative h-[300px] px-5 py-5 justify-between col-span-2"
@@ -206,10 +206,10 @@ const BlogHome = ({
                     </div>
                 </Link>
             </div>
-            <div className="mt-[100px] mx-[100px]">
+            <div className="mt-[100px] xl:mx-[100px] md:mx-[50px] mx-[20px]">
                 <h1 className="text-4xl font-bold">Popular Posts</h1>
-                <div className="mt-[50px] flex gap-8">
-                    <div className="w-[50%]">
+                <div className="mt-[50px] flex lg:flex-row flex-col gap-8">
+                    <div className="lg:w-[50%]">
                         <img
                             className="w-full rounded-md"
                             src={popularBlogs[0]?.image}
@@ -243,7 +243,7 @@ const BlogHome = ({
                             ></p>
                         </div>
                     </div>
-                    <div className="w-[50%] flex flex-col gap-8">
+                    <div className="lg:w-[50%] flex flex-col gap-8">
                         {popularBlogs.slice(1).map((blog, index) => {
                             return (
                                 <Link key={index} href={blog?.slug}>
@@ -279,7 +279,7 @@ const BlogHome = ({
                     </div>
                 </div>
             </div>
-            <div className="mt-[100px] mx-[100px] grid grid-cols-3 gap-5">
+            <div className="mt-[100px] xl:mx-[100px] md:mx-[50px] mx-[20px] grid lg:grid-cols-3 md:grid-cols-2 gap-5">
                 {tagsWithBlogs.map((tag, index) => {
                     return (
                         <div key={index} className="flex flex-col gap-8">
