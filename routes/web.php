@@ -124,9 +124,6 @@ if ($isProduction) {
             ]);
         })->name('home');
         Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
-        Route::get('/', function () {
-            return inertia('BlogHome');
-        })->name('home');
         Route::post('/subscriber/store', [SubscriberController::class, 'store'])->name('subscriber.store');
         Route::middleware('auth')->group(function () {
             Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
