@@ -94,6 +94,7 @@ Route::name('admin.')->group(function () {
     Route::post('/admin/blogs/{blog}', [AdminBlogController::class, 'delete'])->name('blogs.delete');
 });
 if ($isProduction) {
+    dd('hit');
     Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
