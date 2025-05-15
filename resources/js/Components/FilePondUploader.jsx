@@ -20,7 +20,10 @@ const FilePondUploader = ({ photos, onUpload, allowMultiple = false }) => {
         if (photos) {
             return [
                 {
-                    source: photos,
+                    // source: photos,
+                    options: {
+                        file: photos,
+                    },
                 },
             ];
         }
@@ -44,7 +47,10 @@ const FilePondUploader = ({ photos, onUpload, allowMultiple = false }) => {
             files={computedFiles}
             ref={filePond}
             onupdatefiles={setFiles}
+            allowMultiple={allowMultiple}
             name="filepond"
+            allowImagePreview
+            allowReorder
             labelIdle='Drag & Drop your files or <span class="filepond--label-action">Browse</span>'
         />
     );

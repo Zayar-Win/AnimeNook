@@ -17,6 +17,7 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
         chapter_link: chapter?.chapter_link ?? "",
         description: chapter?.description ?? "",
         season_id: chapter?.season_id ?? null,
+        images: chapter?.images ?? [],
     });
 
     const seasonOptions = seasons.map((season) => {
@@ -84,7 +85,7 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
                             onChange={(e) => setData("link", e.target.value)}
                         />
                     </div>
-                    <div>
+                    {/* <div>
                         <Input
                             errorMessage={errors.link}
                             label="Preminum Episode Link"
@@ -93,16 +94,28 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
                                 setData("chapter_link", e.target.value)
                             }
                         />
-                    </div>
-                    <div>
-                        <InputLabel value="Season" />
-                        <Select
-                            onChange={(option) =>
-                                setData("season_id", option.value)
-                            }
-                            selected={data.season_id}
-                            options={seasonOptions}
-                            isDisabled={!seasonOptions.length}
+                    </div> */}
+                    {seasonOptions.length > 0 && (
+                        <div>
+                            <InputLabel value="Season" />
+                            <Select
+                                onChange={(option) =>
+                                    setData("season_id", option.value)
+                                }
+                                selected={data.season_id}
+                                options={seasonOptions}
+                                isDisabled={!seasonOptions.length}
+                            />
+                        </div>
+                    )}
+                    <div className="col-span-2">
+                        <InputLabel value="Manga Images" />
+                        <FilePondUploader
+                            allowMultiple
+                            photos={data.images}
+                            onUpload={(files) => {
+                                setData("images", files);
+                            }}
                         />
                     </div>
                     <div className="col-span-2">
