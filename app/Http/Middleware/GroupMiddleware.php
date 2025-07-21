@@ -18,6 +18,7 @@ class GroupMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         $group = $request->route('group');
+        dd($group);
         if (!is_object($group)) {
             $group = Group::where('subdomain', $group)->first();
         }

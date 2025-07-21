@@ -95,6 +95,7 @@ Route::name('admin.')->group(function () {
 });
 if ($isProduction) {
     Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+        
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
             $group = Group::where('subdomain', 'delta')->first();
