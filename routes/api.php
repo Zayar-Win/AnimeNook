@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\URL;
 
 $isProduction = config('app.env') === 'production';
 if ($isProduction) {
-    Route::domain('{group:subdomain}' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
     });
