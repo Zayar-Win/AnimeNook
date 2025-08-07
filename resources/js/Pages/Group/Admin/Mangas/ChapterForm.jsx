@@ -8,7 +8,7 @@ import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React from "react";
 
-const ChapterForm = ({ chapter, type, manga, seasons }) => {
+const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
     const { data, setData, post, errors } = useForm({
         thumbnail: chapter?.thumbnail ?? null,
         chapter_number: chapter?.chapter_number ?? "",
@@ -17,7 +17,7 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
         chapter_link: chapter?.chapter_link ?? "",
         description: chapter?.description ?? "",
         season_id: chapter?.season_id ?? null,
-        images: chapter?.images ?? [],
+        images: images ?? [],
     });
 
     const seasonOptions = seasons.map((season) => {
@@ -26,6 +26,8 @@ const ChapterForm = ({ chapter, type, manga, seasons }) => {
             value: season.id,
         };
     });
+
+    console.log(data.images);
 
     return (
         <div className="w-[90%] mx-auto mb-10">
