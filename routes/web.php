@@ -63,38 +63,10 @@ Route::get('/contact-us', function () {
 });
 Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->name('redirectGoogle');
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
-Route::name('admin.')->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('users');
-    Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('users.create');
-    Route::post('/admin/users/store', [AdminUserController::class, 'store'])->name('users.store');
-    Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
-    Route::post('/admin/users/{user}/update', [AdminUserController::class, 'update'])->name('users.update');
-    Route::post('/admin/users/{user}/delete', [AdminUserController::class, 'delete'])->name('users.delete');
-    //Group Routes
-    Route::get('/admin/groups', [AdminGroupController::class, 'index'])->name('groups');
-    Route::get('/admin/groups/create', [AdminGroupController::class, 'create'])->name('groups.create');
-    Route::post('/admin/groups/store', [AdminGroupController::class, 'store'])->name('groups.store');
-    Route::get('/admin/groups/{group}/edit', [AdminGroupController::class, 'edit'])->name('groups.edit');
-    Route::post('/admin/groups/{group}/update', [AdminGroupController::class, 'update'])->name('groups.update');
-    Route::post('/admin/groups/{group}/delete', [AdminGroupController::class, 'delete'])->name('groups.delete');
-    Route::post('/admin/groups/{group}/updateSubscription', [AdminGroupController::class, 'updateSubscription'])->name('groups.updateSubscription');
-    //Ouo fail Links
-    Route::get('/admin/ouofaillinks', [AdminOuoFailLinkController::class, 'index'])->name('ouo.fail.links');
-    Route::post('/admin/ouofaillinks/{failLink}/delete', [AdminOuoFailLinkController::class, 'delete'])->name('ouo.fail.links.delete');
-    Route::post('/admin/ouofaillinks/{failLink}/rerun', [AdminOuoFailLinkController::class, 'rerunFailLink'])->name('ouo.fail.links.rerun');
-    Route::post('/admin/ouofaillinks/rerun', [AdminOuoFailLinkController::class, 'rerunAllFailLink'])->name('ouo.fail.links.rerunAll');
 
-    //Blog Routes
-    Route::get('/admin/blogs', [AdminBlogController::class, 'index'])->name('blogs');
-    Route::get('/admin/blogs/create', [AdminBlogController::class, 'create'])->name('blogs.create');
-    Route::post('/admin/blogs/store', [AdminBlogController::class, 'store'])->name('blogs.store');
-    Route::get('/admin/blogs/{blog}/edit', [AdminBlogController::class, 'edit'])->name('blogs.edit');
-    Route::post('/admin/blogs/{blog}/update', [AdminBlogController::class, 'update'])->name('blogs.update');
-    Route::post('/admin/blogs/{blog}', [AdminBlogController::class, 'delete'])->name('blogs.delete');
-});
 if ($isProduction) {
     Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+<<<<<<< HEAD
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         // Route::get('/', function (Group $group) {
 
@@ -128,6 +100,38 @@ if ($isProduction) {
         Route::get('/', function () {
             return inertia('BlogHome');
         })->name('home');
+=======
+
+        Route::get('/admin/dashboard', function () {})->name('dashboard');
+        Route::get('/', function (Group $group) {
+            $group = Group::where('subdomain', 'delta')->first();
+            $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
+            $banners = Banner::with('bannerable')->get();
+            $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
+            $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
+            $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
+            $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
+            $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
+            $today = Carbon::today()->toDateString();
+            $yesterday =  Carbon::yesterday()->toDateString();
+            $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
+            $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+            return inertia('Group/Index', [
+                'trendAnimes' => $trendAnimes,
+                'banners' => $banners,
+                'newAnimes' => $newAnimes,
+                'recommendedAnime' => $recommendedAnime,
+                'continueWatchingAnimes' => $continueWatchingAnimes,
+                'popularAnimes' => $popularAnimes,
+                'popularMangas' => $popularMangas,
+                'newEpisodes' => [
+                    'today' => $todayNewEpisodes,
+                    'yesterday' => $yesterdayNewEpisodes
+                ],
+            ]);
+        })->name('home');
+        Route::get('/animes', [AnimeController::class, 'index'])->name('animes');
+>>>>>>> origin/main
         Route::post('/subscriber/store', [SubscriberController::class, 'store'])->name('subscriber.store');
         Route::middleware('auth')->group(function () {
             Route::post('/comments/create', [CommentController::class, 'store'])->name('comment.create');
@@ -207,9 +211,18 @@ if ($isProduction) {
 
             Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
             Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
+<<<<<<< HEAD
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
+=======
+            Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
+            Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
+        });
+        Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
+        Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
+
+>>>>>>> origin/main
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
         Route::middleware('guest')->group(function () {
             Route::get('/login', function () {
@@ -356,6 +369,37 @@ if ($isProduction) {
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });
 }
+
+Route::name('admin.')->group(function () {
+    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('users');
+    Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('users.create');
+    Route::post('/admin/users/store', [AdminUserController::class, 'store'])->name('users.store');
+    Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
+    Route::post('/admin/users/{user}/update', [AdminUserController::class, 'update'])->name('users.update');
+    Route::post('/admin/users/{user}/delete', [AdminUserController::class, 'delete'])->name('users.delete');
+    //Group Routes
+    Route::get('/admin/groups', [AdminGroupController::class, 'index'])->name('groups');
+    Route::get('/admin/groups/create', [AdminGroupController::class, 'create'])->name('groups.create');
+    Route::post('/admin/groups/store', [AdminGroupController::class, 'store'])->name('groups.store');
+    Route::get('/admin/groups/{group}/edit', [AdminGroupController::class, 'edit'])->name('groups.edit');
+    Route::post('/admin/groups/{group}/update', [AdminGroupController::class, 'update'])->name('groups.update');
+    Route::post('/admin/groups/{group}/delete', [AdminGroupController::class, 'delete'])->name('groups.delete');
+    Route::post('/admin/groups/{group}/updateSubscription', [AdminGroupController::class, 'updateSubscription'])->name('groups.updateSubscription');
+    //Ouo fail Links
+    Route::get('/admin/ouofaillinks', [AdminOuoFailLinkController::class, 'index'])->name('ouo.fail.links');
+    Route::post('/admin/ouofaillinks/{failLink}/delete', [AdminOuoFailLinkController::class, 'delete'])->name('ouo.fail.links.delete');
+    Route::post('/admin/ouofaillinks/{failLink}/rerun', [AdminOuoFailLinkController::class, 'rerunFailLink'])->name('ouo.fail.links.rerun');
+    Route::post('/admin/ouofaillinks/rerun', [AdminOuoFailLinkController::class, 'rerunAllFailLink'])->name('ouo.fail.links.rerunAll');
+
+    //Blog Routes
+    Route::get('/admin/blogs', [AdminBlogController::class, 'index'])->name('blogs');
+    Route::get('/admin/blogs/create', [AdminBlogController::class, 'create'])->name('blogs.create');
+    Route::post('/admin/blogs/store', [AdminBlogController::class, 'store'])->name('blogs.store');
+    Route::get('/admin/blogs/{blog}/edit', [AdminBlogController::class, 'edit'])->name('blogs.edit');
+    Route::post('/admin/blogs/{blog}/update', [AdminBlogController::class, 'update'])->name('blogs.update');
+    Route::post('/admin/blogs/{blog}', [AdminBlogController::class, 'delete'])->name('blogs.delete');
+});
 
 Route::get('/', function () {
     $sliderBlogs = Blog::with('tags', 'author')->take(3)->get();

@@ -5,6 +5,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ViewController;
+use App\Http\Middleware\GroupMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
@@ -21,9 +22,8 @@ use Illuminate\Support\Facades\URL;
 */
 
 $isProduction = config('app.env') === 'production';
-URL::defaults(['group' => 'delta']);
 if ($isProduction) {
-    Route::domain('{group:subdomain}' . config('app.url'))->name('group')->group(function () {
+    Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
     });
