@@ -87,16 +87,6 @@ body {
     transform: translateX(0);
 }
 
-.filepond--wrapper {
-    height: 200px !important;
-}
-.filepond--drop-label {
-    height: 100% !important;
-}
-.filepond--root {
-    height: 100%;
-}
-
 .react-select__input:focus {
     outline: none !important;
     outline-offset: none !important;

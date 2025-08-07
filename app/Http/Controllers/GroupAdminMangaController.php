@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\helpers\ShortenLinkGenerator;
 use App\helpers\Uploader;
 use App\Models\Chapter;
+use App\Models\ChapterImage;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\OuoFailLink;
@@ -13,6 +14,7 @@ use App\Models\Tag;
 use App\Models\Taggable;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class GroupAdminMangaController extends Controller
 {
@@ -148,11 +150,13 @@ class GroupAdminMangaController extends Controller
             'title' => ['required'],
             'link' => ['required'],
             'description' => ['nullable'],
-            'season_id' => ['required']
+            'season_id' => ['required'],
+            'images' => ['required']
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
+        $imagesFromRequest = $validatedData['images'];
         $validatedData['group_id'] = $group->id;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
@@ -168,7 +172,21 @@ class GroupAdminMangaController extends Controller
         // }
         $validatedData['ouo_chapter_link'] = $link;
         unset($validatedData['link']);
+        unset($validatedData['images']);
         $chapter = Chapter::create($validatedData);
+
+
+        foreach ($imagesFromRequest as $index => $image) {
+            if ($image instanceof UploadedFile) {
+                $path = $this->uploader->upload($image, 'mangas');
+                ChapterImage::create([
+                    'chapter_id' => $chapter->id,
+                    'path' => $path,
+                    'order' => $index
+                ]);
+            }
+        }
+
         if ($isOuoGenerateFail) {
             OuoFailLink::create([
                 'group_id' => $group->id,
@@ -182,6 +200,7 @@ class GroupAdminMangaController extends Controller
     {
         return inertia('Group/Admin/Mangas/ChapterForm', [
             'chapter' => $chapter,
+            'images' => $chapter->images()->orderBy('order', 'desc')->get(),
             'type' => 'edit',
             'manga' => $manga,
             'seasons' => $manga->seasons,
@@ -196,8 +215,11 @@ class GroupAdminMangaController extends Controller
             'title' => ['required'],
             'description' => ['required'],
             'link' => ['required'],
-            'season_id' => ['required']
+            'season_id' => ['required'],
+            'images' => ['required']
         ]);
+
+        $imagesFromRequest = $validatedData['images'] ?? [];
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
@@ -226,10 +248,44 @@ class GroupAdminMangaController extends Controller
         $validatedData['ouo_chapter_link'] = $link;
         $validatedData['chapter_link'] = $link;
         unset($validatedData['link']);
+        unset($validatedData['images']);
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['type'] = 'link';
         $chapter->update($validatedData);
+
+
+        $existingImageIdsInRequest = collect($imagesFromRequest)->filter(function ($image) {
+            return is_array($image) && isset($image['id']);
+        })->map(function ($image) {
+            return $image['id'];
+        });
+
+
+        $chapter->images()->whereNotIn('id', $existingImageIdsInRequest)->each(function ($image) {
+            $this->uploader->remove($image->path);
+            $image->delete();
+        });
+
+        foreach ($imagesFromRequest as $index => $image) {
+            if (is_array($image) && isset($image['id'])) {
+                ChapterImage::where('id', $image['id'])->update([
+                    'order' => $index
+                ]);
+            }
+
+            if ($image instanceof UploadedFile) {
+                $path = $this->uploader->upload($image, 'mangas');
+                ChapterImage::create([
+                    'chapter_id' => $chapter->id,
+                    'path' => $path,
+                    'order' => $index
+                ]);
+            }
+        }
+
+
+
         return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chapter udpated successful.');
     }
 

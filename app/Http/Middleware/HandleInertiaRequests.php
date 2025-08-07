@@ -52,7 +52,8 @@ class HandleInertiaRequests extends Middleware
                 'warning' => session()->get('warning'),
                 'error' => session()->get('error')
             ],
-            'APP_URL' => env('APP_URL')
+            'APP_URL' => env('APP_URL'),
+            'env' => env('APP_ENV')
         ];
     }
 }

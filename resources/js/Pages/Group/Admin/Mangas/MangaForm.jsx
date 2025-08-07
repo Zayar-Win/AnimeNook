@@ -127,7 +127,7 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons, tags }) => {
                             />
                             <InputError message={errors.thumbnail} />
                         </div>
-                        <div>
+                        {/* <div>
                             <InputLabel isOptional value={"Background Image"} />
                             <FilePondUploader
                                 photos={data.background_image}
@@ -151,7 +151,7 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons, tags }) => {
                             <InputError
                                 message={errors.transparent_background}
                             />
-                        </div>
+                        </div> */}
                         <div>
                             <Input
                                 label="Name"

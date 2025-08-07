@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chapter extends Model
 {
-    use HasFactory,GroupGetter;
+    use HasFactory, GroupGetter;
     protected $guarded = [];
 
     protected $appends = ['type'];
 
-    protected $hidden =[];
+    protected $hidden = [];
 
     public function chapterable()
     {
@@ -30,11 +30,12 @@ class Chapter extends Model
         }
     }
 
-    protected function getChapterLinkAttribute(){
+    protected function getChapterLinkAttribute()
+    {
         $group = $this->group();
-        if($group && $group->plan->name === 'premium'){
+        if ($group && $group->plan->name === 'premium') {
             return $this->attributes['chapter_link'];
-        }else{
+        } else {
             return $this->ouo_chapter_link;
         }
     }
@@ -49,8 +50,14 @@ class Chapter extends Model
         return $this->morphMany(Comment::class, 'commentable');
     }
 
-    public function season(){
+    public function season()
+    {
         return $this->belongsTo(Season::class);
     }
 
+
+    public function images()
+    {
+        return $this->hasMany(ChapterImage::class)->orderBy('order');
+    }
 }

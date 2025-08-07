@@ -42,6 +42,7 @@
         "react-detect-click-outside": "^1.1.7",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
+        "react-dropzone": "^14.3.8",
         "react-filepond": "^7.1.2",
         "react-pick-color": "^2.0.0",
         "react-quill": "^2.0.0",
