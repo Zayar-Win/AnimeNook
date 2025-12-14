@@ -44,56 +44,78 @@ const Index = ({ users }) => {
         );
     };
     return (
-        <div>
-            <h1 className="text-center text-xl font-bold my-10">
-                User Management
-            </h1>
-            <div className="flex justify-end">
+        <div className="bg-[#0a0a0a] min-h-screen p-8 text-white">
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-black tracking-tight text-white">
+                    User Management
+                </h1>
                 <Button
-                    text={'Create User'}
-                    type={'link'}
-                    href={window.route('admin.users.create')}
-                    className={"!bg-blue-500 my-8 mr-5"}
+                    text={"Create User"}
+                    type={"link"}
+                    href={window.route("admin.users.create")}
+                    className={
+                        "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl font-bold shadow-lg shadow-primary/20 transition-all hover:-translate-y-1"
+                    }
                 />
             </div>
             <Table datas={users} columns={columns}>
-                <TableData>{(user) => <p>{user.name}</p>}</TableData>
+                <TableData>
+                    {(user) => <p className="font-semibold">{user.name}</p>}
+                </TableData>
                 <TableData>
                     {(user) => (
-                        <img
-                            className="w-10 h-10 object-cover rounded-full"
-                            src={user.profile_picture}
-                            alt="Jese image"
-                        ></img>
+                        <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/10">
+                            <img
+                                className="w-full h-full object-cover"
+                                src={user.profile_picture}
+                                alt={user.name}
+                            />
+                        </div>
                     )}
                 </TableData>
-                <TableData>{(user) => <p>{user.email}</p>}</TableData>
                 <TableData>
-                    {(user) => <p className="capitalize">{user.role.name}</p>}
-                </TableData>
-                <TableData>
-                    {(user) => <p className="capitalize">{user.type}</p>}
+                    {(user) => <p className="text-zinc-400">{user.email}</p>}
                 </TableData>
                 <TableData>
                     {(user) => (
-                        <div className="flex items-center gap-2 text-blue-600">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20 capitalize">
+                            {user.role.name}
+                        </span>
+                    )}
+                </TableData>
+                <TableData>
+                    {(user) => (
+                        <span
+                            className={`px-3 py-1 rounded-full text-xs font-bold border capitalize ${
+                                user.type === "premium"
+                                    ? "bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                                    : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"
+                            }`}
+                        >
+                            {user.type}
+                        </span>
+                    )}
+                </TableData>
+                <TableData>
+                    {(user) => (
+                        <div className="flex items-center gap-3">
                             <Link
                                 href={window.route("admin.users.edit", {
                                     user,
                                 })}
-                                className="hover:underline"
+                                className="text-zinc-400 hover:text-primary transition-colors font-medium"
                             >
                                 Edit
                             </Link>
-                            <div
+                            <button
                                 onClick={() => {
                                     setIsDeleteModalOpen(true);
                                     setSelectedUser(user);
                                 }}
-                                className="hover:underline cursor-pointer"
+                                className="text-zinc-400 hover:text-red-500 transition-colors font-medium cursor-pointer"
                             >
                                 Delete
-                            </div>
+                            </button>
                         </div>
                     )}
                 </TableData>
@@ -102,7 +124,7 @@ const Index = ({ users }) => {
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
                     deleteHandler={deleteHandler}
-                    title={"Are you sure want to delete this user."}
+                    title={"Are you sure you want to delete this user?"}
                 />
             )}
         </div>

@@ -6,8 +6,8 @@ import TableData from "./TableData";
 const Table = ({ columns, datas, children, theadClasses }) => {
     return (
         <div>
-            <div className="relative overflow-x-auto shadow-md mb-5 sm:rounded-lg">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <div className="relative overflow-x-auto shadow-xl shadow-black/50 rounded-2xl border border-white/5 bg-[#1a1a1a]">
+                <table className="w-full text-sm text-left text-white">
                     <Thead
                         columns={columns}
                         datas={datas}
@@ -15,7 +15,7 @@ const Table = ({ columns, datas, children, theadClasses }) => {
                         // selectedRows={selectedRows}
                         theadClasses={theadClasses}
                     />
-                    <tbody>
+                    <tbody className="divide-y divide-white/5">
                         {datas?.data ? (
                             datas.data.map((data, i) => (
                                 <TableRow
@@ -65,15 +65,34 @@ const Table = ({ columns, datas, children, theadClasses }) => {
                             </>
                         )}
                         {datas?.data?.length === 0 && (
-                            <tr
-                                key={datas?.data?.length}
-                                className="text-center "
-                            >
+                            <tr key="no-data" className="text-center">
                                 <td
-                                    className="py-8 px-2 bg-slate-50"
+                                    className="py-16 px-6"
                                     colSpan={columns.length + 1}
                                 >
-                                    No Table Data
+                                    <div className="flex flex-col items-center justify-center text-zinc-500">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="w-12 h-12 mb-3 opacity-50"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={1.5}
+                                                d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                                            />
+                                        </svg>
+                                        <p className="text-lg font-bold text-zinc-400">
+                                            No Data Available
+                                        </p>
+                                        <p className="text-sm mt-1">
+                                            There are no records to display at
+                                            this time.
+                                        </p>
+                                    </div>
                                 </td>
                             </tr>
                         )}

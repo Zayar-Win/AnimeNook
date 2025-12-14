@@ -1,14 +1,14 @@
-import React from 'react'
-import ToastLayout from './ToastLayout'
-import {sidebarLinks} from '@/Components/AdminLinks';
-import Sidebar from '@/Components/Sidebar'
-const AdminLayout = ({children}) => {
+import React from "react";
+import ToastLayout from "./ToastLayout";
+import { sidebarLinks } from "@/Components/AdminLinks";
+import Sidebar from "@/Components/Sidebar";
+const AdminLayout = ({ children }) => {
     return (
         <ToastLayout>
             <Sidebar sidebarLinks={sidebarLinks} />
-            <div className="lg:pl-[22%]">{children}</div>
+            <div className="lg:pl-[22%] !bg-black">{children}</div>
         </ToastLayout>
-    )
-}
+    );
+};
 
-export default AdminLayout
+export default AdminLayout;

@@ -3,7 +3,7 @@ import React from "react";
 const TableRow = ({ className, children }) => {
     return (
         <tr
-            className={`border-b bg-white  hover:bg-gray-50  border-gray-200 ${className}`}
+            className={`bg-transparent hover:bg-white/5 transition-colors border-white/5 ${className}`}
         >
             {children}
         </tr>

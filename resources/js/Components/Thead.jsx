@@ -4,9 +4,9 @@ import TableRow from "./TableRow";
 const Thead = ({ theadClasses, columns }) => {
     return (
         <thead
-            className={`${theadClasses} className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"`}
+            className={`${theadClasses} text-xs font-bold text-zinc-400 uppercase bg-white/5 border-b border-white/10`}
         >
-            <TableRow>
+            <TableRow className="!bg-transparent hover:!bg-transparent border-none">
                 <th>
                     <th scope="col" className="p-4">
                         <div className="flex items-center">
@@ -18,7 +18,7 @@ const Thead = ({ theadClasses, columns }) => {
                                 //     (datas.data.length || datas.length)
                                 // }
                                 // onChange={selectAllOrCancel}
-                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500  focus:ring-2 "
+                                className="w-4 h-4 text-primary bg-[#1a1a1a] border-white/10 rounded focus:ring-primary focus:ring-2"
                             />
                             <label
                                 htmlFor="checkbox-all-search"
@@ -32,10 +32,10 @@ const Thead = ({ theadClasses, columns }) => {
                 {columns.map((column) => (
                     <th
                         key={column.field}
-                        className={`font-bolder text-[15px] px-6 py-3 capitalize text-black text-left ${
+                        className={`font-bold text-[13px] px-6 py-4 capitalize text-zinc-300 text-left tracking-wide ${
                             column.minWidth
                                 ? `min-w-[${column.minWidth}]`
-                                : "min-w-[180px]"
+                                : "min-w-[150px]"
                         }`}
                     >
                         {column.field}

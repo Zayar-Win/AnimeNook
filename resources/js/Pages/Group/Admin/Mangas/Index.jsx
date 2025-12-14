@@ -43,77 +43,161 @@ const Index = ({ mangas }) => {
         );
     };
     return (
-        <div>
-            <h1 className="text-center text-xl font-bold my-10">
-                Mangas Management
-            </h1>
-            <div className="flex justify-end">
-                <Button
-                    href={window.route("group.admin.mangas.create")}
-                    text={"Create Manga"}
-                    className={"!bg-blue-500 my-8 mr-5"}
-                />
+        <div className="bg-[#0a0a0a] min-h-screen p-8 text-white">
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
+                <div className="p-3 bg-primary/10 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(237,100,0,0.15)]">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-8 h-8 text-primary"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                </div>
+                <div className="flex flex-col">
+                    <h1 className="text-3xl font-black text-white tracking-tight leading-none">
+                        Manga Management
+                    </h1>
+                    <p className="text-zinc-400 text-sm font-medium mt-1">
+                        Manage your manga library and chapters
+                    </p>
+                </div>
+                <div className="ml-auto">
+                    <Button
+                        href={window.route("group.admin.mangas.create")}
+                        text={"Create Manga"}
+                        className={
+                            "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1"
+                        }
+                    />
+                </div>
             </div>
-            <Table datas={mangas} columns={columns}>
-                <TableData>{(manga) => <p>{manga.name}</p>}</TableData>
-                <TableData>
-                    {(manga) => (
-                        <img
-                            className="w-20 h-10 object-cover"
-                            src={manga.thumbnail}
-                            alt="manga ThumbNail"
-                        ></img>
-                    )}
-                </TableData>
-                <TableData className={"min-w-[300px]"}>
-                    {(manga) => (
-                        <p className="line-clamp-1">{manga.description}</p>
-                    )}
-                </TableData>
-                <TableData>
-                    {(manga) => (
-                        <p className="font-extrabold">{manga?.status?.name}</p>
-                    )}
-                </TableData>
-                <TableData>
-                    {(manga) => (
-                        <p className="font-extrabold">
-                            <span className="text-yellow-500 pr-3">
-                                {manga?.rating}
-                            </span>{" "}
-                            Ratings
-                        </p>
-                    )}
-                </TableData>
-                <TableData>
-                    {(manga) => (
-                        <div className="flex items-center gap-2 text-blue-600">
-                            <Link
-                                href={window.route("group.admin.mangas.edit", {
-                                    manga,
-                                })}
-                                className="hover:underline"
-                            >
-                                Edit
-                            </Link>
-                            <div
-                                onClick={() => {
-                                    setIsDeleteModalOpen(true);
-                                    setSelectedManga(manga);
-                                }}
-                                className="hover:underline cursor-pointer"
-                            >
-                                Delete
+
+            <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl shadow-xl shadow-black/50 overflow-hidden">
+                <Table datas={mangas} columns={columns}>
+                    <TableData>
+                        {(manga) => (
+                            <p className="font-bold text-white">{manga.name}</p>
+                        )}
+                    </TableData>
+                    <TableData>
+                        {(manga) => (
+                            <div className="w-12 h-16 rounded-lg overflow-hidden ring-1 ring-white/10">
+                                <img
+                                    className="w-full h-full object-cover"
+                                    src={manga.thumbnail}
+                                    alt="Manga ThumbNail"
+                                />
                             </div>
-                        </div>
-                    )}
-                </TableData>
-            </Table>
+                        )}
+                    </TableData>
+                    <TableData className={"min-w-[300px]"}>
+                        {(manga) => (
+                            <p className="line-clamp-2 text-zinc-400 text-sm leading-relaxed">
+                                {manga.description}
+                            </p>
+                        )}
+                    </TableData>
+                    <TableData>
+                        {(manga) => (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-green-500/10 text-green-500 capitalize border border-green-500/20">
+                                {manga?.status?.name}
+                            </span>
+                        )}
+                    </TableData>
+                    <TableData>
+                        {(manga) => (
+                            <div className="flex items-center gap-1.5 font-bold text-white">
+                                <svg
+                                    className="w-4 h-4 text-yellow-500 fill-yellow-500"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                </svg>
+                                <span>{manga?.rating}</span>
+                            </div>
+                        )}
+                    </TableData>
+                    <TableData>
+                        {(manga) => (
+                            <div className="flex items-center gap-3">
+                                <Link
+                                    href={window.route(
+                                        "group.admin.mangas.edit",
+                                        {
+                                            manga,
+                                        }
+                                    )}
+                                    className="p-2 rounded-lg text-zinc-400 hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
+                                    title="Edit Manga"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                </Link>
+                                <button
+                                    onClick={() => {
+                                        setIsDeleteModalOpen(true);
+                                        setSelectedManga(manga);
+                                    }}
+                                    className="p-2 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all duration-300"
+                                    title="Delete Manga"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line
+                                            x1="10"
+                                            y1="11"
+                                            x2="10"
+                                            y2="17"
+                                        ></line>
+                                        <line
+                                            x1="14"
+                                            y1="11"
+                                            x2="14"
+                                            y2="17"
+                                        ></line>
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+                    </TableData>
+                </Table>
+            </div>
+
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
                     deleteHandler={deleteHandler}
-                    title={"Are you sure want to delete this Manga."}
+                    title={"Are you sure you want to delete this manga?"}
                 />
             )}
         </div>

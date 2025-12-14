@@ -1,24 +1,28 @@
 import Sidebar from "@/Components/Sidebar";
-import React, {  useState } from "react";
+import React, { useState } from "react";
 import ToastLayout from "./ToastLayout";
 import { sidebarLinks } from "@/Components/GroupAdminLinks";
 
 const GroupAdminLayout = ({ children }) => {
-    const [isOpenMobileSidebar,setIsOpenMobileSidebar] = useState(false);
+    const [isOpenMobileSidebar, setIsOpenMobileSidebar] = useState(false);
     return (
         <ToastLayout>
-            <div>
-                <Sidebar sidebarLinks={sidebarLinks} isOpenMobileSidebar={isOpenMobileSidebar} setIsOpenMobileSidebar={setIsOpenMobileSidebar} />
+            <div className="!bg-black">
+                <Sidebar
+                    sidebarLinks={sidebarLinks}
+                    isOpenMobileSidebar={isOpenMobileSidebar}
+                    setIsOpenMobileSidebar={setIsOpenMobileSidebar}
+                />
                 <div className="bg-white shadow-lg px-3 py-5 lg:hidden block">
-                    <div
-                        className="menu"
-                    >
+                    <div className="menu">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="26"
                             className="menu"
                             height="26"
-                            onClick={() => setIsOpenMobileSidebar(prev => !prev)}
+                            onClick={() =>
+                                setIsOpenMobileSidebar((prev) => !prev)
+                            }
                             viewBox="0 0 256 256"
                         >
                             <path

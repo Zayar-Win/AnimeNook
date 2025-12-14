@@ -27,14 +27,19 @@ export default forwardRef(function Input(
 
     return (
         <div className={`${direction === "row" ? "flex items-center " : ""}`}>
-            {label && <InputLabel className={labelClassName} value={label} />}
+            {label && (
+                <InputLabel
+                    className={`!text-zinc-400 !mb-1.5 ${labelClassName}`}
+                    value={label}
+                />
+            )}
             <div className={`relative ${inputContainerClassName}`}>
                 {!textarea ? (
                     <input
                         {...props}
                         type={type}
                         className={
-                            "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5   " +
+                            "bg-[#1a1a1a] border border-white/10 text-white text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-3 transition-all duration-300 placeholder:text-zinc-600 " +
                             className
                         }
                         ref={input}
@@ -43,7 +48,7 @@ export default forwardRef(function Input(
                     <textarea
                         {...props}
                         className={
-                            "bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 " +
+                            "bg-[#1a1a1a] border border-white/10 text-white text-sm rounded-xl focus:ring-primary focus:border-primary block w-full p-3 transition-all duration-300 placeholder:text-zinc-600 " +
                             className
                         }
                         rows={6}

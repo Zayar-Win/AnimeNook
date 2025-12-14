@@ -18,7 +18,7 @@ const Button = ({ href, text, className, onClick, outline, Icon, type }) => {
                     <span>{text}</span>
                 </button>
             ) : (
-                <Link href={href}>
+                <Link href={href} className="inline-block">
                     <div
                         className={` cursor-pointer flex items-center gap-3 justify-center flex-grow-0 text-white px-4 py-2 rounded-lg font-semibold ${className} ${
                             outline
@@ -27,7 +27,7 @@ const Button = ({ href, text, className, onClick, outline, Icon, type }) => {
                         }`}
                     >
                         {Icon && <span>{Icon}</span>}
-                        <p>{text}</p>
+                        <span>{text}</span>
                     </div>
                 </Link>
             )}

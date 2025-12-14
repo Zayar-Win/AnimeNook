@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import RightArrow from "@/../assets/RightArrow";
 import Dashboard from "@/../assets/Dashboard";
 import { Link, usePage } from "@inertiajs/react";
@@ -10,6 +10,28 @@ const Sidebar = ({
     setIsOpenMobileSidebar,
 }) => {
     const { group } = usePage().props;
+    const [openMenus, setOpenMenus] = useState(() => {
+        const initialState = {};
+        sidebarLinks.forEach((link) => {
+            if (link.children?.length) {
+                const isActive = link.children.some((child) =>
+                    window.route().current(child.routeName)
+                );
+                if (isActive) {
+                    initialState[link.name] = true;
+                }
+            }
+        });
+        return initialState;
+    });
+
+    const toggleMenu = (name) => {
+        setOpenMenus((prev) => ({
+            ...prev,
+            [name]: !prev[name],
+        }));
+    };
+
     const handleClickOutside = (e) => {
         if (e.target.parentNode.classList.contains("menu")) return;
         setIsOpenMobileSidebar(false);
@@ -20,112 +42,159 @@ const Sidebar = ({
     return (
         <div
             ref={sidebarRef}
-            className={`fixed top-0 lg:left-0  transition-all z-[100] bg-white ${
+            className={`fixed top-0 lg:left-0 transition-all z-[100] bg-[#0a0a0a] ${
                 isOpenMobileSidebar ? "left-0" : "left-[-2000px]"
-            } bottom-0 lg:w-[20%] w-[60%] min-h-full overflow-y-auto border-r-[1px]  border-r-gray-300`}
+            } bottom-0 lg:w-[20%] w-[80%] max-w-[300px] min-h-full overflow-y-auto border-r border-white/5 shadow-2xl shadow-black/50`}
         >
-            <div className="flex flex-col justify-between">
-                <div>
+            <div className="flex flex-col h-full">
+                {/* Header */}
+                <div className="p-6">
                     <Link href={window.route("group.home")}>
-                        <div className="flex p-5 items-center gap-4 border-b-[1px] border-b-[rgba(0,0,0,0.1)]">
-                            <div className="w-[50px] h-[50px]">
+                        <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                            <div className="w-10 h-10 shrink-0 rounded-lg overflow-hidden ring-2 ring-white/10">
                                 <img
                                     src={group?.logo}
                                     className="w-full h-full object-cover"
                                     alt=""
                                 />
                             </div>
-                            <div>
-                                <h2 className="text-lg font-medium">
+                            <div className="overflow-hidden">
+                                <h2 className="text-white font-bold truncate">
                                     {group?.name}
                                 </h2>
-                                <p className="text-gray-500 text-sm font-medium">
-                                    Group
+                                <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider">
+                                    Admin Panel
                                 </p>
                             </div>
                         </div>
                     </Link>
-                    <div className="border-b-[1px] pb-5 border-b-[rgba(0,0,0,0.1)]">
-                        <div className="">
-                            <p className="text-gray-600 py-5 pl-5 font-semibold text-xs uppercase">
-                                OverView
-                            </p>
-                            <div className="pl-1">
-                                {sidebarLinks.map((link) =>
-                                    link.children?.length > 0 ? (
-                                        <div className="pl-5" key={link.name}>
-                                            <div className="flex  py-4 rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] cursor-pointer items-center gap-1">
-                                                <div>
-                                                    <RightArrow
-                                                        className={"w-6 h-6"}
-                                                    />
-                                                </div>
-                                                <div className="flex  items-center gap-2">
-                                                    {link.icon}
-                                                    <p className="font-semibold">
-                                                        {link.name}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            {link?.children?.length && (
-                                                <div className="bg-gray-100 rounded-tl-lg rounded-bl-lg">
-                                                    {link.children.map(
-                                                        (childLink) => (
-                                                            <Link
-                                                                href={window.route(
-                                                                    childLink.routeName
-                                                                )}
-                                                                key={
-                                                                    childLink.name
-                                                                }
-                                                                className="flex pl-7 rounded-tl-lg rounded-bl-lg cursor-pointer hover:bg-[rgba(0,0,0,0.1)] py-4 items-center gap-2"
-                                                            >
-                                                                <p className="font-semibold">
-                                                                    {
-                                                                        childLink.name
-                                                                    }
-                                                                </p>
-                                                            </Link>
-                                                        )
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <Link
-                                            className="block pl-5"
-                                            key={link.name}
-                                            href={window.route(link.routeName)}
+                </div>
+
+                <div className="px-6 pb-6 space-y-8 overflow-y-auto custom-scrollbar flex-1">
+                    {/* Overview Section */}
+                    <div>
+                        <p className="px-4 text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">
+                            Overview
+                        </p>
+                        <div className="space-y-1">
+                            {sidebarLinks.map((link) =>
+                                link.children?.length > 0 ? (
+                                    <div key={link.name} className="space-y-1">
+                                        <button
+                                            onClick={() =>
+                                                toggleMenu(link.name)
+                                            }
+                                            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 group ${
+                                                openMenus[link.name]
+                                                    ? "bg-white/5 text-white"
+                                                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                            }`}
                                         >
-                                            <div className="flex  py-4 rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] cursor-pointer items-center gap-1">
-                                                <div className="flex ml-2 items-center gap-2">
+                                            <div className="flex items-center gap-3">
+                                                <div className="[&>svg]:w-5 [&>svg]:h-5">
                                                     {link.icon}
-                                                    <p className="font-semibold">
-                                                        {link.name}
-                                                    </p>
                                                 </div>
+                                                <span className="font-semibold text-sm">
+                                                    {link.name}
+                                                </span>
                                             </div>
-                                        </Link>
-                                    )
-                                )}
-                            </div>
+                                            <RightArrow
+                                                className={`w-4 h-4 text-zinc-600 group-hover:text-white transition-transform duration-200 ${
+                                                    openMenus[link.name]
+                                                        ? "rotate-90 text-white"
+                                                        : ""
+                                                }`}
+                                            />
+                                        </button>
+                                        <div
+                                            className={`space-y-1 overflow-hidden transition-all duration-300 ${
+                                                openMenus[link.name]
+                                                    ? "max-h-[500px] opacity-100 mt-1"
+                                                    : "max-h-0 opacity-0"
+                                            }`}
+                                        >
+                                            {link.children.map((childLink) => (
+                                                <Link
+                                                    href={window.route(
+                                                        childLink.routeName
+                                                    )}
+                                                    key={childLink.name}
+                                                    className={`block pl-12 pr-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                                                        window
+                                                            .route()
+                                                            .current(
+                                                                childLink.routeName
+                                                            )
+                                                            ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                                            : "text-zinc-500 hover:text-white hover:bg-white/5"
+                                                    }`}
+                                                >
+                                                    {childLink.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <Link
+                                        key={link.name}
+                                        href={window.route(link.routeName)}
+                                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                                            window
+                                                .route()
+                                                .current(link.routeName)
+                                                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                                : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                        }`}
+                                    >
+                                        <div className="[&>svg]:w-5 [&>svg]:h-5">
+                                            {link.icon}
+                                        </div>
+                                        <span className="font-semibold text-sm">
+                                            {link.name}
+                                        </span>
+                                    </Link>
+                                )
+                            )}
                         </div>
                     </div>
-                </div>
-                <div>
-                    <p className="text-gray-600 py-5 pl-5 font-semibold text-xs uppercase">
-                        Account
-                    </p>
-                    <div className="pl-1 mb-3">
-                        <Link href={window.route("group.admin.setting")}>
-                            <div className="flex rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] pl-5 py-4 cursor-pointer items-center gap-2">
+
+                    {/* Account Section */}
+                    <div>
+                        <p className="px-4 text-xs font-bold text-zinc-500 uppercase tracking-wider mb-4">
+                            Account
+                        </p>
+                        <div className="space-y-1">
+                            <Link
+                                href={window.route("group.admin.setting")}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                                    window
+                                        .route()
+                                        .current("group.admin.setting")
+                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                        : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                }`}
+                            >
                                 <Dashboard className="w-5 h-5" />
-                                <p className="font-semibold">Setting</p>
-                            </div>
-                        </Link>
-                        <div className="flex pl-5 rounded-tl-md rounded-bl-md hover:bg-[rgba(0,0,0,0.1)] py-4 cursor-pointer items-center gap-2">
-                            <Dashboard className={"w-5 h-5"} />
-                            <p className="font-semibold">Dashboard</p>
+                                <span className="font-semibold text-sm">
+                                    Settings
+                                </span>
+                            </Link>
+
+                            <Link
+                                href={window.route("group.admin.dashboard")}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                                    window
+                                        .route()
+                                        .current("group.admin.dashboard")
+                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                        : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                }`}
+                            >
+                                <Dashboard className="w-5 h-5" />
+                                <span className="font-semibold text-sm">
+                                    Dashboard
+                                </span>
+                            </Link>
                         </div>
                     </div>
                 </div>

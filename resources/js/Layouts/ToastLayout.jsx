@@ -7,7 +7,7 @@ const ToastLayout = ({ children }) => {
     useToast();
     return (
         <div>
-            <ToastContainer position="bottom-right" />
+            <ToastContainer position="bottom-right" theme="dark" />
             {children}
         </div>
     );
