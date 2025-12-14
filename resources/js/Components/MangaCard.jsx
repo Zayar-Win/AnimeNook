@@ -1,13 +1,17 @@
-import { formateDate } from '@/app'
-import React from 'react'
-import {Link, router} from '@inertiajs/react';
-import {usePage} from '@inertiajs/react';
+import React from "react";
+import { Link, router, usePage } from "@inertiajs/react";
 
-const MangaCard = ({manga}) => {
-    const {auth : {user}} = usePage().props;
-    const saveToCollection = () => {
-        if(!user){
-            return router.get(window.route('group.login'));
+const MangaCard = ({ manga }) => {
+    const {
+        auth: { user },
+    } = usePage().props;
+
+    const saveToCollection = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            return router.get(window.route("group.login"));
         }
         router.post(
             window.route("group.item.save", {
@@ -16,48 +20,132 @@ const MangaCard = ({manga}) => {
             {
                 id: manga.id,
                 type: "manga",
-            },{
-                preserveScroll:true,
+            },
+            {
+                preserveScroll: true,
             }
         );
     };
+
     return (
-        <div className='text-white relative rounded-md overflow-hidden cursor-pointer pb-4'>
-            <Link href={window.route('group.manga.detail',manga)}>
-                <div className='h-[320px]'>
-                    <img className='w-full h-full object-cover' src={manga?.thumbnail} alt="" />
-                </div>
-                <h1 className='text-xl font-semibold pt-3 hover:underline'>{manga?.name}</h1>
-                <span className='block font-semibold py-2 hover:underline'>Chapters {manga?.chapters_count}</span>
-                <span className='block font-semibold py-2 hover:underline'>Latest Watched Chapter {manga?.latestWatchedChapter?.chapter_number || 1 }</span>
-                <span className='block text-sm py-2'>Last Update: {formateDate(manga?.updated_at)}</span>
-                <div className='absolute opacity-0 rounded-md hover:opacity-100 p-2 transition-all top-0 bottom-0 left-0 bg-[#1b1f1ee7] w-full h-fll'>
-                    <h1 className='text-xl font-semibold  hover:underline'>{manga?.name}</h1>
-                    <div className='flex items-center gap-1 mt-3 leading-none cursor-pointer text-[14px] hover:text-yellow-400 transition-all'>
-                        <span>{parseInt(manga?.rating).toFixed(1)}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 14 14"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" d="M7.49 1.09L9.08 4.3a.51.51 0 0 0 .41.3l3.51.52a.54.54 0 0 1 .3.93l-2.53 2.51a.53.53 0 0 0-.16.48l.61 3.53a.55.55 0 0 1-.8.58l-3.16-1.67a.59.59 0 0 0-.52 0l-3.16 1.67a.55.55 0 0 1-.8-.58L3.39 9a.53.53 0 0 0-.16-.48L.67 6.05A.54.54 0 0 1 1 5.12l3.51-.52a.51.51 0 0 0 .41-.3l1.59-3.21a.54.54 0 0 1 .98 0Z"/></svg>
-                        <span>({manga?.ratings_count})</span>
+        <div className="group relative w-full">
+            <Link href={window.route("group.manga.detail", manga)}>
+                {/* Image Container */}
+                <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-zinc-900">
+                    <img
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        src={manga?.thumbnail}
+                        alt={manga?.name}
+                        loading="lazy"
+                    />
+
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1.5">
+                        <div className="bg-purple-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm shadow-sm">
+                            Ch {manga?.chapters_count || "?"}
+                        </div>
+                        {manga?.latestWatchedChapter && (
+                            <div className="bg-green-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm shadow-sm">
+                                Read:{" "}
+                                {manga?.latestWatchedChapter?.chapter_number}
+                            </div>
+                        )}
                     </div>
-                    <span className='block font-semibold text-sm py-2 hover:underline'>Chapters {manga?.chapters_count}</span>
-                    <p>{manga?.description}</p>
-                    <div className='flex items-center left-5 gap-3 mt-16 absolute text-yellow-400 bottom-4'>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path d="M2 8v11.529S6.621 19.357 12 22c5.379-2.643 10-2.471 10-2.471V8s-5.454 0-10 2.471C7.454 8 2 8 2 8z" fill="currentColor"/><circle cx="12" cy="5" r="3" fill="currentColor"/></svg>
-                        {
-                            manga?.isSavedByCurrentUser ? <svg xmlns="http://www.w3.org/2000/svg" onClick={e => {
-                                e.preventDefault();
-                                saveToCollection();
-                            }} width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V5q0-.825.588-1.412T7 3h10q.825 0 1.413.588T19 5v16l-7-3z"/></svg>
-                                :
-                                <svg onClick={e => {
-                                    e.preventDefault();
-                                    saveToCollection();
-                                }} xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21V3h14v18l-7-3l-7 3Zm2-3.05l5-2.15l5 2.15V5H7v12.95ZM7 5h10H7Z"/></svg>
-                        }
+
+                    {/* Rating Badge */}
+                    <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm flex items-center gap-1">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            className="text-yellow-400"
+                        >
+                            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
+                        </svg>
+                        {manga?.rating
+                            ? parseFloat(manga?.rating).toFixed(1)
+                            : "N/A"}
+                    </div>
+
+                    {/* Hover Read Button */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-[2px] bg-black/20">
+                        <div className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="mt-3 space-y-1">
+                    <h3 className="text-white font-bold text-sm leading-tight line-clamp-1 group-hover:text-purple-600 transition-colors">
+                        {manga?.name}
+                    </h3>
+
+                    <div className="flex items-center justify-between text-xs text-zinc-500">
+                        <span className="truncate max-w-[70%]">
+                            Manga •{" "}
+                            {new Date(
+                                manga?.updated_at || Date.now()
+                            ).getFullYear()}
+                        </span>
+
+                        <button
+                            onClick={saveToCollection}
+                            className={`transition-colors hover:text-purple-600 ${
+                                manga?.isSavedByCurrentUser
+                                    ? "text-purple-600"
+                                    : "text-zinc-400"
+                            }`}
+                        >
+                            {manga?.isSavedByCurrentUser ? (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <path d="M5 21V3h14v18l-7-3l-7 3Z" />
+                                </svg>
+                            ) : (
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                </svg>
+                            )}
+                        </button>
                     </div>
                 </div>
             </Link>
         </div>
-    )
-}
+    );
+};
 
-export default MangaCard
+export default MangaCard;

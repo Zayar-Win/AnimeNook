@@ -203,7 +203,7 @@ if ($isProduction) {
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $banners = Banner::with('bannerable')->get();
-            $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
+            $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(6)->get();
             $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
             $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
             $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();

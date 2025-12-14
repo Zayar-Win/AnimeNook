@@ -50,6 +50,29 @@ body {
     height: 100px !important;
 }
 
+.dark-form .ql-toolbar {
+    background-color: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+.dark-form .ql-toolbar .ql-stroke {
+    stroke: #a1a1aa !important;
+}
+.dark-form .ql-toolbar .ql-fill {
+    fill: #a1a1aa !important;
+}
+.dark-form .ql-toolbar .ql-picker {
+    color: #a1a1aa !important;
+}
+.dark-form .ql-container {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+}
+.dark-form .ql-editor.ql-blank::before {
+    color: #71717a !important;
+    font-style: normal;
+}
+
 .hover-effect {
     position: relative;
     overflow: hidden;

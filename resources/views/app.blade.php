@@ -34,7 +34,7 @@
 
             ;
 
-            /* Default primary color */
+
             --secondary-color: {
                     {
                     $group->secondary_color ?? 'black'
@@ -42,7 +42,6 @@
             }
 
             ;
-            /* Default secondary color */
         }
     </style>
     <!-- Fonts -->
