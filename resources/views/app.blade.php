@@ -18,30 +18,23 @@
     <title inertia>{{ config('app.name', 'AnimeNook') }}</title>
 
     @php
-    use App\Models\Group;
-    $group = request()->route('group');
-    if(gettype($group) === 'string'){
-    $group = Group::where('subdomain',$group)->first();
-    }
+        use App\Models\Group;
+
+        $routeGroup = request()->route('group');
+        if ($routeGroup !== null && is_string($routeGroup)) {
+            $routeGroup = Group::where('subdomain', $routeGroup)->first();
+        }
+
+        $rawPrimary = $routeGroup?->groupSetting?->primary_color;
+        $primaryColorCss = '#ED6400';
+        if (is_string($rawPrimary) && preg_match('/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/', trim($rawPrimary))) {
+            $primaryColorCss = trim($rawPrimary);
+        }
     @endphp
     <style>
         :root {
-            --primary-color: {
-                    {
-                    $group->groupSetting->primary_color ?? '#ED6400'
-                }
-            }
-
-            ;
-
-
-            --secondary-color: {
-                    {
-                    $group->secondary_color ?? 'black'
-                }
-            }
-
-            ;
+            --primary-color: {{ $primaryColorCss }};
+            --secondary-color: black;
         }
     </style>
     <!-- Fonts -->

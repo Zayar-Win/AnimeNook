@@ -23,6 +23,41 @@ export function formateDate(
 }
 
 window.route = route;
+
+const PRIMARY_COLOR_FALLBACK = "#ED6400";
+
+function sanitizePrimaryColor(raw) {
+    if (typeof raw !== "string") return null;
+    const t = raw.trim();
+    return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/.test(t)
+        ? t
+        : null;
+}
+
+function syncPrimaryColorFromInertiaPage(page) {
+    const g = page?.props?.group;
+    const raw =
+        g?.group_setting?.primary_color ?? g?.groupSetting?.primary_color;
+    const color = sanitizePrimaryColor(raw) ?? PRIMARY_COLOR_FALLBACK;
+    document.documentElement.style.setProperty("--primary-color", color);
+}
+
+const appRoot = document.getElementById("app");
+if (appRoot?.dataset?.page) {
+    try {
+        syncPrimaryColorFromInertiaPage(JSON.parse(appRoot.dataset.page));
+    } catch {
+        document.documentElement.style.setProperty(
+            "--primary-color",
+            PRIMARY_COLOR_FALLBACK,
+        );
+    }
+}
+
+document.addEventListener("inertia:success", (event) => {
+    syncPrimaryColorFromInertiaPage(event.detail.page);
+});
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {
