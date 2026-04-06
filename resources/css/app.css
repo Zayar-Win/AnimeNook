@@ -200,3 +200,62 @@ body {
 .parent-container {
     overflow: visible !important;
 }
+
+/* FilePond Custom Dark Theme */
+.filepond--root {
+    margin-bottom: 0 !important;
+}
+
+.filepond--panel-root {
+    background-color: transparent !important;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 0.75rem !important;
+}
+
+.filepond--drop-label {
+    color: #a1a1aa !important;
+    font-size: 0.875rem !important;
+}
+
+.filepond--label-action {
+    text-decoration: none !important;
+    color: var(--primary-color) !important;
+    font-weight: 700 !important;
+}
+
+.filepond--item-panel {
+    background-color: #27272a !important; /* zinc-800 */
+    border-radius: 0.5rem !important;
+}
+
+.filepond--file-action-button {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    color: white !important;
+    cursor: pointer;
+}
+
+.filepond--image-preview-overlay-success {
+    color: #4ade80 !important; /* green-400 */
+}
+
+/* When dragging over */
+.filepond--drip {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* FilePond Grid Layout for Multiple Files */
+.filepond-grid .filepond--item {
+    width: calc(50% - 0.5em) !important;
+}
+
+@media (min-width: 768px) {
+    .filepond-grid .filepond--item {
+        width: calc(33.33% - 0.5em) !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .filepond-grid .filepond--item {
+        width: calc(25% - 0.5em) !important;
+    }
+}

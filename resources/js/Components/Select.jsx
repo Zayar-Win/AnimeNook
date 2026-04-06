@@ -1,6 +1,7 @@
 import React from "react";
 import ReactSelect from "react-select";
 import InputLabel from "./InputLabel";
+import InputError from "./InputError";
 
 const Select = ({
     options,
@@ -10,6 +11,7 @@ const Select = ({
     selected,
     isDisabled = false,
     isMulti = false,
+    errorMessage = null,
 }) => {
     if (Array.isArray(selected)) {
         defaultValue = options.filter((option) =>
@@ -25,10 +27,14 @@ const Select = ({
         control: (provided, state) => ({
             ...provided,
             backgroundColor: "#1a1a1a",
-            borderColor: state.isFocused ? "var(--primary-color)" : "rgba(255, 255, 255, 0.1)",
+            borderColor: state.isFocused
+                ? "var(--primary-color)"
+                : "rgba(255, 255, 255, 0.1)",
             borderRadius: "0.75rem",
             padding: "0.25rem",
-            boxShadow: state.isFocused ? "0 0 0 1px var(--primary-color)" : "none",
+            boxShadow: state.isFocused
+                ? "0 0 0 1px var(--primary-color)"
+                : "none",
             "&:hover": {
                 borderColor: "rgba(255, 255, 255, 0.2)",
             },
@@ -53,7 +59,9 @@ const Select = ({
             borderRadius: "0.5rem",
             margin: "0.25rem 0",
             ":active": {
-                backgroundColor: state.isSelected ? "var(--primary-color)" : "rgba(255, 255, 255, 0.1)",
+                backgroundColor: state.isSelected
+                    ? "var(--primary-color)"
+                    : "rgba(255, 255, 255, 0.1)",
             },
         }),
         singleValue: (provided) => ({
@@ -84,12 +92,9 @@ const Select = ({
     };
 
     return (
-        <div>
+        <div className="relative">
             {label && (
-                <InputLabel
-                    className="!text-zinc-400 !mb-1.5"
-                    value={label}
-                />
+                <InputLabel className="!text-zinc-400 !mb-1.5" value={label} />
             )}
             {options.length > 0 && (
                 <ReactSelect
@@ -103,11 +108,12 @@ const Select = ({
                         ...theme,
                         colors: {
                             ...theme.colors,
-                            neutral50: "#a1a1aa", 
+                            neutral50: "#a1a1aa",
                         },
                     })}
                 />
             )}
+            {errorMessage && <InputError message={errorMessage} />}
         </div>
     );
 };

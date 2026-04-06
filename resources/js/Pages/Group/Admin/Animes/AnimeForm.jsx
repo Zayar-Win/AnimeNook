@@ -63,6 +63,16 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
     });
 
     const [tagOptions, setTagOptions] = useState([]);
+    const [activeTab, setActiveTab] = useState("details");
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get("tab");
+        if (tab && tabs.find((t) => t.id === tab)) {
+            setActiveTab(tab);
+        }
+    }, [window.location.search]);
+
     const deleteHandler = () => {
         router.post(
             window.route("group.admin.animes.episodes.delete", {
@@ -78,6 +88,17 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
             }
         );
     };
+
+    const tabs = [
+        { id: "details", label: "Details" },
+        ...(type === "edit"
+            ? [
+                  { id: "seasons", label: "Seasons" },
+                  { id: "episodes", label: "Episodes" },
+              ]
+            : []),
+    ];
+
     useEffect(() => {
         if (statuses.length > 0) {
             const options = statuses.map((status) => {
@@ -101,234 +122,427 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
         }
     }, []);
     return (
-        <div>
-            <div className="w-[90%] mx-auto">
-                <h1 className="text-xl font-semibold my-6">
-                    {type === "edit" ? "Edit" : "Create New"} Anime
-                </h1>
-
-                <div className="flex items-center justify-end gap-3">
-                    <Button
-                        href={window.route("group.admin.anime.seasons.create", {
-                            anime: anime.slug,
-                        })}
-                        text={"Create Season"}
-                        className={"!bg-blue-500  "}
-                    />
-                    <Button
-                        href={window.route(
-                            "group.admin.animes.episodes.create",
-                            { anime }
-                        )}
-                        text={"Create Eposide"}
-                        className={"!bg-blue-500 "}
-                    />
+        <div className="bg-[#0a0a0a] min-h-screen p-8 text-white">
+            <div className="max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 pb-6 border-b border-white/10">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(237,100,0,0.15)] shrink-0">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                        </div>
+                        <div className="flex flex-col">
+                            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight leading-none">
+                                {type === "edit"
+                                    ? "Edit Anime"
+                                    : "Create New Anime"}
+                            </h1>
+                            <p className="text-zinc-400 text-sm font-medium mt-1">
+                                {type === "edit"
+                                    ? "Manage anime details, seasons, and episodes"
+                                    : "Add a new anime series to the catalog"}
+                            </p>
+                        </div>
+                    </div>
+                    {type === "edit" && activeTab !== "details" && (
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                            {activeTab === "seasons" && (
+                                <Button
+                                    href={window.route(
+                                        "group.admin.anime.seasons.create",
+                                        {
+                                            anime: anime.slug,
+                                        }
+                                    )}
+                                    text={"Create Season"}
+                                    className={
+                                        "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1 w-full sm:w-auto text-center justify-center"
+                                    }
+                                />
+                            )}
+                            {activeTab === "episodes" && (
+                                <Button
+                                    href={window.route(
+                                        "group.admin.animes.episodes.create",
+                                        { anime }
+                                    )}
+                                    text={"Create Episode"}
+                                    className={
+                                        "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1 w-full sm:w-auto text-center justify-center"
+                                    }
+                                />
+                            )}
+                        </div>
+                    )}
                 </div>
 
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        type === "edit"
-                            ? post(
-                                  window.route("group.admin.animes.update", {
-                                      anime,
-                                  })
-                              )
-                            : post(window.route("group.admin.animes.store"));
-                    }}
-                >
-                    <div className="grid grid-cols-2 gap-x-10 gap-y-14">
-                        <div className={"col-span-2 relative"}>
-                            <InputLabel value={"Thumbnail"} />
-                            <FilePondUploader
-                                photos={data.thumbnail}
-                                onUpload={(file) => setData("thumbnail", file)}
-                            />
-                            <InputError message={errors.thumbnail} />
-                        </div>
-                        <div>
-                            <InputLabel isOptional value={"Background Image"} />
-                            <FilePondUploader
-                                photos={data.background_image}
-                                onUpload={(file) =>
-                                    setData("background_image", file)
-                                }
-                            />
-                            <InputError message={errors.background_image} />
-                        </div>
-                        <div>
-                            <InputLabel
-                                isOptional
-                                value={"Transparent Background Image"}
-                            />
-                            <FilePondUploader
-                                photos={data.transparent_background}
-                                onUpload={(file) =>
-                                    setData("transparent_background", file)
-                                }
-                            />
-                            <InputError
-                                message={errors.transparent_background}
-                            />
-                        </div>
-                        <div>
-                            <Input
-                                label="Name"
-                                value={data.name}
-                                onChange={(e) =>
-                                    setData("name", e.target.value)
-                                }
-                                errorMessage={errors.name}
-                            />
-                        </div>
-                        <div>
-                            <Select
-                                label={"Status"}
-                                options={statusOptions}
-                                selected={data.status_id}
-                                onChange={(status) =>
-                                    setData("status_id", status.value)
-                                }
-                                errorMessage={errors.status}
-                            />
-                        </div>
-                        <div>
-                            <Select
-                                label={"Tags"}
-                                isMulti={true}
-                                options={tagOptions}
-                                selected={data.tag_ids}
-                                onChange={(option) =>
-                                    setData("tag_ids", [...option])
-                                }
-                                errorMessage={errors.tag}
-                            />
-                        </div>
-                        <div className="col-span-2">
-                            <Input
-                                textarea
-                                label="Description"
-                                value={data.description}
-                                onChange={(e) =>
-                                    setData("description", e.target.value)
-                                }
-                                errorMessage={errors.description}
-                            />
-                        </div>
-                    </div>
-                    <Button
-                        text={type === "edit" ? "Update" : "Create"}
-                        type={"submit"}
-                        className={"!bg-blue-500 !inline-block my-8 !px-20"}
-                    />
-                </form>
+                {/* Navigation Tabs */}
+                <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all whitespace-nowrap ${
+                                activeTab === tab.id
+                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                            }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
 
-                {type === "edit" && (
-                    <div>
-                        <h1 className="text-xl font-semibold mt-6 mb-3">
-                            Seasons
-                        </h1>
-                        <div className="flex justify-end"></div>
-                        {seasons?.data.length > 0 ? (
-                            <Season
-                                seasons={seasons}
-                                serie={anime}
-                                type={"anime"}
-                            />
-                        ) : (
-                            <p className="text-center text-xl text-gray-500 font-medium">
-                                No Seasons are created.
-                            </p>
-                        )}
-                    </div>
-                )}
-
-                {type === "edit" && (
-                    <div>
-                        <h1 className="text-xl font-semibold mt-6 mb-3">
-                            Episodes
-                        </h1>
-                        <div className="flex justify-end"></div>
-                        <Table datas={episodes} columns={columns}>
-                            <TableData>
-                                {(episode) => <p>{episode?.chapter_number}</p>}
-                            </TableData>
-                            <TableData>
-                                {(episode) => <p>{episode?.season.title}</p>}
-                            </TableData>
-                            <TableData>
-                                {(episode) => <p>{episode?.title}</p>}
-                            </TableData>
-                            <TableData>
-                                {(episode) => (
-                                    <img
-                                        className="w-20 h-10 object-cover"
-                                        src={episode?.thumbnail}
-                                        alt="Anime ThumbNail"
-                                    ></img>
-                                )}
-                            </TableData>
-                            <TableData className={"max-w-[400px]"}>
-                                {(episode) => (
-                                    <a
-                                        href={episode?.chapter_link}
-                                        className="line-clamp-1 hover:underline hover:text-blue-500"
-                                    >
-                                        {episode?.chapter_link}
-                                    </a>
-                                )}
-                            </TableData>
-                            <TableData>
-                                {(episode) => (
-                                    <p className="line-clamp-2">
-                                        {episode?.description}
-                                    </p>
-                                )}
-                            </TableData>
-                            <TableData>
-                                {(episode) => <p>{episode?.like_count}</p>}
-                            </TableData>
-                            <TableData>
-                                {(episode) => <p>{episode?.view_count}</p>}
-                            </TableData>
-                            <TableData>
-                                {(episode) => (
-                                    <div className="flex items-center gap-2 text-blue-600">
-                                        <Link
-                                            href={window.route(
-                                                "group.admin.animes.episodes.edit",
-                                                {
-                                                    anime,
-                                                    episode,
-                                                }
-                                            )}
-                                            className="hover:underline"
-                                        >
-                                            Edit
-                                        </Link>
-                                        <div
-                                            onClick={() => {
-                                                setIsDeleteModalOpen(true);
-                                                setSelectedEpisode(episode);
-                                            }}
-                                            className="hover:underline cursor-pointer"
-                                        >
-                                            Delete
-                                        </div>
+                {/* Details Tab (Form) */}
+                <div className={activeTab === "details" ? "block" : "hidden"}>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            type === "edit"
+                                ? post(
+                                      window.route(
+                                          "group.admin.animes.update",
+                                          {
+                                              anime,
+                                          }
+                                      )
+                                  )
+                                : post(
+                                      window.route("group.admin.animes.store")
+                                  );
+                        }}
+                        className="bg-[#1a1a1a] rounded-2xl p-8 border border-white/5 shadow-xl shadow-black/50 mb-10"
+                    >
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                            {/* Left Column - Images */}
+                            <div className="lg:col-span-1 space-y-6">
+                                <div>
+                                    <InputLabel
+                                        value={"Thumbnail"}
+                                        className="!text-zinc-400 !mb-2"
+                                    />
+                                    <div className="bg-black/20 rounded-xl p-2 border border-white/5">
+                                        <FilePondUploader
+                                            photos={data.thumbnail}
+                                            onUpload={(file) =>
+                                                setData("thumbnail", file)
+                                            }
+                                        />
                                     </div>
-                                )}
-                            </TableData>
-                        </Table>
-                        {isDeleteModalOpen && (
-                            <DeleteModal
-                                setIsDeleteModalOpen={setIsDeleteModalOpen}
-                                deleteHandler={deleteHandler}
-                                title={
-                                    "Are you sure want to delete this episode."
-                                }
-                            />
-                        )}
-                    </div>
+                                    <InputError message={errors.thumbnail} />
+                                </div>
+                                <div>
+                                    <InputLabel
+                                        isOptional
+                                        value={"Background Image"}
+                                        className="!text-zinc-400 !mb-2"
+                                    />
+                                    <div className="bg-black/20 rounded-xl p-2 border border-white/5">
+                                        <FilePondUploader
+                                            photos={data.background_image}
+                                            onUpload={(file) =>
+                                                setData(
+                                                    "background_image",
+                                                    file
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <InputError
+                                        message={errors.background_image}
+                                    />
+                                </div>
+                                <div>
+                                    <InputLabel
+                                        isOptional
+                                        value={"Transparent Background"}
+                                        className="!text-zinc-400 !mb-2"
+                                    />
+                                    <div className="bg-black/20 rounded-xl p-2 border border-white/5">
+                                        <FilePondUploader
+                                            photos={data.transparent_background}
+                                            onUpload={(file) =>
+                                                setData(
+                                                    "transparent_background",
+                                                    file
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <InputError
+                                        message={errors.transparent_background}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Right Column - Details */}
+                            <div className="lg:col-span-2 space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <Input
+                                        label="Name"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData("name", e.target.value)
+                                        }
+                                        errorMessage={errors.name}
+                                        placeholder="Enter anime title"
+                                    />
+                                    <Select
+                                        label={"Status"}
+                                        options={statusOptions}
+                                        selected={data.status_id}
+                                        onChange={(status) =>
+                                            setData("status_id", status.value)
+                                        }
+                                        errorMessage={errors.status}
+                                    />
+                                </div>
+                                <div>
+                                    <Select
+                                        label={"Tags"}
+                                        isMulti={true}
+                                        options={tagOptions}
+                                        selected={data.tag_ids}
+                                        onChange={(option) =>
+                                            setData("tag_ids", [...option])
+                                        }
+                                        errorMessage={errors.tag_ids}
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        textarea
+                                        label="Description"
+                                        value={data.description}
+                                        onChange={(e) =>
+                                            setData(
+                                                "description",
+                                                e.target.value
+                                            )
+                                        }
+                                        errorMessage={errors.description}
+                                        placeholder="Write a brief synopsis..."
+                                        className="!h-32"
+                                    />
+                                </div>
+
+                                <div className="flex justify-end pt-6 border-t border-white/5">
+                                    <Button
+                                        text={
+                                            type === "edit"
+                                                ? "Save Changes"
+                                                : "Create Anime"
+                                        }
+                                        type={"submit"}
+                                        className={
+                                            "!bg-primary hover:!bg-primary/90 !px-10 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1"
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                {type === "edit" && (
+                    <>
+                        {/* Seasons Tab */}
+                        <div
+                            className={
+                                activeTab === "seasons" ? "block" : "hidden"
+                            }
+                        >
+                            <div className="bg-[#1a1a1a] rounded-2xl border border-white/5 shadow-xl shadow-black/50 overflow-hidden">
+                                <div className="p-6 border-b border-white/5">
+                                    <h2 className="text-xl font-black text-white flex items-center gap-3">
+                                        <span className="w-1.5 h-6 bg-primary rounded-full"></span>
+                                        Manage Seasons
+                                    </h2>
+                                </div>
+                                <div className="p-6">
+                                    {seasons?.data.length > 0 ? (
+                                        <Season
+                                            seasons={seasons}
+                                            serie={anime}
+                                            type={"anime"}
+                                        />
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center py-12 text-zinc-500">
+                                            <p className="font-medium">
+                                                No seasons created yet.
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Episodes Tab */}
+                        <div
+                            className={
+                                activeTab === "episodes" ? "block" : "hidden"
+                            }
+                        >
+                            <div className="bg-[#1a1a1a] rounded-2xl border border-white/5 shadow-xl shadow-black/50 overflow-hidden">
+                                <div className="p-6 border-b border-white/5">
+                                    <h2 className="text-xl font-black text-white flex items-center gap-3">
+                                        <span className="w-1.5 h-6 bg-primary rounded-full"></span>
+                                        Manage Episodes
+                                    </h2>
+                                </div>
+                                <div className="">
+                                    <Table datas={episodes} columns={columns}>
+                                        <TableData>
+                                            {(episode) => (
+                                                <span className="font-bold text-white bg-white/5 px-3 py-1 rounded-lg">
+                                                    Ep {episode?.chapter_number}
+                                                </span>
+                                            )}
+                                        </TableData>
+                                        <TableData>
+                                            {(episode) => (
+                                                <span className="text-zinc-400">
+                                                    {episode?.season.title}
+                                                </span>
+                                            )}
+                                        </TableData>
+                                        <TableData>
+                                            {(episode) => (
+                                                <p className="font-medium text-white line-clamp-1">
+                                                    {episode?.title}
+                                                </p>
+                                            )}
+                                        </TableData>
+                                        <TableData>
+                                            {(episode) => (
+                                                <div className="w-24 h-14 rounded-lg overflow-hidden border border-white/10">
+                                                    <img
+                                                        className="w-full h-full object-cover"
+                                                        src={episode?.thumbnail}
+                                                        alt="Thumbnail"
+                                                    />
+                                                </div>
+                                            )}
+                                        </TableData>
+                                        <TableData className={"max-w-[200px]"}>
+                                            {(episode) => (
+                                                <a
+                                                    href={episode?.chapter_link}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="text-primary hover:underline text-xs truncate block"
+                                                >
+                                                    {episode?.chapter_link}
+                                                </a>
+                                            )}
+                                        </TableData>
+                                        <TableData className="max-w-[250px]">
+                                            {(episode) => (
+                                                <p className="line-clamp-2 text-zinc-500 text-xs">
+                                                    {episode?.description}
+                                                </p>
+                                            )}
+                                        </TableData>
+                                        <TableData>
+                                            {(episode) => (
+                                                <span className="text-zinc-400 text-xs font-bold">
+                                                    {episode?.like_count}
+                                                </span>
+                                            )}
+                                        </TableData>
+                                        <TableData>
+                                            {(episode) => (
+                                                <span className="text-zinc-400 text-xs font-bold">
+                                                    {episode?.view_count}
+                                                </span>
+                                            )}
+                                        </TableData>
+                                        <TableData>
+                                            {(episode) => (
+                                                <div className="flex items-center gap-2">
+                                                    <Link
+                                                        href={window.route(
+                                                            "group.admin.animes.episodes.edit",
+                                                            {
+                                                                anime,
+                                                                episode,
+                                                            }
+                                                        )}
+                                                        className="p-2 rounded-lg text-zinc-400 hover:text-primary hover:bg-primary/10 transition-all duration-300"
+                                                        title="Edit Episode"
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                        </svg>
+                                                    </Link>
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsDeleteModalOpen(
+                                                                true
+                                                            );
+                                                            setSelectedEpisode(
+                                                                episode
+                                                            );
+                                                        }}
+                                                        className="p-2 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all duration-300"
+                                                        title="Delete Episode"
+                                                    >
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            width="16"
+                                                            height="16"
+                                                            viewBox="0 0 24 24"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        >
+                                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                        </svg>
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </TableData>
+                                    </Table>
+                                    {isDeleteModalOpen && (
+                                        <DeleteModal
+                                            setIsDeleteModalOpen={
+                                                setIsDeleteModalOpen
+                                            }
+                                            deleteHandler={deleteHandler}
+                                            title={
+                                                "Are you sure you want to delete this episode?"
+                                            }
+                                        />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </>
                 )}
             </div>
         </div>
