@@ -50,6 +50,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 $isProduction = config('app.env') === 'production';
+
+/** Prevent single-segment URLs like /login from matching group home ({group} = "login"). */
+$groupSubdomainPattern = '^(?!login$|register$|admin$|api$|profile$|forgot-password$|verify-email$|reset-password$|confirm-password$)[a-z0-9][a-z0-9\-]*$';
 // URL::defaults(['group' => 'delta']);
 Route::get('/about', function () {
     return inertia('About');
@@ -65,7 +68,7 @@ Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 
 if ($isProduction) {
-    Route::domain('{group:subdomain}'.'.'.config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::domain('{group:subdomain}'.'.'.config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
@@ -200,7 +203,7 @@ if ($isProduction) {
     });
 } else {
     //end for admin middleware
-    Route::prefix('/{group:subdomain}')->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::prefix('/{group:subdomain}')->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
@@ -332,7 +335,7 @@ if ($isProduction) {
     });
 }
 
-Route::name('admin.')->group(function () {
+Route::name('admin.')->middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/admin/users', [AdminUserController::class, 'index'])->name('users');
     Route::get('/admin/users/create', [AdminUserController::class, 'create'])->name('users.create');

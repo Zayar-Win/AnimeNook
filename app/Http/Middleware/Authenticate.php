@@ -13,10 +13,23 @@ class Authenticate extends Middleware
      */
     protected function redirectTo(Request $request): ?string
     {
-        $group = $request->route('group');
-        if (!is_object($group)) {
-            $group = Group::where('subdomain', $group)->first();
+        if ($request->expectsJson()) {
+            return null;
         }
-        return $request->expectsJson() ? null : route('group.login');
+
+        $group = $request->route('group');
+        if (is_object($group) && $group instanceof Group) {
+            return route('group.login', ['group' => $group->subdomain]);
+        }
+        if (is_string($group) && $group !== '') {
+            return route('group.login', ['group' => $group]);
+        }
+
+        $resolved = Group::where('subdomain', $group)->first();
+        if ($resolved) {
+            return route('group.login', ['group' => $resolved->subdomain]);
+        }
+
+        return route('login');
     }
 }

@@ -14,7 +14,9 @@ use Tests\TestCase;
 |
 */
 
-uses(TestCase::class, RefreshDatabase::class)->in('Feature');
+uses(TestCase::class, RefreshDatabase::class)
+    ->beforeEach(fn () => \Tests\Support\TestBootstrap::seedRoles())
+    ->in('Feature');
 
 /*
 |--------------------------------------------------------------------------
@@ -42,7 +44,15 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function createGroupWithUser(string $roleName = 'user'): array
 {
-    // ..
+    $group = \App\Models\Group::factory()->create();
+    $role = \App\Models\Role::query()->where('name', $roleName)->firstOrFail();
+    $user = \App\Models\User::factory()->create([
+        'group_id' => $group->id,
+        'role_id' => $role->id,
+        'password' => 'password',
+    ]);
+
+    return compact('group', 'user', 'role');
 }

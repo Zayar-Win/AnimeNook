@@ -11,7 +11,11 @@ class CollectionitemRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $collection = $this->route('collection');
+
+        return $collection
+            && auth()->check()
+            && (int) $collection->user_id === (int) auth()->id();
     }
 
     /**

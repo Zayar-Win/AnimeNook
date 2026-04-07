@@ -16,8 +16,11 @@ class StatusFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->unique()->word();
+
         return [
-            //
+            'name' => $name,
+            'keyword' => $this->faker->unique()->slug(),
         ];
     }
 }

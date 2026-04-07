@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 $isProduction = config('app.env') === 'production';
+$groupSubdomainPattern = '^(?!login$|register$|admin$|api$|profile$|forgot-password$|verify-email$|reset-password$|confirm-password$)[a-z0-9][a-z0-9\-]*$';
 $groupNotificationRoutes = function () {
     Route::middleware('auth')->group(function () {
         Route::get('/notis', [NotificationController::class, 'index'])->name('notis');
@@ -31,13 +32,13 @@ $groupNotificationRoutes = function () {
 };
 
 if ($isProduction) {
-    Route::domain('{group:subdomain}'.'.'.config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () use ($groupNotificationRoutes) {
+    Route::domain('{group:subdomain}'.'.'.config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () use ($groupNotificationRoutes) {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
         $groupNotificationRoutes();
     });
 } else {
-    Route::prefix('/{group:subdomain}')->middleware(GroupMiddleware::class)->name('group.')->group(function () use ($groupNotificationRoutes) {
+    Route::prefix('/{group:subdomain}')->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () use ($groupNotificationRoutes) {
         Route::get('/search', [SearchController::class, 'search'])->name('search');
         Route::post('/views/store', [ViewController::class, 'store'])->name('views.store');
         Route::get('/animes-api', [AnimeController::class, 'index'])->name('getAnimesAndMangas');

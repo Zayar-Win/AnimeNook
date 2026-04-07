@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\Group;
+use App\Models\Status;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Anime>
  */
 class AnimeFactory extends Factory
 {
@@ -17,12 +19,14 @@ class AnimeFactory extends Factory
     public function definition(): array
     {
         return [
-            'group_id' => 1,
-            'name' => $this->faker->name(),
+            'group_id' => Group::factory(),
+            'name' => $this->faker->unique()->sentence(3),
             'description' => $this->faker->paragraph(),
-            'thumbnail' => $this->faker->image(),
+            'thumbnail' => 'https://example.test/thumb.jpg',
             'rating' => $this->faker->numberBetween(1, 5),
-            'status_id' => 1,
+            'status_id' => Status::factory(),
+            'views_count' => 0,
+            'likes_count' => 0,
         ];
     }
 }

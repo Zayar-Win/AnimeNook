@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Plan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,10 +18,12 @@ class GroupFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->name(),
-            'group_setting_id' => '1',
-            'plan_id' => $this->faker->numberBetween(1, 2),
+            'name' => $this->faker->company(),
+            'subdomain' => $this->faker->unique()->slug(),
+            'group_setting_id' => null,
+            'plan_id' => Plan::factory(),
             'logo' => '/images/logo.jpg',
+            'expire_date' => now()->addYear(),
         ];
     }
 }
