@@ -5,6 +5,17 @@
 body {
     overflow-x: hidden;
 }
+
+/* Mention links in comment HTML (classes from PHP are not scanned by Tailwind) */
+.comment-mention-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+.comment-mention-link:hover {
+    text-decoration: underline;
+}
 * {
     box-sizing: border-box !important;
 }

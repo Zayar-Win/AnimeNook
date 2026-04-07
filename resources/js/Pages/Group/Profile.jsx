@@ -7,14 +7,27 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 
 const Profile = () => {
+    const page = usePage();
     const {
-        auth: { user },
-    } = usePage().props;
-    const [profileLink, setProfileLink] = useState(user.profile_picture);
+        auth,
+        profileUser: profileUserProp,
+        isOwnProfile: isOwnProp,
+    } = page.props;
+    const isOwnProfile =
+        isOwnProp !== undefined ? isOwnProp : true;
+    const profileUser = profileUserProp ?? auth?.user;
+
+    if (!profileUser) {
+        return null;
+    }
+
+    const [profileLink, setProfileLink] = useState(
+        profileUser.profile_picture,
+    );
     const { data, setData, errors, post } = useForm({
-        profile_picture: user.profile_picture,
-        name: user.name,
-        email: user.email,
+        profile_picture: profileUser.profile_picture,
+        name: profileUser.name,
+        email: profileUser.email ?? "",
     });
 
     useEffect(() => {
@@ -24,124 +37,186 @@ const Profile = () => {
         }
     }, [data.profile_picture]);
 
+    useEffect(() => {
+        setProfileLink(profileUser.profile_picture);
+        if (isOwnProfile) {
+            setData({
+                profile_picture: profileUser.profile_picture,
+                name: profileUser.name,
+                email: profileUser.email ?? "",
+            });
+        }
+    }, [
+        profileUser.profile_picture,
+        profileUser.name,
+        profileUser.email,
+        isOwnProfile,
+        setData,
+    ]);
+
+    const roleName = profileUser?.role?.name;
+
     return (
-        <SectionContainer className={"bg-[#0D0D0D]"}>
+        <SectionContainer className="bg-[#0D0D0D] py-10 md:py-14 lg:py-16">
             <div className="flex md:flex-row flex-col gap-3">
-                <div className="lg:basis-[25%] md:basis-[30%] flex flex-col items-center rounded-xl p-8 pt-12  bg-[#1C1C1C]">
-                    <div className="md:w-[80%] w-[110px] aspect-square relative">
-                        <div className="absolute rounded-full flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 top-0 bg-[rgba(0,0,0,0.4)] left-0 bottom-0 right-0">
-                            <input
-                                type="file"
-                                onChange={(e) =>
-                                    setData(
-                                        "profile_picture",
-                                        e.target.files[0]
-                                    )
-                                }
-                                className="absolute cursor-pointer top-0 left-0 bottom-0 right-0 opacity-0"
+            <div className="lg:basis-[25%] md:basis-[30%] flex flex-col items-center rounded-xl p-8 pt-12 bg-[#1C1C1C]">
+                        <div className="md:w-[80%] w-[110px] aspect-square relative">
+                            {isOwnProfile && (
+                                <div className="absolute rounded-full flex items-center justify-center cursor-pointer opacity-0 hover:opacity-100 top-0 bg-[rgba(0,0,0,0.4)] left-0 bottom-0 right-0">
+                                    <input
+                                        type="file"
+                                        onChange={(e) =>
+                                            setData(
+                                                "profile_picture",
+                                                e.target.files[0],
+                                            )
+                                        }
+                                        className="absolute cursor-pointer top-0 left-0 bottom-0 right-0 opacity-0"
+                                    />
+                                    <p className="font-bold text-white">
+                                        Change Profile
+                                    </p>
+                                </div>
+                            )}
+                            <img
+                                src={profileLink}
+                                className="w-full object-cover rounded-full border-4 border-primary h-full"
+                                alt=""
                             />
-                            <p className="font-bold text-white">
-                                Change Profile
-                            </p>
                         </div>
-                        <img
-                            src={profileLink}
-                            className="w-full object-cover rounded-full border-4 border-primary h-full"
-                            alt="User Profile"
-                        />
+                        <h1 className="text-xl font-bold text-white pt-4">
+                            {profileUser.name}
+                        </h1>
+                        <div className="w-full mt-4">
+                            <div className="flex items-center text-sm text-gray-300 justify-between w-full">
+                                <p>Join Date</p>
+                                <p>
+                                    {moment(profileUser.created_at).format(
+                                        "MMM DD, YYYY",
+                                    )}
+                                </p>
+                            </div>
+                            <div className="flex items-center text-sm text-gray-300 justify-between w-full mt-2">
+                                <p>Watch List</p>
+                                <p>0</p>
+                            </div>
+                        </div>
                     </div>
-                    <h1 className="text-xl font-bold text-white pt-4">
-                        {user.name}
-                    </h1>
-                    <div className="w-full mt-4">
-                        <div className="flex items-center text-sm text-gray-300 justify-between w-full">
-                            <p>Join Date</p>
-                            <p>
-                                {moment(user.created_at).format("MMM DD, YYYY")}
-                            </p>
-                        </div>
-                        <div className="flex items-center text-sm text-gray-300 justify-between w-full mt-2">
-                            <p>Watch List</p>
-                            <p>0</p>
-                        </div>
+                    <div className="lg:basis-[75%] md:basis-[75%] rounded-xl p-5 bg-[#1C1C1C]">
+                        {isOwnProfile ? (
+                            <form
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    post(
+                                        window.route(
+                                            "group.users.profile.update",
+                                        ),
+                                        {
+                                            preserveScroll: true,
+                                        },
+                                    );
+                                }}
+                                className="lg:w-[60%] w-full flex flex-col gap-y-7 text-gray-300"
+                            >
+                                <div>
+                                    <Input
+                                        readOnly
+                                        labelClassName="!text-gray-300 !basis-[40%] mb-0"
+                                        direction="row"
+                                        value={moment(
+                                            profileUser.created_at,
+                                        ).format("MMM DD, YYYY")}
+                                        inputContainerClassName="!basis-[60%]"
+                                        className="bg-transparent !py-2 !text-gray-300"
+                                        label="Join Date"
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        direction="row"
+                                        labelClassName="!text-gray-300 !basis-[40%] mb-0"
+                                        inputContainerClassName="!basis-[60%]"
+                                        className="bg-transparent !py-2 !text-gray-300"
+                                        label="Email Address"
+                                        value={data.email}
+                                        onChange={(e) =>
+                                            setData("email", e.target.value)
+                                        }
+                                        errorMessage={errors.email}
+                                    />
+                                </div>
+                                <div>
+                                    <Input
+                                        direction="row"
+                                        labelClassName="!text-gray-300 !basis-[40%] mb-0"
+                                        inputContainerClassName="!basis-[60%]"
+                                        className="bg-transparent !py-2 !text-gray-300"
+                                        label="Username"
+                                        value={data.name}
+                                        onChange={(e) =>
+                                            setData("name", e.target.value)
+                                        }
+                                        errorMessage={errors.name}
+                                    />
+                                </div>
+                                <div className="flex items-center">
+                                    <p className="basis-[40%] text-sm font-semibold">
+                                        Type
+                                    </p>
+                                    <p className="px-8 py-2 font-bold bg-primary text-white rounded-[100px]">
+                                        {profileUser.type}
+                                    </p>
+                                </div>
+                                <div className="flex items-center">
+                                    <p className="basis-[40%] text-sm font-semibold">
+                                        Role
+                                    </p>
+                                    <p className="px-8 py-2 font-bold bg-primary text-white rounded-[100px]">
+                                        {roleName}
+                                    </p>
+                                </div>
+                                <Button
+                                    type="submit"
+                                    text="Update"
+                                    className={"!bg-primary w-[50%] mt-7"}
+                                />
+                            </form>
+                        ) : (
+                            <div className="lg:w-[60%] w-full flex flex-col gap-y-7 text-gray-300">
+                                <div>
+                                    <Input
+                                        readOnly
+                                        labelClassName="!text-gray-300 !basis-[40%] mb-0"
+                                        direction="row"
+                                        value={moment(
+                                            profileUser.created_at,
+                                        ).format("MMM DD, YYYY")}
+                                        inputContainerClassName="!basis-[60%]"
+                                        className="bg-transparent !py-2 !text-gray-300"
+                                        label="Join Date"
+                                    />
+                                </div>
+                                <div className="flex items-center">
+                                    <p className="basis-[40%] text-sm font-semibold">
+                                        Type
+                                    </p>
+                                    <p className="px-8 py-2 font-bold bg-primary text-white rounded-[100px]">
+                                        {profileUser.type}
+                                    </p>
+                                </div>
+                                <div className="flex items-center">
+                                    <p className="basis-[40%] text-sm font-semibold">
+                                        Role
+                                    </p>
+                                    <p className="px-8 py-2 font-bold bg-primary text-white rounded-[100px]">
+                                        {roleName}
+                                    </p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="lg:basis-[75%] md:basis-[70%] rounded-xl p-5 bg-[#1C1C1C]">
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            post(window.route("group.users.profile.update"), {
-                                preserveScroll: true,
-                            });
-                        }}
-                        className="lg:w-[60%] w-full flex flex-col gap-y-7 text-gray-300"
-                    >
-                        <div>
-                            <Input
-                                readOnly
-                                labelClassName="!text-gray-300 !basis-[40%] mb-0"
-                                direction="row"
-                                value={moment(user.created_at).format(
-                                    "MMM DD, YYYY"
-                                )}
-                                inputContainerClassName="!basis-[60%]"
-                                className="bg-transparent !py-2 !text-gray-300"
-                                label="Join Date"
-                            />
-                        </div>
-                        <div>
-                            <Input
-                                direction="row"
-                                labelClassName="!text-gray-300 !basis-[40%] mb-0"
-                                inputContainerClassName="!basis-[60%]"
-                                className="bg-transparent !py-2 !text-gray-300"
-                                label="Email Address"
-                                value={data.email}
-                                onChange={(e) =>
-                                    setData("email", e.target.value)
-                                }
-                                errorMessage={errors.email}
-                            />
-                        </div>
-                        <div>
-                            <Input
-                                direction="row"
-                                labelClassName="!text-gray-300 !basis-[40%] mb-0"
-                                inputContainerClassName="!basis-[60%]"
-                                className="bg-transparent !py-2 !text-gray-300"
-                                label="Username"
-                                value={data.name}
-                                onChange={(e) =>
-                                    setData("name", e.target.value)
-                                }
-                                errorMessage={errors.name}
-                            />
-                        </div>
-                        <div className="flex items-center">
-                            <p className="basis-[40%] text-sm font-semibold">
-                                Type
-                            </p>
-                            <p className="px-8 py-2 font-bold bg-primary text-white rounded-[100px]">
-                                {user.type}
-                            </p>
-                        </div>
-                        <div className="flex items-center">
-                            <p className="basis-[40%] text-sm font-semibold">
-                                Role
-                            </p>
-                            <p className="px-8 py-2 font-bold bg-primary text-white rounded-[100px]">
-                                {user.role.name}
-                            </p>
-                        </div>
-                        <Button
-                            type="submit"
-                            text="Update"
-                            className={"!bg-primary w-[50%] mt-7"}
-                        />
-                    </form>
-                </div>
-            </div>
-        </SectionContainer>
+            </SectionContainer>
     );
 };
 

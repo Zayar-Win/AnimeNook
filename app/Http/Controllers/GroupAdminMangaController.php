@@ -6,15 +6,18 @@ use App\helpers\ShortenLinkGenerator;
 use App\helpers\Uploader;
 use App\Models\Chapter;
 use App\Models\ChapterImage;
+use App\Models\CollectionItems;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\OuoFailLink;
 use App\Models\Status;
 use App\Models\Tag;
 use App\Models\Taggable;
+use App\Notifications\NewMangaChapterUpload;
+use App\Notifications\SavedContentUpdatedNotification;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Notification;
 
 class GroupAdminMangaController extends Controller
 {
@@ -23,6 +26,7 @@ class GroupAdminMangaController extends Controller
     public function index(Group $group)
     {
         $mangas = $group->mangas()->latest()->paginate(15);
+
         return inertia('Group/Admin/Mangas/Index', [
             'mangas' => $mangas,
         ]);
@@ -31,9 +35,9 @@ class GroupAdminMangaController extends Controller
     public function create(Group $group)
     {
         return inertia('Group/Admin/Mangas/MangaForm', [
-            'type' => "create",
+            'type' => 'create',
             'statuses' => Status::all(),
-            'tags' => Tag::all()
+            'tags' => Tag::all(),
         ]);
     }
 
@@ -63,30 +67,32 @@ class GroupAdminMangaController extends Controller
             $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
-        $manga =  Manga::create($validatedData);
+        $manga = Manga::create($validatedData);
         if ($tag_ids->count()) {
             foreach ($tag_ids as $id) {
                 Taggable::firstOrCreate([
                     'taggable_id' => $manga->id,
                     'taggable_type' => Manga::class,
-                    'tag_id' => $id
+                    'tag_id' => $id,
                 ]);
             }
         }
+
         return redirect(route('group.admin.mangas'))->with('success', 'Manga Series Created Successful.');
     }
 
     public function edit(Group $group, Manga $manga)
     {
-        $chapters = Chapter::with('season')->where('chapterable_id', $manga->id)->where("chapterable_type", Manga::class)->where('group_id', $group->id)->latest()->paginate(20);
+        $chapters = Chapter::with('season')->where('chapterable_id', $manga->id)->where('chapterable_type', Manga::class)->where('group_id', $group->id)->latest()->paginate(20);
         $manga = Manga::where('id', $manga->id)->with(['tags'])->first();
+
         return inertia('Group/Admin/Mangas/MangaForm', [
             'type' => 'edit',
             'manga' => $manga,
             'chapters' => $chapters,
             'statuses' => Status::all(),
             'tags' => Tag::all(),
-            'seasons' => $manga->seasons()->with('seasonable')->withCount('chapters')->paginate(10)
+            'seasons' => $manga->seasons()->with('seasonable')->withCount('chapters')->paginate(10),
         ]);
     }
 
@@ -99,7 +105,7 @@ class GroupAdminMangaController extends Controller
             'name' => ['required'],
             'status_id' => ['required'],
             'description' => ['required'],
-            'tag_ids' => ['required']
+            'tag_ids' => ['required'],
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
@@ -112,7 +118,7 @@ class GroupAdminMangaController extends Controller
                 Taggable::firstOrCreate([
                     'taggable_id' => $manga->id,
                     'taggable_type' => Manga::class,
-                    'tag_id' => $id
+                    'tag_id' => $id,
                 ]);
             }
         }
@@ -124,12 +130,14 @@ class GroupAdminMangaController extends Controller
             $validatedData['transparent_background'] = $this->uploader->upload($validatedData['transparent_background'], 'animes');
         }
         $manga->update($validatedData);
+
         return redirect(route('group.admin.mangas'))->with('success', 'Manga Series updated Successful.');
     }
 
     public function delete(Group $group, Manga $manga)
     {
         $manga->delete();
+
         return back()->with('success', 'Manga deleted successful.');
     }
 
@@ -151,7 +159,7 @@ class GroupAdminMangaController extends Controller
             'link' => ['required'],
             'description' => ['nullable'],
             'season_id' => ['required'],
-            'images' => ['required']
+            'images' => ['required'],
         ]);
         if (gettype($validatedData['thumbnail']) !== 'string') {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
@@ -160,7 +168,7 @@ class GroupAdminMangaController extends Controller
         $validatedData['group_id'] = $group->id;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
-        $validatedData['type']  = 'link';
+        $validatedData['type'] = 'link';
         $link = $validatedData['link'];
         // if ($group->plan->name !== 'premium') {
         //     $generator = new ShortenLinkGenerator();
@@ -175,6 +183,22 @@ class GroupAdminMangaController extends Controller
         unset($validatedData['images']);
         $chapter = Chapter::create($validatedData);
 
+        $savedUserIds = CollectionItems::query()
+            ->where('item_type', Manga::class)
+            ->where('item_id', $manga->id)
+            ->pluck('user_id')
+            ->unique()
+            ->all();
+
+        $nonSavers = $group->users()->whereNotIn('id', $savedUserIds)->get();
+        $savers = $group->users()->whereIn('id', $savedUserIds)->get();
+
+        if ($nonSavers->isNotEmpty()) {
+            Notification::send($nonSavers, new NewMangaChapterUpload($chapter, $group, $manga));
+        }
+        if ($savers->isNotEmpty()) {
+            Notification::send($savers, new SavedContentUpdatedNotification($chapter, $group, $manga));
+        }
 
         foreach ($imagesFromRequest as $index => $image) {
             if ($image instanceof UploadedFile) {
@@ -182,7 +206,7 @@ class GroupAdminMangaController extends Controller
                 ChapterImage::create([
                     'chapter_id' => $chapter->id,
                     'path' => $path,
-                    'order' => $index
+                    'order' => $index,
                 ]);
             }
         }
@@ -190,9 +214,10 @@ class GroupAdminMangaController extends Controller
         if ($isOuoGenerateFail) {
             OuoFailLink::create([
                 'group_id' => $group->id,
-                'chapter_id' => $chapter->id
+                'chapter_id' => $chapter->id,
             ]);
         }
+
         return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chpater created Successful.');
     }
 
@@ -216,12 +241,12 @@ class GroupAdminMangaController extends Controller
             'description' => ['required'],
             'link' => ['required'],
             'season_id' => ['required'],
-            'images' => ['required']
+            'images' => ['required'],
         ]);
 
         $imagesFromRequest = $validatedData['images'] ?? [];
         if (gettype($validatedData['thumbnail']) !== 'string') {
-            $validatedData['thumbnail'] =  $this->uploader->upload($validatedData['thumbnail'], 'animes');
+            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
         }
         $validatedData['group_id'] = $group->id;
         $link = $validatedData['link'];
@@ -254,13 +279,11 @@ class GroupAdminMangaController extends Controller
         $validatedData['type'] = 'link';
         $chapter->update($validatedData);
 
-
         $existingImageIdsInRequest = collect($imagesFromRequest)->filter(function ($image) {
             return is_array($image) && isset($image['id']);
         })->map(function ($image) {
             return $image['id'];
         });
-
 
         $chapter->images()->whereNotIn('id', $existingImageIdsInRequest)->each(function ($image) {
             $this->uploader->remove($image->path);
@@ -270,7 +293,7 @@ class GroupAdminMangaController extends Controller
         foreach ($imagesFromRequest as $index => $image) {
             if (is_array($image) && isset($image['id'])) {
                 ChapterImage::where('id', $image['id'])->update([
-                    'order' => $index
+                    'order' => $index,
                 ]);
             }
 
@@ -279,12 +302,10 @@ class GroupAdminMangaController extends Controller
                 ChapterImage::create([
                     'chapter_id' => $chapter->id,
                     'path' => $path,
-                    'order' => $index
+                    'order' => $index,
                 ]);
             }
         }
-
-
 
         return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chapter udpated successful.');
     }
@@ -292,6 +313,7 @@ class GroupAdminMangaController extends Controller
     public function deleteChapter(Group $group, Manga $manga, Chapter $chapter)
     {
         $chapter->delete();
+
         return back()->with('success', 'Delete chapter Successful.');
     }
 }

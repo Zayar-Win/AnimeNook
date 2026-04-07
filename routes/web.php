@@ -65,7 +65,7 @@ Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 
 if ($isProduction) {
-    Route::domain('{group:subdomain}' . '.' . config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::domain('{group:subdomain}'.'.'.config('app.url'))->middleware(GroupMiddleware::class)->name('group.')->group(function () {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
@@ -73,14 +73,15 @@ if ($isProduction) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $banners = Banner::with('bannerable')->get();
             $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
-            $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
+            $recommendedAnime = Anime::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
             $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
             $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
             $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
             $today = Carbon::today()->toDateString();
-            $yesterday =  Carbon::yesterday()->toDateString();
+            $yesterday = Carbon::yesterday()->toDateString();
             $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
             $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+
             return inertia('Group/Index', [
                 'trendAnimes' => $trendAnimes,
                 'banners' => $banners,
@@ -91,7 +92,7 @@ if ($isProduction) {
                 'popularMangas' => $popularMangas,
                 'newEpisodes' => [
                     'today' => $todayNewEpisodes,
-                    'yesterday' => $yesterdayNewEpisodes
+                    'yesterday' => $yesterdayNewEpisodes,
                 ],
             ]);
         })->name('home');
@@ -139,11 +140,11 @@ if ($isProduction) {
             Route::post('/admin/animes/{anime}/episodes/{episode}/update', [GroupAdminAnimeController::class, 'updateEpisode'])->name('animes.episodes.update');
             Route::post('/admin/animes/{anime}/episodes/{episode}/delete', [GroupAdminAnimeController::class, 'delegdgbvteEpisode'])->name('animes.episodes.delete');
             // Manga Route
-            Route::get('/admin/mangas', [GroupAdminMangaController::class, 'index'])->name("mangas");
+            Route::get('/admin/mangas', [GroupAdminMangaController::class, 'index'])->name('mangas');
             Route::get('/admin/mangas/create', [GroupAdminMangaController::class, 'create'])->name('mangas.create');
             Route::post('/admin/mangas/store', [GroupAdminMangaController::class, 'store'])->name('mangas.store');
             Route::get('/admin/mangas/{manga}/edit', [GroupAdminMangaController::class, 'edit'])->name('mangas.edit');
-            Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name("mangas.update");
+            Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name('mangas.update');
             Route::post('/admin/mangas/delete', [GroupAdminMangaController::class, 'delete'])->name('mangas.delete');
             Route::get('/admin/mangas/{manga}/chapters/create', [GroupAdminMangaController::class, 'chapterCreate'])->name('mangas.chapters.create');
             Route::post('/admin/mangas/{manga}/chapters/store', [GroupAdminMangaController::class, 'chapterStore'])->name('mangas.chapters.store');
@@ -178,6 +179,7 @@ if ($isProduction) {
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
+        Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
         Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
         Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
 
@@ -204,14 +206,15 @@ if ($isProduction) {
             $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $banners = Banner::with('bannerable')->get();
             $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(6)->get();
-            $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
+            $recommendedAnime = Anime::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
             $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
             $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
             $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
             $today = Carbon::today()->toDateString();
-            $yesterday =  Carbon::yesterday()->toDateString();
+            $yesterday = Carbon::yesterday()->toDateString();
             $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
             $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+
             return inertia('Group/Index', [
                 'trendAnimes' => $trendAnimes,
                 'banners' => $banners,
@@ -222,7 +225,7 @@ if ($isProduction) {
                 'popularMangas' => $popularMangas,
                 'newEpisodes' => [
                     'today' => $todayNewEpisodes,
-                    'yesterday' => $yesterdayNewEpisodes
+                    'yesterday' => $yesterdayNewEpisodes,
                 ],
             ]);
         })->name('home');
@@ -270,11 +273,11 @@ if ($isProduction) {
             Route::post('/admin/animes/{anime}/episodes/{episode}/update', [GroupAdminAnimeController::class, 'updateEpisode'])->name('animes.episodes.update');
             Route::post('/admin/animes/{anime}/episodes/{episode}/delete', [GroupAdminAnimeController::class, 'delegdgbvteEpisode'])->name('animes.episodes.delete');
             // Manga Route
-            Route::get('/admin/mangas', [GroupAdminMangaController::class, 'index'])->name("mangas");
+            Route::get('/admin/mangas', [GroupAdminMangaController::class, 'index'])->name('mangas');
             Route::get('/admin/mangas/create', [GroupAdminMangaController::class, 'create'])->name('mangas.create');
             Route::post('/admin/mangas/store', [GroupAdminMangaController::class, 'store'])->name('mangas.store');
             Route::get('/admin/mangas/{manga}/edit', [GroupAdminMangaController::class, 'edit'])->name('mangas.edit');
-            Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name("mangas.update");
+            Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name('mangas.update');
             Route::post('/admin/mangas/delete', [GroupAdminMangaController::class, 'delete'])->name('mangas.delete');
             Route::get('/admin/mangas/{manga}/chapters/create', [GroupAdminMangaController::class, 'chapterCreate'])->name('mangas.chapters.create');
             Route::post('/admin/mangas/{manga}/chapters/store', [GroupAdminMangaController::class, 'chapterStore'])->name('mangas.chapters.store');
@@ -311,6 +314,7 @@ if ($isProduction) {
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
+        Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
         Route::middleware('guest')->group(function () {
             Route::get('/login', function () {
@@ -384,26 +388,26 @@ Route::get('/', function () {
 
         // Set the blogs relation with tags included
         $tag->setRelation('blogs', $tag->blogs->take(3));
+
         return $tag;
     })->filter(function ($tag) {
         return $tag->blogs->isNotEmpty();
     })->take(3);
+
     return inertia('BlogHome', [
         'sliderBlogs' => $sliderBlogs,
         'randomBlogs' => $randomBlogs,
         'randomGridBlogs' => $randomGridBlogs,
         'popularBlogs' => $popularBlogs,
-        'tagsWithBlogs' => $tagsWithBlogs
+        'tagsWithBlogs' => $tagsWithBlogs,
     ]);
 });
 
-
-
 Route::get('/blogs/{blog:slug}', function (Blog $blog) {
     $blog = Blog::with('tags', 'author')->find($blog->id);
-    $blogKey = 'viewed_blog_' . $blog->id;
+    $blogKey = 'viewed_blog_'.$blog->id;
 
-    if (!session()->has($blogKey)) {
+    if (! session()->has($blogKey)) {
         $blog->update(['views' => $blog->views + 1]);
         session()->put($blogKey, true);
     }
@@ -425,9 +429,8 @@ Route::get('/blogs/{blog:slug}', function (Blog $blog) {
         'blog' => $blog,
         'popularBlogs' => $popularBlogs,
         'tags' => $tags,
-        'relatedBlogs' => $relatedBlogs
+        'relatedBlogs' => $relatedBlogs,
     ]);
 })->name('blogs.show');
 
-
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

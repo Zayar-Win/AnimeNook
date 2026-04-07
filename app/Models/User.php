@@ -19,7 +19,6 @@ class User extends Authenticatable
      */
     protected $guarded = [];
 
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -47,7 +46,7 @@ class User extends Authenticatable
         static::created(function (User $user) {
             Collection::create([
                 'user_id' => $user->id,
-                'name' => 'Favourite'
+                'name' => 'Favourite',
             ]);
         });
     }
@@ -70,5 +69,12 @@ class User extends Authenticatable
     public function likes()
     {
         return $this->hasMany(Likeable::class);
+    }
+
+    public function scopeAdminsInGroup($query, int $groupId)
+    {
+        return $query->where('group_id', $groupId)->whereHas('role', function ($q) {
+            $q->where('name', 'admin');
+        });
     }
 }

@@ -82,9 +82,12 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                     ) : (
                         <>
                             <div
-                                className="text-zinc-300 text-sm leading-relaxed break-words [&>p]:mb-2 last:[&>p]:mb-0"
+                                className="text-zinc-300 text-sm leading-relaxed break-words [&>p]:mb-2 last:[&>p]:mb-0 [&_a.comment-mention-link]:text-primary [&_a.comment-mention-link]:hover:underline"
                                 dangerouslySetInnerHTML={{
-                                    __html: comment.body,
+                                    __html:
+                                        comment.display_body ??
+                                        comment.displayBody ??
+                                        comment.body,
                                 }}
                             />
 

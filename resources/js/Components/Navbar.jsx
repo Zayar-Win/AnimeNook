@@ -9,7 +9,7 @@ import axios from "axios";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import Modal from "./Modal";
 import Logo from "./Logo";
-import VideoUploadNotification from "./Notifications/VideoUploadNotification";
+import NotificationRow from "./Notifications/NotificationRow";
 
 const Navbar = () => {
     const {
@@ -60,19 +60,17 @@ const Navbar = () => {
                     !isFirstRender
                 ) {
                     setIsLoading(true);
-                    axios
-                        .get(nextPageUrl + "&userId=" + auth.user.id)
-                        .then((res) => {
-                            setNotifications((prev) => [
-                                ...prev,
-                                ...res.data.notifications.data,
-                            ]);
+                    axios.get(nextPageUrl).then((res) => {
+                        setNotifications((prev) => [
+                            ...prev,
+                            ...res.data.notifications.data,
+                        ]);
 
-                            setNextPageUrl(
-                                res.data.notifications.next_page_url
-                            );
-                            setIsLoading(false);
-                        });
+                        setNextPageUrl(
+                            res.data.notifications.next_page_url,
+                        );
+                        setIsLoading(false);
+                    });
                 }
             });
         });
@@ -84,19 +82,68 @@ const Navbar = () => {
         setSearchModalOpen(false);
     };
 
-    const fetchNotifications = async () => {
-        const response = await axios.get(
-            window.route("group.notis", { userId: auth?.user?.id })
-        );
-        setNotifications(response.data.notifications.data);
-        setNextPageUrl(response.data.notifications.next_page_url);
+    const markAllNotificationsRead = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!auth?.user) return;
+        const hasUnread = notifications.some((n) => !n.read_at);
+        if (!hasUnread) return;
+        try {
+            await axios.post(window.route("group.notis.read-all"));
+            const now = new Date().toISOString();
+            setNotifications((prev) =>
+                prev.map((n) =>
+                    n.read_at ? n : { ...n, read_at: now },
+                ),
+            );
+        } catch {
+            /* ignore */
+        }
+    };
+
+    const markOneNotificationRead = async (notificationId) => {
+        if (!auth?.user) return;
+        try {
+            await axios.post(
+                window.route("group.notis.read", { id: notificationId }),
+            );
+            const now = new Date().toISOString();
+            setNotifications((prev) =>
+                prev.map((n) =>
+                    n.id === notificationId ? { ...n, read_at: now } : n,
+                ),
+            );
+        } catch {
+            /* ignore */
+        }
     };
 
     useEffect(() => {
-        if (auth.user) {
-            fetchNotifications();
+        if (!auth.user) {
+            setNotifications([]);
+            setNextPageUrl(null);
+            return;
         }
-    }, []);
+        let cancelled = false;
+        (async () => {
+            try {
+                const response = await axios.get(
+                    window.route("group.notis"),
+                );
+                if (cancelled) return;
+                setNotifications(response.data.notifications.data);
+                setNextPageUrl(response.data.notifications.next_page_url);
+            } catch {
+                if (!cancelled) {
+                    setNotifications([]);
+                    setNextPageUrl(null);
+                }
+            }
+        })();
+        return () => {
+            cancelled = true;
+        };
+    }, [auth.user]);
 
     const handleClickOutside = (e) => {
         if (e.target.parentNode.classList.contains("profile-container")) return;
@@ -414,22 +461,32 @@ const Navbar = () => {
                                             <h1 className="text-lg font-bold text-gray-800">
                                                 Notifications
                                             </h1>
-                                            <p
+                                            <button
+                                                type="button"
+                                                onClick={markAllNotificationsRead}
+                                                disabled={
+                                                    !notifications.some(
+                                                        (n) => !n.read_at,
+                                                    )
+                                                }
                                                 className={
-                                                    "cursor-pointer text-xs font-semibold text-primary hover:text-primary/80 hover:underline"
+                                                    "text-xs font-semibold text-primary hover:text-primary/80 hover:underline disabled:opacity-40 disabled:no-underline disabled:cursor-not-allowed cursor-pointer"
                                                 }
                                             >
                                                 Mark all read
-                                            </p>
+                                            </button>
                                         </div>
                                         <div className="overflow-y-auto flex-1 custom-scrollbar">
                                             {notifications.map((notification) =>
                                                 notification.notifiable_type ===
                                                 "App\\Models\\User" ? (
-                                                    <VideoUploadNotification
+                                                    <NotificationRow
                                                         key={notification.id}
                                                         notification={
                                                             notification
+                                                        }
+                                                        onMarkRead={
+                                                            markOneNotificationRead
                                                         }
                                                     />
                                                 ) : null

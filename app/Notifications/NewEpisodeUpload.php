@@ -6,7 +6,6 @@ use App\Models\Anime;
 use App\Models\Chapter;
 use App\Models\Group;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -51,12 +50,13 @@ class NewEpisodeUpload extends Notification
     public function toDatabase(object $notifiable): array
     {
         return [
+            'notification_type' => 'new_anime_episode',
             'chapter_id' => $this->chapter->id,
             'name' => $this->anime->name,
             'thumbnail' => $this->anime->thumbnail,
             'title' => $this->chapter->title,
             'link' => $this->chapter->chapter_link,
-            'group_id' => $this->group->id
+            'group_id' => $this->group->id,
         ];
     }
 }

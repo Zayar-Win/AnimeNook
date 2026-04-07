@@ -5,7 +5,6 @@
 use App\Http\Controllers\AnimeController;
 use App\Http\Controllers\AnimeDetailController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BannerController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
@@ -22,7 +21,6 @@ use App\Models\Manga;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/', function (Group $group) {
     $banners = Banner::with('bannerable')->where('group_id', $group->id)->latest()->get();
     $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
@@ -32,9 +30,10 @@ Route::get('/', function (Group $group) {
     $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
     $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
     $today = Carbon::today()->toDateString();
-    $yesterday =  Carbon::yesterday()->toDateString();
+    $yesterday = Carbon::yesterday()->toDateString();
     $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
     $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+
     return inertia('Group/Index', [
         'banners' => $banners,
         'trendAnimes' => $trendAnimes,
@@ -45,7 +44,7 @@ Route::get('/', function (Group $group) {
         'popularMangas' => $popularMangas,
         'newEpisodes' => [
             'today' => $todayNewEpisodes,
-            'yesterday' => $yesterdayNewEpisodes
+            'yesterday' => $yesterdayNewEpisodes,
         ],
     ]);
 })->name('home');
@@ -70,6 +69,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
 Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
+Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
 Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {

@@ -5,73 +5,89 @@ namespace App\Http\Controllers;
 use App\helpers\Uploader;
 use App\Models\Group;
 use App\Models\User;
+use App\Notifications\AdminNewUserNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\Rule;
-
-use function PHPSTORM_META\map;
 
 class GroupAdminUserController extends Controller
 {
-    public function __construct(public Uploader $uploader)
+    public function __construct(public Uploader $uploader) {}
+
+    public function index(Group $group)
     {
-        
-    }
-    public function index(Group $group){
         $users = $group->users()->latest()->paginate(10);
-        return inertia('Group/Admin/Users/Index',[
-            'users' => $users
+
+        return inertia('Group/Admin/Users/Index', [
+            'users' => $users,
         ]);
     }
 
-    public function create(){
-        return inertia('Group/Admin/Users/UserForm',[
-            'type' => 'create'
+    public function create()
+    {
+        return inertia('Group/Admin/Users/UserForm', [
+            'type' => 'create',
         ]);
     }
-    public function edit(Group $group,User $user){
+
+    public function edit(Group $group, User $user)
+    {
         $user->makeVisible(['password']);
-        return inertia('Group/Admin/Users/UserForm',[
+
+        return inertia('Group/Admin/Users/UserForm', [
             'type' => 'edit',
-            'user' =>$user
+            'user' => $user,
         ]);
     }
 
-    public function update(Group $group,User $user){
+    public function update(Group $group, User $user)
+    {
         $validatedData = request()->validate([
             'name' => 'required',
-            'email' => ['required','email',Rule::unique('users','email')->ignore($user->id)],
+            'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'profile_picture' => ['required'],
             'role_id' => ['required'],
-            'type' => ['required','in:free,paid'],
-            'password' => ['required','min:6','max:20']
+            'type' => ['required', 'in:free,paid'],
+            'password' => ['required', 'min:6', 'max:20'],
         ]);
-        if(gettype($validatedData['profile_picture']) !== 'string'){
-            $validatedData['profile_picture'] = $this->uploader->upload($validatedData['profile_picture'],'amineProfile');
+        if (gettype($validatedData['profile_picture']) !== 'string') {
+            $validatedData['profile_picture'] = $this->uploader->upload($validatedData['profile_picture'], 'amineProfile');
         }
         $user->update($validatedData);
-        return back()->with('success','User Update successful.');
+
+        return back()->with('success', 'User Update successful.');
     }
 
-    public function delete(Group $group,User $user){
+    public function delete(Group $group, User $user)
+    {
         $user->delete();
-        return back()->with('success','User Delete Successful');
+
+        return back()->with('success', 'User Delete Successful');
     }
 
-    public function store(Group $group ,Request $request){
+    public function store(Group $group, Request $request)
+    {
         $validatedData = $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'profile_picture' => 'nullable',
             'role_id' => 'required',
             'type' => 'required|in:free,paid',
-            'password' => 'required|min:6|max:20'
+            'password' => 'required|min:6|max:20',
         ]);
         $validatedData['group_id'] = $group->id;
         $validatedData['password'] = bcrypt($validatedData['password']);
-        if(gettype($validatedData['profile_picture']) !== 'string'){
-            $validatedData['profile_picture'] =  $this->uploader->upload($validatedData['profile_picture'],'animeProfile');
+        if (gettype($validatedData['profile_picture']) !== 'string') {
+            $validatedData['profile_picture'] = $this->uploader->upload($validatedData['profile_picture'], 'animeProfile');
         }
-        User::create($validatedData);
-        return redirect(route('group.admin.users'))->with('success','User Created Successful.');
+        $user = User::create($validatedData);
+        $admins = User::adminsInGroup($group->id)
+            ->where('id', '!=', auth()->id())
+            ->get();
+        if ($admins->isNotEmpty()) {
+            Notification::send($admins, new AdminNewUserNotification($user, $group));
+        }
+
+        return redirect(route('group.admin.users'))->with('success', 'User Created Successful.');
     }
 }
