@@ -232,14 +232,14 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
 
                     <Button
                         text={
-                            manga.isSaveByCurrentUser
+                            manga.isSavedByCurrentUser
                                 ? "Saved"
                                 : "Add to Collection"
                         }
                         type={"button"}
                         onClick={saveToCollection}
                         className={`!px-8 !py-4 !rounded-xl !gap-2 border transition-all hover:-translate-y-1 ${
-                            manga.isSaveByCurrentUser
+                            manga.isSavedByCurrentUser
                                 ? "!bg-green-600 border-green-500 text-white shadow-lg shadow-green-600/20"
                                 : "!bg-white/5 border-white/10 text-white hover:!bg-white hover:!text-black"
                         }`}

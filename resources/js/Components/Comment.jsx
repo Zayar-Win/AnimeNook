@@ -158,7 +158,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                         <DeleteModal
                             title={"Delete Comment"}
                             deleteHandler={commentDelete}
-                            setIsDeleteModelOpen={setIsDeleteModelOpen}
+                            setIsDeleteModalOpen={setIsDeleteModelOpen}
                         />
                     )}
 
