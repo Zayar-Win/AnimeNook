@@ -1,30 +1,41 @@
 <?php
 
+use App\Models\Group;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 
-test('login screen can be rendered', function () {
+test('main-domain login URL redirects to group login', function () {
+    $sub = config('auth.default_group_subdomain');
+
     $response = $this->get('/login');
 
-    $response->assertStatus(200);
+    $response->assertRedirect(route('group.login', ['group' => $sub]));
 });
 
-test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+test('users can authenticate via group login', function () {
+    $sub = config('auth.default_group_subdomain');
+    $group = Group::factory()->create(['subdomain' => $sub]);
+    $user = User::factory()->create([
+        'group_id' => $group->id,
+        'email' => 'auth-test@example.com',
+    ]);
 
-    $response = $this->post('/login', [
+    $response = $this->post('/'.$sub.'/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(RouteServiceProvider::HOME);
+    $response->assertRedirect(route('group.home', ['group' => $sub]));
 });
 
 test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    $sub = config('auth.default_group_subdomain');
+    $group = Group::factory()->create(['subdomain' => $sub]);
+    $user = User::factory()->create([
+        'group_id' => $group->id,
+    ]);
 
-    $this->post('/login', [
+    $this->post('/'.$sub.'/login', [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);

@@ -67,6 +67,26 @@ test.describe("Group user features", () => {
         ).toBeVisible({ timeout: 15_000 });
     });
 
+    test("newsletter duplicate email shows already subscribed warning", async ({
+        page,
+    }) => {
+        await navigateGroup(page, "/");
+        const email = `e2e-sub-dup-${Date.now()}@example.test`;
+        const field = page.getByPlaceholder("Enter your email address");
+        await field.scrollIntoViewIfNeeded();
+        await field.fill(email);
+        await page.getByRole("button", { name: /Subscribe Now/i }).click();
+        await expect(
+            page.locator(".Toastify__toast-body").getByText(/Thanks For Subscribe/i),
+        ).toBeVisible({ timeout: 15_000 });
+
+        await field.fill(email);
+        await page.getByRole("button", { name: /Subscribe Now/i }).click();
+        await expect(
+            page.locator(".Toastify__toast-body").getByText(/already subscribed/i),
+        ).toBeVisible({ timeout: 15_000 });
+    });
+
     test("navbar search shows E2E anime fixture", async ({ page, request }) => {
         await skipUnlessSeededAnime(request);
         await navigateGroup(page, "/");

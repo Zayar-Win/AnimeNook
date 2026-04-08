@@ -1,15 +1,18 @@
 <?php
 
+use App\Models\Group;
 use App\Models\User;
 
-test('profile page is displayed', function () {
+test('main-domain profile URL redirects to group profile', function () {
+    $sub = config('auth.default_group_subdomain');
+    Group::factory()->create(['subdomain' => $sub]);
     $user = User::factory()->create();
 
     $response = $this
         ->actingAs($user)
         ->get('/profile');
 
-    $response->assertOk();
+    $response->assertRedirect(route('group.user.profile', ['group' => $sub]));
 });
 
 test('profile information can be updated', function () {

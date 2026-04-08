@@ -198,6 +198,12 @@ if ($isProduction) {
             })->name('register');
             Route::get('/google-oauth-login', [AuthController::class, 'googleOauthLogin'])->name('google.oauth.login');
             Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
+            Route::get('/forgot-password', function () {
+                return inertia('Group/ForgotPassword');
+            })->name('password.request');
+            Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetLink'])->name('password.email');
+            Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+            Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.store');
         });
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });
@@ -330,6 +336,12 @@ if ($isProduction) {
             })->name('register');
             Route::get('/google-oauth-login', [AuthController::class, 'googleOauthLogin'])->name('google.oauth.login');
             Route::post('/register', [AuthController::class, 'userRegister'])->name('register');
+            Route::get('/forgot-password', function () {
+                return inertia('Group/ForgotPassword');
+            })->name('password.request');
+            Route::post('/forgot-password', [AuthController::class, 'sendPasswordResetLink'])->name('password.email');
+            Route::get('/reset-password/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+            Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.store');
         });
         Route::post('/logout', [AuthController::class, 'userLogout'])->name('logout');
     });

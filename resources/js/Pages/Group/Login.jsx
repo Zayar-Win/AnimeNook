@@ -4,6 +4,7 @@ import Logo from "../../../assets/logo.png";
 import Button from "@/Components/Button";
 import Google from "@/../assets/Google";
 import { usePage } from "@inertiajs/react";
+import ToastLayout from "@/Layouts/ToastLayout";
 
 const Login = () => {
     const { data, setData, errors, clearErrors, post } = useForm({
@@ -17,6 +18,7 @@ const Login = () => {
         post(window.route("group.login"));
     };
     return (
+        <ToastLayout>
         <div className="w-full h-[100vh] flex items-center justify-center bg-[#0D0D0D]">
             <div className="w-[80%] flex rounded-lg p-10 gap-8 bg-white">
                 <div className="basis-[60%]">
@@ -102,6 +104,16 @@ const Login = () => {
                                 </span>
                             )}
                         </div>
+                        <div className="mt-2 text-right">
+                            <Link
+                                href={window.route("group.password.request", {
+                                    group: group.subdomain,
+                                })}
+                                className="text-sm text-blue-500 hover:underline font-semibold"
+                            >
+                                Forgot password?
+                            </Link>
+                        </div>
                         <Button
                             text={"Login"}
                             type={"submit"}
@@ -135,6 +147,7 @@ const Login = () => {
                 </div>
             </div>
         </div>
+        </ToastLayout>
     );
 };
 

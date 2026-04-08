@@ -58,7 +58,7 @@ const NotificationRow = ({ notification, onMarkRead }) => {
             type="button"
             onClick={handleClick}
             className={`w-full text-left flex items-start gap-3 cursor-pointer px-3 py-3 border-b border-gray-100 transition-colors hover:bg-gray-100 ${
-                unread ? "bg-primary/5 border-l-4 border-l-primary" : ""
+                unread ? "bg-primary/5" : ""
             }`}
         >
             <div className="shrink-0">

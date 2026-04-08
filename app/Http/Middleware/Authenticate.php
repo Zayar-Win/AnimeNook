@@ -30,6 +30,8 @@ class Authenticate extends Middleware
             return route('group.login', ['group' => $resolved->subdomain]);
         }
 
-        return route('login');
+        return route('group.login', [
+            'group' => config('auth.default_group_subdomain'),
+        ]);
     }
 }

@@ -4,6 +4,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default group (tenant) for auth redirects
+    |--------------------------------------------------------------------------
+    |
+    | Main-domain routes named "login" / "register" redirect to this group's
+    | custom auth pages (see routes/auth.php).
+    |
+    */
+
+    'default_group_subdomain' => env('DEFAULT_GROUP_SUBDOMAIN', 'delta'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Defaults
     |--------------------------------------------------------------------------
     |

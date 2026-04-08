@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import LogoImg from "../../assets/logo.png";
 import Close from "../../assets/Close";
 import SectionContainer from "./SectionContainer";
@@ -27,15 +27,21 @@ const Navbar = () => {
     const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [nextPageUrl, setNextPageUrl] = useState(null);
-    const [isFirstRender, setIsFirstRender] = useState(true);
     const [isOpenMobileNavbar, setIsOpenMobileNavbar] = useState(false);
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-    const scrollRef = useRef(null);
+    const notificationListRef = useRef(null);
+    const notificationLoadSentinelRef = useRef(null);
+    const nextPageUrlRef = useRef(null);
+    const isLoadingNotificationsRef = useRef(false);
     const mobileSearchInputRef = useRef(null);
 
     useEffect(() => {
-        setIsFirstRender(false);
-    }, []);
+        nextPageUrlRef.current = nextPageUrl;
+    }, [nextPageUrl]);
+
+    useEffect(() => {
+        isLoadingNotificationsRef.current = isLoading;
+    }, [isLoading]);
 
     // Focus input when mobile search opens
     useEffect(() => {
@@ -44,38 +50,52 @@ const Navbar = () => {
         }
     }, [isMobileSearchOpen]);
 
-    const handleCallback = useCallback((el) => {
-        if (!el) {
-            if (scrollRef.current) {
-                scrollRef.current.disconnect();
-            }
-            return;
-        }
-        scrollRef.current = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
+    useEffect(() => {
+        if (!isNotificationModalOpen || !auth?.user) return;
+        const root = notificationListRef.current;
+        const target = notificationLoadSentinelRef.current;
+        if (!root || !target || !nextPageUrl) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const visible = entries.some((e) => e.isIntersecting);
                 if (
-                    entry.isIntersecting &&
-                    !isLoading &&
-                    nextPageUrl !== null &&
-                    !isFirstRender
+                    !visible ||
+                    isLoadingNotificationsRef.current ||
+                    !nextPageUrlRef.current
                 ) {
-                    setIsLoading(true);
-                    axios.get(nextPageUrl).then((res) => {
+                    return;
+                }
+                isLoadingNotificationsRef.current = true;
+                setIsLoading(true);
+                const url = nextPageUrlRef.current;
+                axios
+                    .get(url)
+                    .then((res) => {
                         setNotifications((prev) => [
                             ...prev,
                             ...res.data.notifications.data,
                         ]);
-
-                        setNextPageUrl(
-                            res.data.notifications.next_page_url,
-                        );
+                        setNextPageUrl(res.data.notifications.next_page_url);
+                    })
+                    .catch(() => {
+                        /* ignore */
+                    })
+                    .finally(() => {
+                        isLoadingNotificationsRef.current = false;
                         setIsLoading(false);
                     });
-                }
-            });
-        });
-        scrollRef.current.observe(el);
-    });
+            },
+            { root, rootMargin: "48px", threshold: 0 },
+        );
+        observer.observe(target);
+        return () => observer.disconnect();
+    }, [
+        isNotificationModalOpen,
+        auth?.user,
+        nextPageUrl,
+        notifications.length,
+    ]);
 
     const closeSearchModal = () => {
         setSearch("");
@@ -476,7 +496,10 @@ const Navbar = () => {
                                                 Mark all read
                                             </button>
                                         </div>
-                                        <div className="overflow-y-auto flex-1 custom-scrollbar">
+                                        <div
+                                            ref={notificationListRef}
+                                            className="overflow-y-auto flex-1 custom-scrollbar"
+                                        >
                                             {notifications.map((notification) =>
                                                 notification.notifiable_type ===
                                                 "App\\Models\\User" ? (
@@ -491,12 +514,21 @@ const Navbar = () => {
                                                     />
                                                 ) : null
                                             )}
-                                            <button
-                                                className="opacity-0 w-full h-4"
-                                                ref={handleCallback}
-                                            >
-                                                More
-                                            </button>
+                                            {nextPageUrl ? (
+                                                <div
+                                                    ref={
+                                                        notificationLoadSentinelRef
+                                                    }
+                                                    className="flex min-h-8 items-center justify-center py-2"
+                                                    aria-hidden
+                                                >
+                                                    {isLoading ? (
+                                                        <span className="text-xs text-gray-400">
+                                                            Loading…
+                                                        </span>
+                                                    ) : null}
+                                                </div>
+                                            ) : null}
                                         </div>
                                     </div>
                                 </div>
