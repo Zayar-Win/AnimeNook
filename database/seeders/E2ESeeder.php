@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Anime;
 use App\Models\Chapter;
+use App\Models\ChapterImage;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Role;
@@ -94,16 +95,21 @@ class E2ESeeder extends Seeder
                 'seasonable_id' => $manga->id,
                 'seasonable_type' => Manga::class,
             ]);
-            Chapter::factory()->create([
+            $mangaChapter = Chapter::factory()->create([
                 'group_id' => $group->id,
                 'chapterable_id' => $manga->id,
                 'chapterable_type' => Manga::class,
                 'season_id' => $season->id,
                 'chapter_number' => 1,
                 'type' => 'link',
-                'chapter_link' => 'https://example.com/chapter',
-                'ouo_chapter_link' => 'https://example.com/chapter',
+                'chapter_link' => null,
+                'ouo_chapter_link' => null,
                 'title' => 'E2E Chapter',
+            ]);
+            ChapterImage::create([
+                'chapter_id' => $mangaChapter->id,
+                'path' => 'https://placehold.co/800x1200/1a1a1a/ed6400/png?text=E2E+Page+1',
+                'order' => 0,
             ]);
         }
     }

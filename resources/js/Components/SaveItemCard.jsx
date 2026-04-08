@@ -1,4 +1,5 @@
 import React from "react";
+import { mangaThumbnailUrl } from "@/app";
 import Tags from "./Tags";
 import Delete from "@/../assets/Delete";
 import { router } from "@inertiajs/react";
@@ -33,7 +34,11 @@ const SaveItemCard = ({ item, type, itemId, collectionId }) => {
                 {/* Image Section */}
                 <div className="relative aspect-video overflow-hidden">
                     <img
-                        src={item.thumbnail}
+                        src={
+                            type === "manga"
+                                ? item.thumbnail || mangaThumbnailUrl
+                                : item.thumbnail
+                        }
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         alt={item.name}
                     />

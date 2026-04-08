@@ -2,6 +2,7 @@ import Button from "@/Components/Button";
 import DeleteModal from "@/Components/DeleteModal";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
+import { mangaThumbnailUrl } from "@/app";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router } from "@inertiajs/react";
 import React, { useState } from "react";
@@ -91,7 +92,7 @@ const Index = ({ mangas }) => {
                             <div className="w-12 h-16 rounded-lg overflow-hidden ring-1 ring-white/10">
                                 <img
                                     className="w-full h-full object-cover"
-                                    src={manga.thumbnail}
+                                    src={manga?.thumbnail || mangaThumbnailUrl}
                                     alt="Manga ThumbNail"
                                 />
                             </div>

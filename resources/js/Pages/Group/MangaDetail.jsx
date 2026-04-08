@@ -2,7 +2,7 @@ import SectionContainer from "@/Components/SectionContainer";
 import UserLayout from "@/Layouts/UserLayout";
 import React, { useEffect, useRef, useState } from "react";
 // import Star from '../../../assets/Star';
-import { formateDate } from "@/app";
+import { formateDate, mangaThumbnailUrl } from "@/app";
 import Button from "@/Components/Button";
 import Heart from "@/../assets/Heart";
 import Comment from "@/../assets/Comment";
@@ -64,6 +64,16 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
         };
         createView();
     }, []);
+
+    const chapterReaderHref = (chapterId) =>
+        window.route("group.manga.chapter.read", {
+            manga: manga.slug,
+            chapter: chapterId,
+        });
+
+    const continueChapterId =
+        manga?.latestWatchedChapter?.id ?? manga?.chapters?.[0]?.id;
+
     return (
         <>
             <SectionContainer className={"bg-black text-white"}>
@@ -73,7 +83,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         <div className="sticky top-24">
                             <div className="relative group rounded-xl overflow-hidden shadow-2xl shadow-primary/20">
                                 <img
-                                    src={manga.thumbnail}
+                                    src={manga?.thumbnail || mangaThumbnailUrl}
                                     className="w-full aspect-[2/3] object-cover transition-transform duration-500 group-hover:scale-105"
                                     alt={manga.name}
                                 />
@@ -201,9 +211,9 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                     </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 my-8">
-                    {manga?.chapters[0] && (
-                        <a
-                            href={manga.chapters[0].chapter_link}
+                    {continueChapterId && (
+                        <Link
+                            href={chapterReaderHref(continueChapterId)}
                             className="flex-1 sm:flex-none"
                         >
                             <Button
@@ -227,7 +237,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                     </svg>
                                 }
                             />
-                        </a>
+                        </Link>
                     )}
 
                     <Button
@@ -399,14 +409,9 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         {manga?.chapters.length > 0 ? (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                                 {manga?.chapters.map((chapter, i) => (
-                                    <a
+                                    <Link
                                         key={i}
-                                        href={
-                                            user && user?.type === "free"
-                                                ? chapter.ouo_chapter_link
-                                                : chapter.chapter_link ||
-                                                  chapter.ouo_chapter_link
-                                        }
+                                        href={chapterReaderHref(chapter.id)}
                                         className="group relative flex items-center gap-4 p-4 rounded-xl bg-[#1a1a1a] hover:bg-[#252525] border border-white/5 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
                                     >
                                         <div className="shrink-0 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white text-zinc-500 transition-colors font-black text-sm">
@@ -447,7 +452,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                                 <path d="M5 12h14M12 5l7 7-7 7" />
                                             </svg>
                                         </div>
-                                    </a>
+                                    </Link>
                                 ))}
                             </div>
                         ) : (

@@ -107,15 +107,15 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                         />
                     </div>
 
-                    <div className="flex items-center w-full md:w-auto md:justify-end justify-between gap-4 text-white">
-                        <div className="group relative sort items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl hover:bg-[#252525] hover:border-white/20 transition-all cursor-pointer">
+                    <div className="flex items-center w-full md:w-auto md:justify-end justify-between gap-4 text-white overflow-visible">
+                        <div className="group relative sort z-40 items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl hover:bg-[#252525] hover:border-white/20 transition-all cursor-pointer">
                             <div className="flex items-center gap-2 text-zinc-400 group-hover:text-white transition-colors">
                                 <Sort className="w-5 h-5" />
                                 <span className="uppercase font-bold text-xs tracking-wider">
                                     Sort By
                                 </span>
                             </div>
-                            <ul className="absolute w-[180px] sort-options z-30 hidden top-[calc(100%+10px)] right-0 p-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl shadow-black/50">
+                            <ul className="absolute left-0 w-[180px] max-w-[calc(100vw-2rem)] sort-options z-30 hidden top-[calc(100%+10px)] p-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl shadow-black/50">
                                 <li
                                     onClick={() => {
                                         setSort("popularity");
@@ -145,14 +145,14 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                             </ul>
                         </div>
 
-                        <div className="group relative filter items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl hover:bg-[#252525] hover:border-white/20 transition-all cursor-pointer">
+                        <div className="group relative filter z-40 items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl hover:bg-[#252525] hover:border-white/20 transition-all cursor-pointer">
                             <div className="flex items-center gap-2 text-zinc-400 group-hover:text-white transition-colors">
                                 <Filter className="w-5 h-5" />
                                 <span className="uppercase font-bold text-xs tracking-wider">
                                     Filter
                                 </span>
                             </div>
-                            <ul className="absolute w-[180px] filter-options z-30 hidden top-[calc(100%+10px)] right-0 p-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl shadow-black/50">
+                            <ul className="absolute right-0 w-[180px] max-w-[calc(100vw-2rem)] filter-options z-30 hidden top-[calc(100%+10px)] p-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl shadow-black/50">
                                 <li
                                     onClick={() => {
                                         setFilter("all");
@@ -197,37 +197,44 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                     </div>
                 </div>
 
-                {/* Tags Filter */}
+                {/* Tags Filter — single row, horizontal scroll */}
                 {tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-12">
-                        <div className="w-full text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">
+                    <div className="mb-12">
+                        <div className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">
                             Filter by Genres
                         </div>
-                        {tags.map((tag) => (
-                            <div
-                                key={tag.id}
-                                onClick={() => {
-                                    setFilterTags((prev) => {
-                                        if (prev.includes(tag.name)) {
-                                            return prev.filter(
-                                                (prevTag) =>
-                                                    prevTag !== tag.name
-                                            );
-                                        } else {
-                                            return [...prev, tag.name];
-                                        }
-                                    });
-                                    setIsFilter(true);
-                                }}
-                                className={`shrink-0 cursor-pointer px-4 py-1.5 rounded-full border text-xs font-bold transition-all duration-300 ${
-                                    filterTags.includes(tag.name)
-                                        ? "bg-primary border-primary text-white shadow-[0_0_15px_rgba(237,100,0,0.4)]"
-                                        : "bg-[#1a1a1a] border-white/10 text-zinc-400 hover:border-white/30 hover:text-white"
-                                }`}
-                            >
-                                {tag.name}
-                            </div>
-                        ))}
+                        <div
+                            className="flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden py-1 -mx-1 px-1 scroll-smooth touch-pan-x [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.25)_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20"
+                            role="list"
+                            aria-label="Genre filters"
+                        >
+                            {tags.map((tag) => (
+                                <div
+                                    key={tag.id}
+                                    role="listitem"
+                                    onClick={() => {
+                                        setFilterTags((prev) => {
+                                            if (prev.includes(tag.name)) {
+                                                return prev.filter(
+                                                    (prevTag) =>
+                                                        prevTag !== tag.name
+                                                );
+                                            } else {
+                                                return [...prev, tag.name];
+                                            }
+                                        });
+                                        setIsFilter(true);
+                                    }}
+                                    className={`shrink-0 cursor-pointer px-4 py-1.5 rounded-full border text-xs font-bold transition-all duration-300 whitespace-nowrap ${
+                                        filterTags.includes(tag.name)
+                                            ? "bg-primary border-primary text-white shadow-[0_0_15px_rgba(237,100,0,0.4)]"
+                                            : "bg-[#1a1a1a] border-white/10 text-zinc-400 hover:border-white/30 hover:text-white"
+                                    }`}
+                                >
+                                    {tag.name}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MangaChapterReaderController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\SubscriberController;
@@ -25,7 +26,7 @@ Route::get('/', function (Group $group) {
     $banners = Banner::with('bannerable')->where('group_id', $group->id)->latest()->get();
     $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
     $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
-    $recommendedAnime = Anime::with('tags')->where('group_id',  $group->id)->where('is_recommended', true)->latest()->first();
+    $recommendedAnime = Anime::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
     $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
     $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
     $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
@@ -68,6 +69,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
+Route::get('/mangas/{manga:slug}/chapters/{chapter}', [MangaChapterReaderController::class, 'show'])->name('manga.chapter.read');
 Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
 Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
 Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');

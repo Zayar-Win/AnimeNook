@@ -1,3 +1,4 @@
+import { mangaThumbnailUrl } from "@/app";
 import React from "react";
 import { Link, router, usePage } from "@inertiajs/react";
 
@@ -34,7 +35,7 @@ const MangaCard = ({ manga }) => {
                 <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-zinc-900">
                     <img
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        src={manga?.thumbnail}
+                        src={manga?.thumbnail || mangaThumbnailUrl}
                         alt={manga?.name}
                         loading="lazy"
                     />

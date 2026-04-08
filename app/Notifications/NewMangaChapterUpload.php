@@ -7,6 +7,7 @@ use App\Models\Group;
 use App\Models\Manga;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
 
 class NewMangaChapterUpload extends Notification
 {
@@ -27,7 +28,11 @@ class NewMangaChapterUpload extends Notification
             'name' => $this->manga->name,
             'thumbnail' => $this->manga->thumbnail,
             'title' => $this->chapter->title,
-            'link' => $this->chapter->chapter_link,
+            'link' => URL::route('group.manga.chapter.read', [
+                'group' => $this->group->subdomain,
+                'manga' => $this->manga,
+                'chapter' => $this->chapter,
+            ], absolute: true),
             'group_id' => $this->group->id,
         ];
     }

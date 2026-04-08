@@ -2,21 +2,45 @@
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import FilePondUploader from "@/Components/FilePondUploader";
+import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { useForm } from "@inertiajs/react";
 import React from "react";
 
+function fieldError(errors, key) {
+    if (!errors || key == null) {
+        return undefined;
+    }
+    const raw = errors[key];
+    if (raw == null || raw === "") {
+        return undefined;
+    }
+    return Array.isArray(raw) ? raw[0] : raw;
+}
+
+function firstImagesRelatedError(errors) {
+    const direct = fieldError(errors, "images");
+    if (direct) {
+        return direct;
+    }
+    if (!errors) {
+        return undefined;
+    }
+    const key = Object.keys(errors).find((k) => k.startsWith("images."));
+    return key ? fieldError(errors, key) : undefined;
+}
+
 const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
     const { data, setData, post, errors } = useForm({
         thumbnail: chapter?.thumbnail ?? null,
         chapter_number: chapter?.chapter_number ?? "",
         title: chapter?.title ?? "",
-        link: chapter?.ouo_chapter_link ?? "",
-        chapter_link: chapter?.chapter_link ?? "",
         description: chapter?.description ?? "",
         season_id: chapter?.season_id ?? null,
+        content_mode: chapter?.pdf_path ? "pdf" : "images",
+        pdf: null,
         images: images ?? [],
     });
 
@@ -27,7 +51,9 @@ const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
         };
     });
 
-    console.log(images);
+    const imagesError = firstImagesRelatedError(errors);
+    const contentFileError =
+        imagesError ?? fieldError(errors, "pdf");
 
     return (
         <div className="bg-[#0a0a0a] min-h-screen p-8 text-white flex items-center justify-center">
@@ -85,15 +111,19 @@ const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
                                 Cover Image
                             </h3>
                             <InputLabel
-                                value="Chapter Thumbnail"
+                                value="Chapter Thumbnail (optional)"
                                 className="!text-zinc-400 !mb-2"
                             />
-                            <div className="bg-black/20 rounded-xl p-2 border border-white/5">
+                            <div className="relative bg-black/20 rounded-xl p-2 border border-white/5 pb-6">
                                 <FilePondUploader
                                     photos={data.thumbnail}
                                     onUpload={(file) =>
                                         setData("thumbnail", file)
                                     }
+                                />
+                                <InputError
+                                    message={errors?.thumbnail}
+                                    inline
                                 />
                             </div>
                         </div>
@@ -107,7 +137,10 @@ const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
 
                         <div>
                             <Input
-                                errorMessage={errors?.chapter_number}
+                                errorMessage={fieldError(
+                                    errors,
+                                    "chapter_number",
+                                )}
                                 label="Chapter Number"
                                 value={data.chapter_number}
                                 onChange={(e) =>
@@ -118,7 +151,7 @@ const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
                         </div>
                         <div>
                             <Input
-                                errorMessage={errors.title}
+                                errorMessage={fieldError(errors, "title")}
                                 label="Title"
                                 value={data.title}
                                 onChange={(e) =>
@@ -131,31 +164,54 @@ const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
                         {/* Links & Association */}
                         <div className="col-span-1 md:col-span-2 mt-4">
                             <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-6 border-b border-white/5 pb-2">
-                                Additional Info
+                                Chapter content
                             </h3>
                         </div>
 
-                        <div>
-                            <Input
-                                errorMessage={errors.link}
-                                label="Chapter Link"
-                                value={data.link}
-                                onChange={(e) =>
-                                    setData("link", e.target.value)
+                        <div className="col-span-1 md:col-span-2 flex flex-wrap gap-3">
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setData((prev) => ({
+                                        ...prev,
+                                        content_mode: "images",
+                                        pdf: null,
+                                    }))
                                 }
-                                placeholder="https://..."
+                                className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${
+                                    data.content_mode === "images"
+                                        ? "bg-primary text-black border-primary"
+                                        : "bg-white/5 border-white/10 text-zinc-400 hover:border-white/20"
+                                }`}
+                            >
+                                Image pages
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setData((prev) => ({
+                                        ...prev,
+                                        content_mode: "pdf",
+                                        images: [],
+                                    }))
+                                }
+                                className={`px-4 py-2 rounded-lg text-sm font-bold border transition-all ${
+                                    data.content_mode === "pdf"
+                                        ? "bg-primary text-black border-primary"
+                                        : "bg-white/5 border-white/10 text-zinc-400 hover:border-white/20"
+                                }`}
+                            >
+                                Single PDF
+                            </button>
+                        </div>
+
+                        <div className="col-span-1 md:col-span-2">
+                            <InputError
+                                message={fieldError(errors, "content_mode")}
+                                inline
                             />
                         </div>
-                        {/* <div>
-                            <Input
-                                errorMessage={errors.link}
-                                label="Preminum Episode Link"
-                                value={data.chapter_link}
-                                onChange={(e) =>
-                                    setData("chapter_link", e.target.value)
-                                }
-                            />
-                        </div> */}
+
                         {seasonOptions.length > 0 && (
                             <div>
                                 <Select
@@ -166,70 +222,95 @@ const ChapterForm = ({ chapter, type, manga, seasons, images }) => {
                                     selected={data.season_id}
                                     options={seasonOptions}
                                     isDisabled={!seasonOptions.length}
+                                    errorMessage={fieldError(
+                                        errors,
+                                        "season_id",
+                                    )}
                                 />
                             </div>
                         )}
 
-                        {/* Manga Images */}
-                        <div className="col-span-1 md:col-span-2 mt-4">
-                            <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
-                                <h3 className="text-sm font-bold text-primary uppercase tracking-wider">
-                                    Manga Pages
-                                </h3>
-                                <span className="text-xs text-zinc-500 font-medium">
-                                    Drag and drop to reorder pages
-                                </span>
-                            </div>
-
-                            <div className="bg-black/20 rounded-xl p-4 border border-white/5">
-                                <div className="mb-3 flex items-center gap-2 text-zinc-400 text-xs">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                        <polyline points="14 2 14 8 20 8"></polyline>
-                                        <line
-                                            x1="16"
-                                            y1="13"
-                                            x2="8"
-                                            y2="13"
-                                        ></line>
-                                        <line
-                                            x1="16"
-                                            y1="17"
-                                            x2="8"
-                                            y2="17"
-                                        ></line>
-                                        <polyline points="10 9 9 9 8 9"></polyline>
-                                    </svg>
-                                    <span>
-                                        Upload pages in reading order. You can
-                                        rearrange them after uploading.
+                        {data.content_mode === "images" && (
+                            <div className="col-span-1 md:col-span-2 mt-4">
+                                <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+                                    <h3 className="text-sm font-bold text-primary uppercase tracking-wider">
+                                        Manga pages
+                                    </h3>
+                                    <span className="text-xs text-zinc-500 font-medium">
+                                        Drag and drop to reorder pages
                                     </span>
                                 </div>
-                                <FilePondUploader
-                                    allowMultiple
-                                    photos={data.images}
-                                    onUpload={(files) =>
-                                        setData("images", files)
+
+                                <div className="bg-black/20 rounded-xl p-4 border border-white/5">
+                                    <div className="mb-3 flex items-center gap-2 text-zinc-400 text-xs">
+                                        <span>
+                                            Upload pages in reading order. You
+                                            can rearrange them after uploading.
+                                        </span>
+                                    </div>
+                                    <InputError
+                                        message={contentFileError}
+                                        inline
+                                        className="mb-2"
+                                    />
+                                    <FilePondUploader
+                                        allowMultiple
+                                        photos={data.images}
+                                        onUpload={(files) =>
+                                            setData("images", files)
+                                        }
+                                    />
+                                </div>
+                            </div>
+                        )}
+
+                        {data.content_mode === "pdf" && (
+                            <div className="col-span-1 md:col-span-2 mt-4 space-y-3">
+                                <InputLabel
+                                    value="PDF file"
+                                    className="!text-zinc-400 !mb-2"
+                                />
+                                {chapter?.pdf_path && (
+                                    <p className="text-xs text-zinc-500">
+                                        Current file:{" "}
+                                        <a
+                                            href={chapter.pdf_path}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="text-primary hover:underline break-all"
+                                        >
+                                            {chapter.pdf_path}
+                                        </a>
+                                        . Upload a new file below to replace
+                                        it.
+                                    </p>
+                                )}
+                                <input
+                                    type="file"
+                                    accept="application/pdf"
+                                    className="block w-full text-sm text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-bold file:bg-primary file:text-black"
+                                    onChange={(e) =>
+                                        setData(
+                                            "pdf",
+                                            e.target.files?.[0] ?? null,
+                                        )
                                     }
                                 />
+                                <InputError
+                                    message={contentFileError}
+                                    inline
+                                />
                             </div>
-                        </div>
+                        )}
 
                         <div className="col-span-1 md:col-span-2">
                             <Input
                                 textarea
                                 value={data.description}
-                                errorMessage={errors.description}
+                                errorMessage={fieldError(
+                                    errors,
+                                    "description",
+                                )}
                                 label="Description"
                                 onChange={(e) =>
                                     setData("description", e.target.value)

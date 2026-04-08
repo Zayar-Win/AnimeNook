@@ -7,6 +7,7 @@ import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
+import { mangaThumbnailUrl } from "@/app";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
@@ -26,7 +27,7 @@ const columns = [
         field: "Thumbnail",
     },
     {
-        field: "Video Link",
+        field: "Reader",
     },
     {
         field: "Description",
@@ -228,7 +229,7 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons, tags }) => {
                             <div className="lg:col-span-1 space-y-6">
                                 <div>
                                     <InputLabel
-                                        value={"Thumbnail"}
+                                        value={"Thumbnail (optional)"}
                                         className="!text-zinc-400 !mb-2"
                                     />
                                     <div className="bg-black/20 rounded-xl p-2 border border-white/5">
@@ -386,7 +387,10 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons, tags }) => {
                                                 <div className="w-24 h-14 rounded-lg overflow-hidden border border-white/10">
                                                     <img
                                                         className="w-full h-full object-cover"
-                                                        src={chapter?.thumbnail}
+                                                        src={
+                                                            chapter?.thumbnail ||
+                                                            mangaThumbnailUrl
+                                                        }
                                                         alt="Thumbnail"
                                                     />
                                                 </div>
@@ -395,12 +399,18 @@ const MangaForm = ({ type, manga, statuses, chapters, seasons, tags }) => {
                                         <TableData className={"max-w-[200px]"}>
                                             {(chapter) => (
                                                 <a
-                                                    href={chapter?.chapter_link}
+                                                    href={window.route(
+                                                        "group.manga.chapter.read",
+                                                        {
+                                                            manga: manga.slug,
+                                                            chapter: chapter.id,
+                                                        },
+                                                    )}
                                                     target="_blank"
                                                     rel="noreferrer"
-                                                    className="text-primary hover:underline text-xs truncate block"
+                                                    className="text-primary hover:underline text-xs font-bold"
                                                 >
-                                                    {chapter?.chapter_link}
+                                                    Open reader
                                                 </a>
                                             )}
                                         </TableData>

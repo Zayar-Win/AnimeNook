@@ -8,6 +8,7 @@ use App\Models\Group;
 use App\Models\Manga;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
 
 class SavedContentUpdatedNotification extends Notification
 {
@@ -28,7 +29,13 @@ class SavedContentUpdatedNotification extends Notification
             'name' => $this->series->name,
             'thumbnail' => $this->series->thumbnail,
             'title' => $this->chapter->title,
-            'link' => $this->chapter->chapter_link,
+            'link' => $this->series instanceof Manga
+                ? URL::route('group.manga.chapter.read', [
+                    'group' => $this->group->subdomain,
+                    'manga' => $this->series,
+                    'chapter' => $this->chapter,
+                ], absolute: true)
+                : $this->chapter->chapter_link,
             'group_id' => $this->group->id,
             'content_kind' => $this->series instanceof Manga ? 'manga' : 'anime',
         ];

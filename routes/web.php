@@ -22,6 +22,7 @@ use App\Http\Controllers\GroupAdminSubscriberController;
 use App\Http\Controllers\GroupAdminTagController;
 use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Controllers\ImageController;
+use App\Http\Controllers\MangaChapterReaderController;
 use App\Http\Controllers\MangaController;
 use App\Http\Controllers\MangaDetailController;
 use App\Http\Controllers\SubscriberController;
@@ -181,6 +182,7 @@ if ($isProduction) {
             Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
+        Route::get('/mangas/{manga:slug}/chapters/{chapter}', [MangaChapterReaderController::class, 'show'])->name('manga.chapter.read');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
         Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
@@ -322,6 +324,7 @@ if ($isProduction) {
             Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
+        Route::get('/mangas/{manga:slug}/chapters/{chapter}', [MangaChapterReaderController::class, 'show'])->name('manga.chapter.read');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');

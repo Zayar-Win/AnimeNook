@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->text('description');
-            $table->string('thumbnail');
+            $table->string('thumbnail')->nullable();
             $table->bigInteger('rating')->default(0);
             $table->bigInteger('views_count')->default(0);
             $table->bigInteger('likes_count')->default(0);

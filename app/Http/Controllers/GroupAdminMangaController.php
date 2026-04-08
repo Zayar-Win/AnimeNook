@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\helpers\ShortenLinkGenerator;
 use App\helpers\Uploader;
 use App\Models\Chapter;
 use App\Models\ChapterImage;
 use App\Models\CollectionItems;
 use App\Models\Group;
 use App\Models\Manga;
-use App\Models\OuoFailLink;
 use App\Models\Status;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Notifications\NewMangaChapterUpload;
 use App\Notifications\SavedContentUpdatedNotification;
-use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class GroupAdminMangaController extends Controller
 {
@@ -44,7 +44,7 @@ class GroupAdminMangaController extends Controller
     public function store(Group $group)
     {
         $validatedData = request()->validate([
-            'thumbnail' => ['required', 'image'],
+            'thumbnail' => ['nullable', 'image'],
             'background_image' => ['nullable'],
             'transparent_background' => ['nullable'],
             'name' => ['required'],
@@ -52,8 +52,10 @@ class GroupAdminMangaController extends Controller
             'description' => ['required'],
             'tag_ids' => ['required'],
         ]);
-        if (gettype($validatedData['thumbnail']) !== 'string') {
+        if (($validatedData['thumbnail'] ?? null) instanceof UploadedFile) {
             $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
+        } else {
+            $validatedData['thumbnail'] = null;
         }
         $tag_ids = collect($validatedData['tag_ids'])->map(function ($tag) {
             return $tag['value'];
@@ -99,7 +101,7 @@ class GroupAdminMangaController extends Controller
     public function update(Group $group, Manga $manga)
     {
         $validatedData = request()->validate([
-            'thumbnail' => ['required'],
+            'thumbnail' => ['nullable'],
             'background_image' => ['nullable'],
             'transparent_background' => ['nullable'],
             'name' => ['required'],
@@ -107,8 +109,13 @@ class GroupAdminMangaController extends Controller
             'description' => ['required'],
             'tag_ids' => ['required'],
         ]);
-        if (gettype($validatedData['thumbnail']) !== 'string') {
-            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
+        if (array_key_exists('thumbnail', $validatedData)) {
+            $thumb = $validatedData['thumbnail'];
+            if ($thumb instanceof UploadedFile) {
+                $validatedData['thumbnail'] = $this->uploader->upload($thumb, 'animes');
+            } elseif ($thumb === null || $thumb === '') {
+                $validatedData['thumbnail'] = null;
+            }
         }
         $tag_ids = collect($validatedData['tag_ids'])->map(function ($tag) {
             return $tag['value'];
@@ -151,36 +158,58 @@ class GroupAdminMangaController extends Controller
 
     public function chapterStore(Group $group, Manga $manga)
     {
-        $isOuoGenerateFail = false;
         $validatedData = request()->validate([
-            'thumbnail' => ['required', 'image'],
+            'thumbnail' => ['nullable', 'image'],
             'chapter_number' => ['required'],
             'title' => ['required'],
-            'link' => ['required'],
             'description' => ['nullable'],
             'season_id' => ['required'],
-            'images' => ['required'],
+            'content_mode' => ['required', Rule::in(['images', 'pdf'])],
+            'images' => ['nullable', 'array'],
+            'images.*' => ['file', 'image', 'max:20480'],
+            'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
         ]);
-        if (gettype($validatedData['thumbnail']) !== 'string') {
-            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
+
+        $contentMode = $validatedData['content_mode'];
+        $pdfFile = request()->file('pdf');
+        $imagesFromRequest = collect($validatedData['images'] ?? [])->filter(fn ($f) => $f instanceof UploadedFile);
+
+        if ($contentMode === 'pdf') {
+            if (! $pdfFile) {
+                throw ValidationException::withMessages(['pdf' => 'Upload a PDF file for this chapter.']);
+            }
+            if ($imagesFromRequest->isNotEmpty()) {
+                throw ValidationException::withMessages(['images' => 'Use either image pages or one PDF, not both.']);
+            }
+        } else {
+            if ($pdfFile) {
+                throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
+            }
+            if ($imagesFromRequest->isEmpty()) {
+                throw ValidationException::withMessages(['images' => 'Upload at least one page image.']);
+            }
         }
-        $imagesFromRequest = $validatedData['images'];
+
+        if (($validatedData['thumbnail'] ?? null) instanceof UploadedFile) {
+            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
+        } else {
+            $validatedData['thumbnail'] = null;
+        }
         $validatedData['group_id'] = $group->id;
         $validatedData['chapterable_id'] = $manga->id;
         $validatedData['chapterable_type'] = Manga::class;
-        $validatedData['type'] = 'link';
-        $link = $validatedData['link'];
-        // if ($group->plan->name !== 'premium') {
-        //     $generator = new ShortenLinkGenerator();
-        //     try {
-        //         $link = $generator->generate($validatedData['link']);
-        //     } catch (Exception $e) {
-        //         $isOuoGenerateFail = true;
-        //     }
-        // }
-        $validatedData['ouo_chapter_link'] = $link;
-        unset($validatedData['link']);
-        unset($validatedData['images']);
+        $validatedData['chapter_link'] = null;
+        $validatedData['ouo_chapter_link'] = null;
+
+        if ($contentMode === 'pdf') {
+            $validatedData['pdf_path'] = $this->uploader->upload($pdfFile, 'mangas');
+            $validatedData['type'] = 'pdf';
+        } else {
+            $validatedData['pdf_path'] = null;
+            $validatedData['type'] = 'link';
+        }
+
+        unset($validatedData['content_mode'], $validatedData['images'], $validatedData['pdf']);
         $chapter = Chapter::create($validatedData);
 
         $savedUserIds = CollectionItems::query()
@@ -200,8 +229,8 @@ class GroupAdminMangaController extends Controller
             Notification::send($savers, new SavedContentUpdatedNotification($chapter, $group, $manga));
         }
 
-        foreach ($imagesFromRequest as $index => $image) {
-            if ($image instanceof UploadedFile) {
+        if ($contentMode === 'images') {
+            foreach ($imagesFromRequest->values() as $index => $image) {
                 $path = $this->uploader->upload($image, 'mangas');
                 ChapterImage::create([
                     'chapter_id' => $chapter->id,
@@ -209,13 +238,6 @@ class GroupAdminMangaController extends Controller
                     'order' => $index,
                 ]);
             }
-        }
-
-        if ($isOuoGenerateFail) {
-            OuoFailLink::create([
-                'group_id' => $group->id,
-                'chapter_id' => $chapter->id,
-            ]);
         }
 
         return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chpater created Successful.');
@@ -235,75 +257,112 @@ class GroupAdminMangaController extends Controller
     public function updateChapter(Group $group, Manga $manga, Chapter $chapter)
     {
         $validatedData = request()->validate([
-            'thumbnail' => ['required'],
+            'thumbnail' => ['nullable'],
             'chapter_number' => ['required'],
             'title' => ['required'],
             'description' => ['required'],
-            'link' => ['required'],
             'season_id' => ['required'],
-            'images' => ['required'],
+            'content_mode' => ['required', Rule::in(['images', 'pdf'])],
+            'images' => ['nullable', 'array'],
+            'images.*' => ['nullable'],
+            'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
         ]);
 
+        $contentMode = $validatedData['content_mode'];
+        $pdfFile = request()->file('pdf');
         $imagesFromRequest = $validatedData['images'] ?? [];
-        if (gettype($validatedData['thumbnail']) !== 'string') {
-            $validatedData['thumbnail'] = $this->uploader->upload($validatedData['thumbnail'], 'animes');
+
+        if ($contentMode === 'pdf') {
+            if (! $pdfFile && ! $chapter->pdf_path) {
+                throw ValidationException::withMessages(['pdf' => 'Upload a PDF file or keep the existing chapter PDF.']);
+            }
+            $newImageFiles = collect($imagesFromRequest)->filter(fn ($f) => $f instanceof UploadedFile);
+            if ($newImageFiles->isNotEmpty()) {
+                throw ValidationException::withMessages(['images' => 'Use either image pages or one PDF, not both.']);
+            }
+        } else {
+            if ($pdfFile) {
+                throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
+            }
+            $hasExisting = collect($imagesFromRequest)->contains(fn ($i) => is_array($i) && isset($i['id']));
+            $hasNewFiles = collect($imagesFromRequest)->filter(fn ($i) => $i instanceof UploadedFile)->isNotEmpty();
+            if (! $hasExisting && ! $hasNewFiles) {
+                throw ValidationException::withMessages(['images' => 'Add at least one page image.']);
+            }
+            foreach ($imagesFromRequest as $img) {
+                if ($img instanceof UploadedFile) {
+                    Validator::make(
+                        ['file' => $img],
+                        ['file' => ['required', 'image', 'max:20480']],
+                    )->validate();
+                }
+            }
+        }
+
+        if (array_key_exists('thumbnail', $validatedData)) {
+            $thumb = $validatedData['thumbnail'];
+            if ($thumb instanceof UploadedFile) {
+                $validatedData['thumbnail'] = $this->uploader->upload($thumb, 'animes');
+            } elseif ($thumb === null || $thumb === '') {
+                $validatedData['thumbnail'] = null;
+            }
         }
         $validatedData['group_id'] = $group->id;
-        $link = $validatedData['link'];
-        // if ($chapter->ouo_chapter_link !== $validatedData['link']) {
-        //     $validatedData['chapter_link'] = $link;
-        //     if ($group->plan->name !== 'premium') {
-        //         $generator = new ShortenLinkGenerator();
-        //         try {
-        //             $link = $generator->generate($link);
-        //         } catch (Exception $e) {
-        //             $failLink = OuoFailLink::where('chapter_id', $chapter->id)->first();
-        //             if (!$failLink) {
-        //                 OuoFailLink::create([
-        //                     'group_id' => $group->id,
-        //                     'chapter_id' => $chapter->id
-        //                 ]);
-        //             }
-        //         }
-        //     }
-        //     $validatedData['ouo_chapter_link'] = $link;
-        // } else {
-        //     $validatedData['ouo_chapter_link'] = $link;
-        // }
-        $validatedData['ouo_chapter_link'] = $link;
-        $validatedData['chapter_link'] = $link;
-        unset($validatedData['link']);
-        unset($validatedData['images']);
+        $validatedData['chapter_link'] = null;
+        $validatedData['ouo_chapter_link'] = null;
         $validatedData['chapterable_type'] = Manga::class;
         $validatedData['chapterable_id'] = $manga->id;
-        $validatedData['type'] = 'link';
+
+        if ($contentMode === 'pdf') {
+            $validatedData['type'] = 'pdf';
+            if ($pdfFile) {
+                if ($chapter->pdf_path) {
+                    $this->uploader->remove($chapter->pdf_path);
+                }
+                $validatedData['pdf_path'] = $this->uploader->upload($pdfFile, 'mangas');
+                $chapter->images()->each(function ($image) {
+                    $this->uploader->remove($image->path);
+                    $image->delete();
+                });
+            }
+        } else {
+            $validatedData['type'] = 'link';
+            if ($chapter->pdf_path) {
+                $this->uploader->remove($chapter->pdf_path);
+            }
+            $validatedData['pdf_path'] = null;
+        }
+
+        unset($validatedData['content_mode'], $validatedData['images'], $validatedData['pdf']);
         $chapter->update($validatedData);
 
-        $existingImageIdsInRequest = collect($imagesFromRequest)->filter(function ($image) {
-            return is_array($image) && isset($image['id']);
-        })->map(function ($image) {
-            return $image['id'];
-        });
+        if ($contentMode === 'images') {
+            $existingImageIdsInRequest = collect($imagesFromRequest)->filter(function ($image) {
+                return is_array($image) && isset($image['id']);
+            })->map(function ($image) {
+                return $image['id'];
+            });
 
-        $chapter->images()->whereNotIn('id', $existingImageIdsInRequest)->each(function ($image) {
-            $this->uploader->remove($image->path);
-            $image->delete();
-        });
+            $chapter->images()->whereNotIn('id', $existingImageIdsInRequest)->each(function ($image) {
+                $this->uploader->remove($image->path);
+                $image->delete();
+            });
 
-        foreach ($imagesFromRequest as $index => $image) {
-            if (is_array($image) && isset($image['id'])) {
-                ChapterImage::where('id', $image['id'])->update([
-                    'order' => $index,
-                ]);
-            }
+            foreach ($imagesFromRequest as $index => $image) {
+                if (is_array($image) && isset($image['id'])) {
+                    ChapterImage::where('id', $image['id'])->update([
+                        'order' => $index,
+                    ]);
+                }
 
-            if ($image instanceof UploadedFile) {
-                $path = $this->uploader->upload($image, 'mangas');
-                ChapterImage::create([
-                    'chapter_id' => $chapter->id,
-                    'path' => $path,
-                    'order' => $index,
-                ]);
+                if ($image instanceof UploadedFile) {
+                    $path = $this->uploader->upload($image, 'mangas');
+                    ChapterImage::create([
+                        'chapter_id' => $chapter->id,
+                        'path' => $path,
+                        'order' => $index,
+                    ]);
+                }
             }
         }
 

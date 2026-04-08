@@ -1,3 +1,4 @@
+import { mangaThumbnailUrl } from "@/app";
 import Select from "@/Components/Select";
 import Tag from "@/Components/Tag";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
@@ -67,7 +68,9 @@ const DraggableBanner = ({ item, index, moveItem, removeItem }) => {
             </div>
             <div className="relative h-[150px] overflow-hidden">
                 <img
-                    src={item.bannerable.thumbnail}
+                    src={
+                        item.bannerable?.thumbnail || mangaThumbnailUrl
+                    }
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     alt={item.bannerable.name}
                 />

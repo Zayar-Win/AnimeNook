@@ -22,6 +22,10 @@ export function formateDate(
         .replaceAll("/", sperator);
 }
 
+/** Default cover when a manga has no `thumbnail` (use as `manga?.thumbnail || mangaThumbnailUrl`). */
+export const mangaThumbnailUrl =
+    "https://ui-avatars.com/api/?name=Manga&background=52525b&color=fafafa&size=512&bold=true";
+
 window.route = route;
 
 const PRIMARY_COLOR_FALLBACK = "#ED6400";
