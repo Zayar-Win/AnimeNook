@@ -6,7 +6,8 @@ import { defineConfig, devices } from "@playwright/test";
  *
  * Seed e2e users and delta-scoped fixtures: `php artisan db:seed --class=E2ESeeder`
  * (after migrations and Role/Group seeders). Search / anime / manga detail tests skip when
- * those fixtures are missing (HTTP check). Uses workers=2 to reduce login-route contention.
+ * those fixtures are missing (HTTP check). Default workers=1 for stable local runs; set
+ * PLAYWRIGHT_WORKERS=2 or pass --workers=2 to parallelize.
  *
  * Slow motion (all e2e tests): set `PLAYWRIGHT_SLOW_MO` to milliseconds between actions, e.g.
  *   PLAYWRIGHT_SLOW_MO=400 npm run test:e2e
@@ -20,7 +21,10 @@ export default defineConfig({
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
-    workers: process.env.CI ? 1 : 2,
+    workers:
+        process.env.PLAYWRIGHT_WORKERS !== undefined
+            ? Number(process.env.PLAYWRIGHT_WORKERS)
+            : 1,
     reporter: process.env.CI ? "github" : "html",
     use: {
         baseURL: process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:8000",

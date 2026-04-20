@@ -21,7 +21,12 @@ export const E2E_ANIME_SLUG =
 export const E2E_MANGA_SLUG =
     process.env.E2E_MANGA_SLUG ?? "e2e-manga-fixture";
 
-/** Group login; waits until the URL is no longer the login page. */
+/**
+ * Group login; waits until the URL is no longer the login page.
+ * Uses `waitUntil: "commit"` so Inertia client-side navigations are detected without
+ * waiting for a full document `load` (which can hang on SPAs).
+ * If login fails, throws with visible validation text to simplify debugging.
+ */
 export async function loginGroupTenant(
     page: Page,
     email: string,
@@ -31,16 +36,37 @@ export async function loginGroupTenant(
         waitUntil: "domcontentloaded",
         timeout: 60_000,
     });
+
+    const pathOnArrival = new URL(page.url()).pathname.replace(/\/$/, "");
+    if (!pathOnArrival.endsWith("/login")) {
+        return;
+    }
+
+    await expect(page.locator("#email")).toBeVisible({ timeout: 15_000 });
+    await page.locator("#email").click();
     await page.locator("#email").fill(email);
+    await page.locator("#password").click();
     await page.locator("#password").fill(password);
-    await page.getByRole("button", { name: "Login" }).click();
-    await page.waitForURL(
+
+    const leftLogin = page.waitForURL(
         (u) => {
             const path = new URL(u).pathname.replace(/\/$/, "");
             return !path.endsWith("/login");
         },
-        { timeout: 25_000, waitUntil: "domcontentloaded" },
+        { timeout: 45_000, waitUntil: "commit" },
     );
+
+    await page.getByRole("button", { name: "Login" }).click();
+
+    try {
+        await leftLogin;
+    } catch {
+        const snippet = (await page.locator("body").innerText()).slice(0, 800);
+        throw new Error(
+            `loginGroupTenant: still on login after 45s for ${email}. ` +
+                `Seed E2E users (php artisan db:seed --class=E2ESeeder). Body snippet: ${snippet}`,
+        );
+    }
 }
 
 const groupNavigationWait = {

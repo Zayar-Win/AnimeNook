@@ -9,6 +9,7 @@ use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Role;
 use App\Models\Season;
+use App\Models\Subscriber;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -53,6 +54,11 @@ class E2ESeeder extends Seeder
                 'role_id' => $adminRole->id,
                 'profile_picture' => 'https://sb.kaleidousercontent.com/67418/1920x1545/c5f15ac173/samuel-raita-ridxdghg7pw-unsplash.jpg',
             ]
+        );
+
+        Subscriber::updateOrCreate(
+            ['email' => 'e2e-subscriber@example.test', 'group_id' => $group->id],
+            []
         );
 
         $anime = Anime::where('group_id', $group->id)

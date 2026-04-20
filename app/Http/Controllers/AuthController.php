@@ -24,15 +24,19 @@ class AuthController extends Controller
     {
         $data = $request->validated();
         $user = User::where('group_id', $group->id)->where('email', $data['email'])->first();
-        if ($user) {
-            $isPasswordCorrect = Hash::check($data['password'], $user->password);
-            if (! $isPasswordCorrect) {
-                return back()->withErrors(['password' => 'Password doesn\'t match.']);
-            }
-            auth()->login($user);
-
-            return Redirect::intended(route('group.home'))->with('success', 'Welcome back from our website');
+        if (! $user) {
+            return back()->withErrors([
+                'email' => 'No account with this email for this site.',
+            ]);
         }
+
+        $isPasswordCorrect = Hash::check($data['password'], $user->password);
+        if (! $isPasswordCorrect) {
+            return back()->withErrors(['password' => 'Password doesn\'t match.']);
+        }
+        auth()->login($user);
+
+        return Redirect::intended(route('group.home'))->with('success', 'Welcome back from our website');
     }
 
     public function userRegister(Group $group, RegisterRequest $request)
