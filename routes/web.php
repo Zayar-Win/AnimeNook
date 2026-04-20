@@ -180,13 +180,14 @@ if ($isProduction) {
 
             Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
             Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
+
+            Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
+            Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
         });
         Route::get('/mangas/{manga:slug}', [MangaDetailController::class, 'index'])->name('manga.detail');
         Route::get('/mangas/{manga:slug}/chapters/{chapter}', [MangaChapterReaderController::class, 'show'])->name('manga.chapter.read');
         Route::get('/animes/{anime:slug}', [AnimeDetailController::class, 'index'])->name('anime.detail');
         Route::get('/user/profile/{user}', [UserController::class, 'showUserProfile'])->name('user.profile.show');
-        Route::get('/admin/banners', [GroupAdminBannerController::class, 'index'])->name('banners');
-        Route::post('/admin/banners/update', [GroupAdminBannerController::class, 'update'])->name('banners.update');
 
         Route::post('/remove-bg', [ImageController::class, 'removeBg'])->name('removeBg');
         Route::middleware('guest')->group(function () {
