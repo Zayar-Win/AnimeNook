@@ -543,11 +543,11 @@ function Index({
                     </div>
                 </div>
             </SectionContainer>
-            <SectionContainer className="bg-white dark:bg-gradient-to-b dark:from-sky-950/20 dark:to-transparent">
+            <SectionContainer className="bg-white dark:bg-black">
                 <div className="mt-6 sm:mt-8">
                     <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
                         <div className="flex items-center gap-3 font-semibold text-sky-700 dark:text-sky-400">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-700 ring-1 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/25">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-black ring-1 ring-sky-200 dark:bg-black dark:text-white dark:ring-sky-500/25">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"
@@ -566,7 +566,7 @@ function Index({
                             </span>
                             <div>
                                 <span className="text-lg font-bold text-zinc-900 dark:text-white">
-                                    Latest manga
+                                    Latest manga hello
                                 </span>
                                 <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300 sm:text-sm">
                                     Newest series added to the group
@@ -617,11 +617,11 @@ function Index({
                     </div>
                 </div>
             </SectionContainer>
-            <SectionContainer className="bg-white dark:bg-gradient-to-b dark:from-zinc-950/80 dark:to-transparent">
+            <SectionContainer className="bg-white dark:bg-black">
                 <div className="mt-6 sm:mt-8">
                     <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
                         <div className="flex items-center gap-3 font-semibold text-orange-700 dark:text-orange-400">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-500/15 dark:text-orange-400 dark:ring-orange-500/25">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-black ring-1 ring-orange-200 dark:bg-black dark:text-white dark:ring-orange-500/25">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"
@@ -843,9 +843,7 @@ function Index({
                 ) : null}
             </SectionContainer>
             <SectionContainer
-                className={
-                    "mt-12 bg-white py-12 dark:bg-[#0a0a0a]"
-                }
+                className={"mt-12 bg-white py-12 dark:bg-[#0a0a0a]"}
                 padding={false}
             >
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">

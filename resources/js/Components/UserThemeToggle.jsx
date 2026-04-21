@@ -5,7 +5,7 @@ const btnClass =
     "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-zinc-300/80 bg-white/80 text-zinc-800 shadow-sm transition hover:bg-zinc-100 dark:border-white/10 dark:bg-white/5 dark:text-zinc-200 dark:hover:bg-white/10";
 
 /**
- * Sun / moon control for group user pages (UserLayout). Requires UserThemeProvider.
+ * Sun / moon toggle for group pages. Requires UserThemeProvider (UserLayout, GroupAuthLayout, etc.).
  */
 export default function UserThemeToggle({ className = "" }) {
     const { theme, toggleTheme } = useUserTheme();

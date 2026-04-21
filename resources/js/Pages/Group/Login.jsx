@@ -3,7 +3,7 @@ import React from "react";
 import Logo from "../../../assets/logo.png";
 import Button from "@/Components/Button";
 import Google from "@/../assets/Google";
-import ToastLayout from "@/Layouts/ToastLayout";
+import GroupAuthLayout from "@/Layouts/GroupAuthLayout";
 
 const Login = () => {
     const { data, setData, errors, clearErrors, post } = useForm({
@@ -17,10 +17,9 @@ const Login = () => {
         post(window.route("group.login"));
     };
     return (
-        <ToastLayout>
-            <div className="min-h-dvh w-full bg-[#0D0D0D] px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12 flex items-center justify-center">
-                <div className="w-full max-w-5xl flex flex-col rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-2xl lg:flex-row lg:min-h-[min(36rem,90vh)]">
-                    {/* Hero: top on mobile, right on desktop */}
+        <GroupAuthLayout>
+            <div className="flex min-h-dvh w-full items-center justify-center bg-zinc-100 px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12 dark:bg-zinc-950">
+                <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl sm:rounded-2xl dark:border-white/10 dark:bg-zinc-900 lg:min-h-[min(36rem,90vh)] lg:flex-row">
                     <div className="relative order-1 h-36 w-full shrink-0 sm:h-44 md:h-52 lg:order-2 lg:h-auto lg:min-h-[28rem] lg:w-[40%] lg:max-w-md xl:max-w-none">
                         <img
                             className="absolute inset-0 h-full w-full object-cover"
@@ -30,7 +29,6 @@ const Login = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent lg:bg-gradient-to-l lg:from-transparent lg:to-black/20" />
                     </div>
 
-                    {/* Form column */}
                     <div className="order-2 w-full flex-1 px-5 py-8 sm:px-8 sm:py-10 lg:order-1 lg:flex lg:w-[60%] lg:flex-col lg:justify-center lg:px-10 lg:py-12">
                         <div className="mx-auto w-full max-w-md lg:max-w-lg">
                             <div className="mb-6 flex items-center gap-3 sm:mb-8">
@@ -48,11 +46,11 @@ const Login = () => {
                                     <h1 className="text-2xl font-medium text-primary sm:text-3xl">
                                         Konnichiwa!
                                     </h1>
-                                    <span className="text-sm font-medium text-gray-600">
+                                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
                                         My fellow Otaku!
                                     </span>
                                 </div>
-                                <p className="mt-2 max-w-xl text-sm font-medium text-gray-700 sm:text-base">
+                                <p className="mt-2 max-w-xl text-sm font-medium text-zinc-700 sm:text-base dark:text-zinc-300">
                                     Welcome back from the world of animes and
                                     movies Guy.Just Watch and Chill.
                                 </p>
@@ -74,13 +72,13 @@ const Login = () => {
                                             clearErrors();
                                             setData("email", e.target.value);
                                         }}
-                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 pl-0 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0"
+                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 bg-transparent pl-0 text-zinc-900 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0 dark:text-white"
                                         type="email"
                                         autoComplete="email"
                                         name="email"
                                     />
                                     <label
-                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-gray-600 transition-all ${
+                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-zinc-600 transition-all dark:text-zinc-400 ${
                                             data.email !== "" ? "active" : ""
                                         }`}
                                         htmlFor="email"
@@ -88,7 +86,7 @@ const Login = () => {
                                         Email
                                     </label>
                                     {errors.email && (
-                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500">
+                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500 dark:text-red-400">
                                             {errors.email}
                                         </span>
                                     )}
@@ -108,13 +106,13 @@ const Login = () => {
                                                 e.target.value,
                                             );
                                         }}
-                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 pl-0 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0"
+                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 bg-transparent pl-0 text-zinc-900 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0 dark:text-white"
                                         type="password"
                                         autoComplete="current-password"
                                         name="password"
                                     />
                                     <label
-                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-gray-600 transition-all ${
+                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-zinc-600 transition-all dark:text-zinc-400 ${
                                             data.password !== ""
                                                 ? "active"
                                                 : ""
@@ -124,7 +122,7 @@ const Login = () => {
                                         Password
                                     </label>
                                     {errors.password && (
-                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500">
+                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500 dark:text-red-400">
                                             {errors.password}
                                         </span>
                                     )}
@@ -137,7 +135,7 @@ const Login = () => {
                                                 group: group.subdomain,
                                             },
                                         )}
-                                        className="text-sm font-semibold text-blue-500 hover:underline"
+                                        className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Forgot password?
                                     </Link>
@@ -149,18 +147,18 @@ const Login = () => {
                                         "mt-6 w-full bg-yellow-400 !px-8 py-3 text-center sm:mt-8 sm:w-auto sm:!px-20"
                                     }
                                 />
-                                <span className="mt-4 block text-center text-sm text-gray-700 sm:text-left">
+                                <span className="mt-4 block text-center text-sm text-zinc-700 sm:text-left dark:text-zinc-300">
                                     {"You don't have an account? "}
                                     <Link
                                         href={window.route("group.register")}
-                                        className="font-semibold text-blue-500 hover:underline"
+                                        className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                                     >
                                         Register
                                     </Link>{" "}
                                     here.
                                 </span>
                                 <a
-                                    className="mt-4 flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-2 border-primary px-4 py-3 text-sm font-semibold text-black transition-colors hover:bg-black/5 sm:text-base"
+                                    className="mt-4 flex w-full cursor-pointer items-center justify-center gap-3 rounded-lg border-2 border-primary px-4 py-3 text-sm font-semibold text-zinc-900 transition-colors hover:bg-zinc-100 sm:text-base dark:text-white dark:hover:bg-white/10"
                                     href={`${APP_URL}/auth-google-redirect?subdomain=${group.subdomain}`}
                                 >
                                     <Google />
@@ -171,7 +169,7 @@ const Login = () => {
                     </div>
                 </div>
             </div>
-        </ToastLayout>
+        </GroupAuthLayout>
     );
 };
 

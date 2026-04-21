@@ -1,5 +1,5 @@
 import Button from "@/Components/Button";
-import ToastLayout from "@/Layouts/ToastLayout";
+import GroupAuthLayout from "@/Layouts/GroupAuthLayout";
 import { Link, useForm, usePage } from "@inertiajs/react";
 import React from "react";
 import Logo from "../../../assets/logo.png";
@@ -19,162 +19,171 @@ const ResetPassword = ({ token, email: emailProp }) => {
     };
 
     return (
-        <ToastLayout>
-            <div className="w-full h-[100vh] flex items-center justify-center bg-[#0D0D0D]">
-                <div className="w-[80%] flex rounded-lg p-10 gap-8 bg-white">
-                    <div className="basis-[60%]">
-                        <div className="w-32 h-32">
-                            <img
-                                src={Logo}
-                                alt=""
-                                className="w-full h-full object-cover"
-                            />
-                        </div>
-                        <div className="border-l-4 border-l-yellow-400 rounded-md py-3 pl-4">
-                            <div className="flex items-baseline gap-3">
-                                <h1 className="text-3xl font-medium text-primary">
-                                    Set new password
-                                </h1>
-                                <span className="text-sm font-medium">
-                                    My fellow Otaku!
-                                </span>
-                            </div>
-                            <p className="text-gray-700 font-medium w-[60%] pt-2">
-                                Choose a new password for your account (6–30
-                                characters).
-                            </p>
-                        </div>
-                        <form
-                            onSubmit={handleSubmit}
-                            className="mt-10 w-[70%]"
-                        >
-                            <div
-                                className={`relative ${
-                                    errors.email ? "shake" : ""
-                                }`}
-                            >
-                                <input
-                                    id="email"
-                                    value={data.email}
-                                    onChange={(e) => {
-                                        clearErrors();
-                                        setData("email", e.target.value);
-                                    }}
-                                    className="w-full pl-0 animate-input outline-none focus:ring-0 focus:border-yellow-400 focus:outline-none border-b-2 border-0 border-b-yellow-400"
-                                    type="email"
-                                    name="email"
-                                    autoComplete="email"
+        <GroupAuthLayout>
+            <div className="flex min-h-dvh w-full items-center justify-center bg-zinc-100 px-4 py-8 dark:bg-zinc-950">
+                <div className="flex w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-white/10 dark:bg-zinc-900 lg:flex-row lg:rounded-2xl">
+                    <div className="flex flex-1 flex-col px-6 py-8 sm:px-10 sm:py-10 lg:w-[58%] lg:justify-center lg:py-12">
+                        <div className="mx-auto w-full max-w-md">
+                            <div className="mb-6 h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:mb-8 sm:h-20 sm:w-20">
+                                <img
+                                    src={Logo}
+                                    alt=""
+                                    className="h-full w-full object-cover"
                                 />
-                                <label
-                                    className={`absolute transition-all ${
-                                        data.email !== "" ? "active" : ""
-                                    } animate-label block bottom-3 left-0 text-sm font-medium text-gray-600`}
-                                    htmlFor="email"
-                                >
-                                    Email
-                                </label>
-                                {errors.email && (
-                                    <span className="absolute left-0 text-sm font-medium bottom-[-22px] text-red-500">
-                                        {errors.email}
+                            </div>
+                            <div className="rounded-md border-l-4 border-l-yellow-400 py-2 pl-3 sm:pl-4">
+                                <div className="flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-3">
+                                    <h1 className="text-2xl font-medium text-primary sm:text-3xl">
+                                        Set new password
+                                    </h1>
+                                    <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">
+                                        My fellow Otaku!
                                     </span>
-                                )}
+                                </div>
+                                <p className="pt-2 text-sm font-medium text-zinc-700 sm:text-base dark:text-zinc-300">
+                                    Choose a new password for your account
+                                    (6–30 characters).
+                                </p>
                             </div>
-                            <div
-                                className={`relative mt-8 ${
-                                    errors.password ? "shake" : ""
-                                }`}
+                            <form
+                                onSubmit={handleSubmit}
+                                className="mt-8 w-full sm:mt-10"
                             >
-                                <input
-                                    id="password"
-                                    value={data.password}
-                                    onChange={(e) => {
-                                        clearErrors();
-                                        setData("password", e.target.value);
-                                    }}
-                                    className="w-full pl-0 animate-input outline-none focus:ring-0 focus:border-yellow-400 focus:outline-none border-b-2 border-0 border-b-yellow-400"
-                                    type="password"
-                                    name="password"
-                                    autoComplete="new-password"
-                                />
-                                <label
-                                    className={`absolute transition-all ${
-                                        data.password !== "" ? "active" : ""
-                                    } animate-label block bottom-3 left-0 text-sm font-medium text-gray-600`}
-                                    htmlFor="password"
+                                <div
+                                    className={`relative ${
+                                        errors.email ? "shake" : ""
+                                    }`}
                                 >
-                                    New password
-                                </label>
-                                {errors.password && (
-                                    <span className="absolute left-0 text-sm font-medium bottom-[-22px] text-red-500">
-                                        {errors.password}
-                                    </span>
-                                )}
-                            </div>
-                            <div
-                                className={`relative mt-8 ${
-                                    errors.password_confirmation ? "shake" : ""
-                                }`}
-                            >
-                                <input
-                                    id="password_confirmation"
-                                    value={data.password_confirmation}
-                                    onChange={(e) => {
-                                        clearErrors();
-                                        setData(
-                                            "password_confirmation",
-                                            e.target.value,
-                                        );
-                                    }}
-                                    className="w-full pl-0 animate-input outline-none focus:ring-0 focus:border-yellow-400 focus:outline-none border-b-2 border-0 border-b-yellow-400"
-                                    type="password"
-                                    name="password_confirmation"
-                                    autoComplete="new-password"
-                                />
-                                <label
-                                    className={`absolute transition-all ${
-                                        data.password_confirmation !== ""
-                                            ? "active"
+                                    <input
+                                        id="email"
+                                        value={data.email}
+                                        onChange={(e) => {
+                                            clearErrors();
+                                            setData("email", e.target.value);
+                                        }}
+                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 bg-transparent pl-0 text-zinc-900 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0 dark:text-white"
+                                        type="email"
+                                        name="email"
+                                        autoComplete="email"
+                                    />
+                                    <label
+                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-zinc-600 transition-all dark:text-zinc-400 ${
+                                            data.email !== "" ? "active" : ""
+                                        }`}
+                                        htmlFor="email"
+                                    >
+                                        Email
+                                    </label>
+                                    {errors.email && (
+                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500 dark:text-red-400">
+                                            {errors.email}
+                                        </span>
+                                    )}
+                                </div>
+                                <div
+                                    className={`relative mt-8 sm:mt-10 ${
+                                        errors.password ? "shake" : ""
+                                    }`}
+                                >
+                                    <input
+                                        id="password"
+                                        value={data.password}
+                                        onChange={(e) => {
+                                            clearErrors();
+                                            setData("password", e.target.value);
+                                        }}
+                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 bg-transparent pl-0 text-zinc-900 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0 dark:text-white"
+                                        type="password"
+                                        name="password"
+                                        autoComplete="new-password"
+                                    />
+                                    <label
+                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-zinc-600 transition-all dark:text-zinc-400 ${
+                                            data.password !== ""
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                        htmlFor="password"
+                                    >
+                                        New password
+                                    </label>
+                                    {errors.password && (
+                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500 dark:text-red-400">
+                                            {errors.password}
+                                        </span>
+                                    )}
+                                </div>
+                                <div
+                                    className={`relative mt-8 sm:mt-10 ${
+                                        errors.password_confirmation
+                                            ? "shake"
                                             : ""
-                                    } animate-label block bottom-3 left-0 text-sm font-medium text-gray-600`}
-                                    htmlFor="password_confirmation"
+                                    }`}
                                 >
-                                    Confirm password
-                                </label>
-                                {errors.password_confirmation && (
-                                    <span className="absolute left-0 text-sm font-medium bottom-[-22px] text-red-500">
-                                        {errors.password_confirmation}
-                                    </span>
-                                )}
-                            </div>
-                            <Button
-                                text={
-                                    processing ? "Updating…" : "Reset password"
-                                }
-                                type="submit"
-                                className="bg-yellow-400 my-8 !px-20 inline-block"
-                            />
-                            <span className="block text-sm text-gray-700">
-                                <Link
-                                    href={window.route("group.login", {
-                                        group: group.subdomain,
-                                    })}
-                                    className="text-blue-500 hover:underline font-semibold"
-                                >
-                                    Back to login
-                                </Link>
-                            </span>
-                        </form>
+                                    <input
+                                        id="password_confirmation"
+                                        value={data.password_confirmation}
+                                        onChange={(e) => {
+                                            clearErrors();
+                                            setData(
+                                                "password_confirmation",
+                                                e.target.value,
+                                            );
+                                        }}
+                                        className="animate-input w-full border-0 border-b-2 border-b-yellow-400 bg-transparent pl-0 text-zinc-900 outline-none focus:border-yellow-400 focus:outline-none focus:ring-0 dark:text-white"
+                                        type="password"
+                                        name="password_confirmation"
+                                        autoComplete="new-password"
+                                    />
+                                    <label
+                                        className={`animate-label absolute bottom-3 left-0 block text-sm font-medium text-zinc-600 transition-all dark:text-zinc-400 ${
+                                            data.password_confirmation !== ""
+                                                ? "active"
+                                                : ""
+                                        }`}
+                                        htmlFor="password_confirmation"
+                                    >
+                                        Confirm password
+                                    </label>
+                                    {errors.password_confirmation && (
+                                        <span className="absolute bottom-[-22px] left-0 text-sm font-medium text-red-500 dark:text-red-400">
+                                            {errors.password_confirmation}
+                                        </span>
+                                    )}
+                                </div>
+                                <Button
+                                    text={
+                                        processing
+                                            ? "Updating…"
+                                            : "Reset password"
+                                    }
+                                    type="submit"
+                                    className="my-8 inline-block bg-yellow-400 !px-12 sm:!px-20"
+                                />
+                                <span className="block text-sm text-zinc-700 dark:text-zinc-300">
+                                    <Link
+                                        href={window.route("group.login", {
+                                            group: group.subdomain,
+                                        })}
+                                        className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                                    >
+                                        Back to login
+                                    </Link>
+                                </span>
+                            </form>
+                        </div>
                     </div>
-                    <div className="basis-[40%]">
+                    <div className="relative order-first h-40 w-full shrink-0 sm:h-48 lg:order-none lg:h-auto lg:min-h-[22rem] lg:w-[42%]">
                         <img
-                            className="w-full h-full object-cover"
+                            className="h-full w-full object-cover lg:absolute lg:inset-0 lg:min-h-full"
                             src="https://cdn.oneesports.gg/cdn-data/2023/06/Anime_OnePiece_Wallpaper_StrawHatPirates_Complete.jpg"
                             alt=""
                         />
+                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent lg:bg-gradient-to-l lg:from-transparent lg:to-black/25" />
                     </div>
                 </div>
             </div>
-        </ToastLayout>
+        </GroupAuthLayout>
     );
 };
 
