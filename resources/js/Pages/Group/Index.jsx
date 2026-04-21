@@ -1,6 +1,5 @@
 import Button from "@/Components/Button";
 import MangaCard from "@/Components/MangaCard";
-import MovieCard from "@/Components/MovieCard";
 import NewEpisodeCard from "@/Components/NewEpisodeCard";
 import SectionContainer from "@/Components/SectionContainer";
 // import Tag from '@/Components/Tag'
@@ -13,20 +12,124 @@ import Tag from "@/Components/Tag";
 import Pause from "@/../assets/Pause";
 import { usePage } from "@inertiajs/react";
 
+function bannerableDetailHref(bb) {
+    if (!bb?.slug) {
+        return window.route("group.animes", { filter: "mangas" });
+    }
+    if (bb.type === "manga") {
+        return window.route("group.manga.detail", { manga: bb });
+    }
+    return window.route("group.anime.detail", { anime: bb });
+}
+
+function bannerChaptersLine(bb) {
+    const n = bb?.totalChaptersCount ?? bb?.chapters_count ?? 0;
+    const label = bb?.type === "manga" ? "Chapters" : "Episodes";
+    return `${n} ${label}`;
+}
+
+function TopMangaSidebarItem({ manga, index }) {
+    const [thumbFailed, setThumbFailed] = React.useState(false);
+    const thumbOk = Boolean(manga?.thumbnail) && !thumbFailed;
+    const initial = (manga?.name || "?").trim().charAt(0).toUpperCase() || "?";
+
+    return (
+        <Link
+            href={window.route("group.manga.detail", { manga })}
+            className="group flex min-w-0 items-center gap-2 py-2.5 pl-2 pr-1 sm:gap-3 sm:p-3 rounded-xl hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/5"
+        >
+            <span
+                className={`w-6 shrink-0 text-center text-lg font-black tabular-nums leading-none transition-colors sm:w-7 sm:text-xl ${
+                    index < 3
+                        ? "text-primary"
+                        : "text-zinc-600 group-hover:text-zinc-500"
+                }`}
+            >
+                {index + 1}
+            </span>
+
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 shadow-md ring-1 ring-white/10 transition-all group-hover:ring-primary/40 sm:h-14 sm:w-14">
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-zinc-500 sm:text-sm">
+                    {initial}
+                </div>
+                {thumbOk && (
+                    <img
+                        src={manga.thumbnail}
+                        alt=""
+                        onError={() => setThumbFailed(true)}
+                        className="absolute inset-0 z-[1] h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                )}
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col justify-center pr-0.5">
+                <h3 className="truncate text-sm font-bold text-zinc-100 transition-colors group-hover:text-primary sm:text-base">
+                    {manga?.name}
+                </h3>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-medium text-zinc-500 sm:gap-2 sm:text-[11px]">
+                    <div className="inline-flex items-center gap-1 rounded-full bg-white/5 px-1.5 py-0.5 sm:gap-1.5 sm:px-2">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="h-3 w-3 shrink-0 text-zinc-500 sm:h-3.5 sm:w-3.5"
+                        >
+                            <path
+                                fill="currentColor"
+                                d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"
+                            />
+                        </svg>
+                        <span>{manga?.views_count ?? 0}</span>
+                    </div>
+                    <div className="inline-flex items-center gap-1 rounded-full bg-white/5 px-1.5 py-0.5 sm:gap-1.5 sm:px-2">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            className="h-3 w-3 shrink-0 text-primary sm:h-3 sm:w-3"
+                        >
+                            <path
+                                fill="currentColor"
+                                d="m12 21l-1.45-1.3q-2.525-2.275-4.175-3.925T3.75 12.812Q2.775 11.5 2.388 10.4T2 8.15Q2 5.8 3.575 4.225T7.5 2.65q1.3 0 2.475.55T12 4.75q.85-1 2.025-1.55t2.475-.55q2.35 0 3.925 1.575T22 8.15q0 1.15-.388 2.25t-1.362 2.412q-.975 1.313-2.625 2.963T13.45 19.7L12 21Zm0-2.7q2.4-2.15 3.95-3.688t2.45-2.674q.9-1.138 1.25-2.026T20 8.15q0-1.5-1-2.5t-2.5-1q-1.175 0-2.175.662T12.95 7h-1.9q-.375-1.025-1.375-1.688T7.5 4.65q-1.5 0-2.5 1t-1 2.5q0 .875.35 1.763t1.25 2.025q.9 1.137 2.45 2.675T12 18.3Zm0-6.825Z"
+                            />
+                        </svg>
+                        <span>{manga?.likes_count ?? 0}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div className="shrink-0 text-zinc-600 transition-colors group-hover:text-white">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 sm:h-5 sm:w-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                >
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </div>
+        </Link>
+    );
+}
+
 function Index({
     banners,
-    newAnimes,
-    recommendedAnime,
-    continueWatchingAnimes,
-    popularAnimes,
+    newMangas,
+    recommendedManga,
+    continueReadingMangas,
     popularMangas,
+    hotMangas,
+    latestMangas,
     newEpisodes,
-    trendAnimes,
+    trendMangas,
 }) {
     const {
         auth: { user },
     } = usePage().props;
-    const saveToWatchList = (anime) => {
+    const saveToCollection = (manga) => {
         if (!user) {
             return router.get(window.route("group.login"));
         }
@@ -35,12 +138,12 @@ function Index({
                 collection: user?.collections[0],
             }),
             {
-                id: anime.id,
-                type: "anime",
+                id: manga.id,
+                type: "manga",
             },
             {
                 preserveScroll: true,
-            }
+            },
         );
     };
 
@@ -79,180 +182,188 @@ function Index({
                             </svg>
                             <p className="font-semibold">News</p>
                         </div>
-                        <div className="h-[500px] lg:h-[650px] relative group rounded-2xl overflow-hidden shadow-2xl shadow-black/50">
-                            <Carousel id={"banner-swiper"}>
-                                {banners?.map((banner, i) => (
-                                    <SwiperSlide
-                                        key={i}
-                                        className="w-full h-full"
-                                    >
-                                        <div className="relative w-full h-full">
-                                            {/* Background Image */}
-                                            <div className="absolute inset-0">
-                                                <img
-                                                    className="w-full h-full object-cover"
-                                                    src={
-                                                        banner?.bannerable
-                                                            ?.background_image
-                                                    }
-                                                    alt={
-                                                        banner?.bannerable?.name
-                                                    }
-                                                />
-                                                {/* Modern Gradient Overlay */}
-                                                <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
-                                                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
-                                            </div>
-
-                                            {/* Content */}
-                                            <div className="relative z-20 h-full flex flex-col justify-center px-6 sm:px-12 lg:px-20 max-w-4xl">
-                                                <div className="space-y-6 animate-fade-in-up">
-                                                    {/* Tags */}
-                                                    <div className="flex flex-wrap items-center gap-2">
-                                                        <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-lg shadow-primary/20">
-                                                            Featured
-                                                        </span>
-                                                        {banner?.bannerable?.tags
-                                                            ?.slice(0, 3)
-                                                            .map((tag, i) => (
-                                                                <Tag
-                                                                    key={i}
-                                                                    tag={tag}
-                                                                    className="!bg-white/10 !border-white/10 !text-zinc-200 hover:!bg-white/20 transition-colors"
-                                                                />
-                                                            ))}
-                                                    </div>
-
-                                                    {/* Title */}
-                                                    <h1 className="text-4xl sm:text-5xl lg:text-7xl font-black text-white leading-[0.9] tracking-tight drop-shadow-lg line-clamp-2">
-                                                        {
+                        {/* Full-bleed slider below xl (SectionContainer uses px-3 / lg:px-10) */}
+                        <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 xl:left-0 xl:w-full xl:max-w-none xl:translate-x-0">
+                            <div className="h-[min(42vh,320px)] xs:h-[min(44vh,340px)] sm:h-[380px] md:h-[460px] lg:h-[560px] xl:h-[640px] relative group overflow-hidden shadow-2xl shadow-black/50 rounded-none xl:rounded-2xl">
+                                <Carousel id={"banner-swiper"}>
+                                    {banners?.map((banner, i) => (
+                                        <SwiperSlide
+                                            key={i}
+                                            className="w-full h-full"
+                                        >
+                                            <div className="relative w-full h-full">
+                                                {/* Background Image */}
+                                                <div className="absolute inset-0">
+                                                    <img
+                                                        className="w-full h-full object-cover"
+                                                        src={
+                                                            banner?.bannerable
+                                                                ?.thumbnail
+                                                        }
+                                                        alt={
                                                             banner?.bannerable
                                                                 ?.name
                                                         }
-                                                    </h1>
+                                                    />
+                                                    {/* Modern Gradient Overlay */}
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
+                                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+                                                </div>
 
-                                                    {/* Info Row */}
-                                                    <div className="flex items-center gap-6 text-sm sm:text-base font-medium text-zinc-300">
-                                                        <div className="flex items-center gap-2">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="20"
-                                                                height="20"
-                                                                viewBox="0 0 24 24"
-                                                                fill="currentColor"
-                                                                className="text-primary"
-                                                            >
-                                                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-                                                            </svg>
-                                                            <span className="text-white">
-                                                                {
-                                                                    banner
-                                                                        ?.bannerable
-                                                                        ?.totalChaptersCount
-                                                                }{" "}
-                                                                Episodes
+                                                {/* Content */}
+                                                <div className="relative z-20 h-full flex flex-col justify-center px-4 xxs:px-5 sm:px-10 lg:px-16 xl:px-20 max-w-4xl">
+                                                    <div className="space-y-3 sm:space-y-4 lg:space-y-6 animate-fade-in-up">
+                                                        {/* Tags */}
+                                                        <div className="flex flex-wrap items-center gap-2">
+                                                            <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-lg shadow-primary/20">
+                                                                Featured
                                                             </span>
+                                                            {banner?.bannerable?.tags
+                                                                ?.slice(0, 3)
+                                                                .map(
+                                                                    (
+                                                                        tag,
+                                                                        i,
+                                                                    ) => (
+                                                                        <Tag
+                                                                            key={
+                                                                                i
+                                                                            }
+                                                                            tag={
+                                                                                tag
+                                                                            }
+                                                                            className="!bg-white/10 !border-white/10 !text-zinc-200 hover:!bg-white/20 transition-colors"
+                                                                        />
+                                                                    ),
+                                                                )}
                                                         </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="20"
-                                                                height="20"
-                                                                viewBox="0 0 24 24"
-                                                                fill="currentColor"
-                                                                className="text-yellow-400"
-                                                            >
-                                                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
-                                                            </svg>
-                                                            <span>
-                                                                {banner
+
+                                                        {/* Title */}
+                                                        <h1 className="text-2xl xxs:text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight sm:leading-[0.9] tracking-tight drop-shadow-lg line-clamp-2">
+                                                            {
+                                                                banner
                                                                     ?.bannerable
-                                                                    ?.rating ||
-                                                                    "4.8"}
-                                                            </span>
-                                                        </div>
-                                                    </div>
+                                                                    ?.name
+                                                            }
+                                                        </h1>
 
-                                                    {/* Description */}
-                                                    <p className="text-zinc-400 text-base sm:text-lg leading-relaxed line-clamp-3 max-w-2xl">
-                                                        {
-                                                            banner?.bannerable
-                                                                .description
-                                                        }
-                                                    </p>
-
-                                                    {/* Actions */}
-                                                    <div className="flex flex-wrap gap-4 pt-4">
-                                                        <Button
-                                                            text="Watch Now"
-                                                            className="!bg-primary hover:!bg-primary/90 !text-white !px-8 !py-4 !rounded-xl !text-base !font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 transition-all"
-                                                            href={window.route(
-                                                                "group.anime.detail",
-                                                                {
-                                                                    anime: banner?.bannerable,
-                                                                }
-                                                            )}
-                                                            Icon={
+                                                        {/* Info Row */}
+                                                        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base font-medium text-zinc-300">
+                                                            <div className="flex items-center gap-2">
                                                                 <svg
                                                                     xmlns="http://www.w3.org/2000/svg"
-                                                                    width="24"
-                                                                    height="24"
+                                                                    width="20"
+                                                                    height="20"
                                                                     viewBox="0 0 24 24"
                                                                     fill="currentColor"
+                                                                    className="text-primary"
                                                                 >
-                                                                    <path d="M8 5v14l11-7z" />
+                                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
                                                                 </svg>
+                                                                <span className="text-white">
+                                                                    {bannerChaptersLine(
+                                                                        banner?.bannerable,
+                                                                    )}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="20"
+                                                                    height="20"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="currentColor"
+                                                                    className="text-yellow-400"
+                                                                >
+                                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
+                                                                </svg>
+                                                                <span>
+                                                                    {banner
+                                                                        ?.bannerable
+                                                                        ?.rating ||
+                                                                        "4.8"}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+
+                                                        {/* Description */}
+                                                        <p className="text-zinc-400 text-sm sm:text-base md:text-lg leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-3 max-w-2xl">
+                                                            {
+                                                                banner
+                                                                    ?.bannerable
+                                                                    .description
                                                             }
-                                                        />
-                                                        <Link
-                                                            href={window.route(
-                                                                "group.anime.detail",
-                                                                {
-                                                                    anime: banner?.bannerable,
-                                                                }
-                                                            )}
-                                                            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold backdrop-blur-sm transition-all hover:-translate-y-1"
-                                                        >
-                                                            <svg
-                                                                xmlns="http://www.w3.org/2000/svg"
-                                                                width="20"
-                                                                height="20"
-                                                                viewBox="0 0 24 24"
-                                                                fill="none"
-                                                                stroke="currentColor"
-                                                                strokeWidth="2"
-                                                                strokeLinecap="round"
-                                                                strokeLinejoin="round"
+                                                        </p>
+
+                                                        {/* Actions — compact, equal visual weight (Button Link is w-full on mobile) */}
+                                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-3">
+                                                            <Link
+                                                                href={bannerableDetailHref(
+                                                                    banner?.bannerable,
+                                                                )}
+                                                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary/90 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
                                                             >
-                                                                <circle
-                                                                    cx="12"
-                                                                    cy="12"
-                                                                    r="10"
-                                                                ></circle>
-                                                                <line
-                                                                    x1="12"
-                                                                    y1="16"
-                                                                    x2="12"
-                                                                    y2="12"
-                                                                ></line>
-                                                                <line
-                                                                    x1="12"
-                                                                    y1="8"
-                                                                    x2="12.01"
-                                                                    y2="8"
-                                                                ></line>
-                                                            </svg>
-                                                            <span>
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className="h-4 w-4 shrink-0"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    aria-hidden
+                                                                >
+                                                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                                                </svg>
+                                                                Read now
+                                                            </Link>
+                                                            <Link
+                                                                href={bannerableDetailHref(
+                                                                    banner?.bannerable,
+                                                                )}
+                                                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/15 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
+                                                            >
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    className="h-4 w-4 shrink-0"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="none"
+                                                                    stroke="currentColor"
+                                                                    strokeWidth="2"
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    aria-hidden
+                                                                >
+                                                                    <circle
+                                                                        cx="12"
+                                                                        cy="12"
+                                                                        r="10"
+                                                                    />
+                                                                    <line
+                                                                        x1="12"
+                                                                        y1="16"
+                                                                        x2="12"
+                                                                        y2="12"
+                                                                    />
+                                                                    <line
+                                                                        x1="12"
+                                                                        y1="8"
+                                                                        x2="12.01"
+                                                                        y2="8"
+                                                                    />
+                                                                </svg>
                                                                 More Info
-                                                            </span>
-                                                        </Link>
+                                                            </Link>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </SwiperSlide>
-                                ))}
-                            </Carousel>
+                                        </SwiperSlide>
+                                    ))}
+                                </Carousel>
+                            </div>
                         </div>
                     </div>
                     <div className="xl:w-[30%] w-full xl:ml-4 xl:mt-0 mt-10 flex flex-col">
@@ -260,7 +371,7 @@ function Index({
                             <div className="flex items-center gap-3">
                                 <div className="w-1 h-8 bg-red-500 rounded-full"></div>
                                 <h2 className="text-xl font-black text-zinc-900 uppercase tracking-wide">
-                                    Top Airing
+                                    Latest manga
                                 </h2>
                             </div>
                             <div className="flex gap-2">
@@ -269,180 +380,97 @@ function Index({
                                 <div className="w-2 h-2 rounded-full bg-red-500/20"></div>
                             </div>
                         </div>
-                        <div className="bg-[#0D0D0D] rounded-xl flex flex-col gap-2 p-3 text-white overflow-y-auto custom-scrollbar flex-1 h-[500px] xl:h-auto">
-                            {newAnimes?.map((anime, i) => (
-                                <Link
-                                    key={i}
-                                    href={window.route("group.anime.detail", {
-                                        anime,
-                                    })}
-                                    className="group flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/5"
-                                >
-                                    {/* Ranking Number */}
-                                    <span
-                                        className={`text-3xl font-black italic w-8 shrink-0 transition-colors ${
-                                            i < 3
-                                                ? "text-primary drop-shadow-[0_0_8px_rgba(var(--primary-rgb),0.5)]"
-                                                : "text-zinc-700 group-hover:text-zinc-500"
-                                        }`}
-                                    >
-                                        {i + 1}
-                                    </span>
-
-                                    {/* Image Container */}
-                                    <div className="w-14 h-14 shrink-0 rounded-full overflow-hidden ring-2 ring-transparent group-hover:ring-primary/50 transition-all shadow-md">
-                                        <img
-                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            src={anime?.thumbnail}
-                                            alt={anime?.name}
-                                        />
-                                    </div>
-
-                                    {/* Content */}
-                                    <div className="flex flex-col flex-grow min-w-0 justify-center">
-                                        <h3 className="font-bold text-sm text-gray-200 line-clamp-1 group-hover:text-primary transition-colors">
-                                            {anime?.name}
-                                        </h3>
-
-                                        <div className="flex items-center gap-4 mt-1 text-[11px] font-medium text-gray-500">
-                                            <div className="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded-full">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="12"
-                                                    height="12"
-                                                    viewBox="0 0 24 24"
-                                                    className="text-gray-400"
-                                                >
-                                                    <path
-                                                        fill="currentColor"
-                                                        d="M12 9a3 3 0 0 1 3 3a3 3 0 0 1-3 3a3 3 0 0 1-3-3a3 3 0 0 1 3-3m0-4.5c5 0 9.27 3.11 11 7.5c-1.73 4.39-6 7.5-11 7.5S2.73 16.39 1 12c1.73-4.39 6-7.5 11-7.5M3.18 12a9.821 9.821 0 0 0 17.64 0a9.821 9.821 0 0 0-17.64 0Z"
-                                                    />
-                                                </svg>
-                                                <span>
-                                                    {anime?.views_count}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center gap-1.5 bg-white/5 px-2 py-0.5 rounded-full">
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    width="10"
-                                                    height="10"
-                                                    viewBox="0 0 24 24"
-                                                    className="text-primary"
-                                                >
-                                                    <path
-                                                        fill="currentColor"
-                                                        d="m12 21l-1.45-1.3q-2.525-2.275-4.175-3.925T3.75 12.812Q2.775 11.5 2.388 10.4T2 8.15Q2 5.8 3.575 4.225T7.5 2.65q1.3 0 2.475.55T12 4.75q.85-1 2.025-1.55t2.475-.55q2.35 0 3.925 1.575T22 8.15q0 1.15-.388 2.25t-1.362 2.412q-.975 1.313-2.625 2.963T13.45 19.7L12 21Zm0-2.7q2.4-2.15 3.95-3.688t2.45-2.674q.9-1.138 1.25-2.026T20 8.15q0-1.5-1-2.5t-2.5-1q-1.175 0-2.175.662T12.95 7h-1.9q-.375-1.025-1.375-1.688T7.5 4.65q-1.5 0-2.5 1t-1 2.5q0 .875.35 1.763t1.25 2.025q.9 1.137 2.45 2.675T12 18.3Zm0-6.825Z"
-                                                    />
-                                                </svg>
-                                                <span>
-                                                    {anime?.likes_count}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Arrow Action */}
-                                    <div className="text-gray-600 group-hover:text-white transition-colors">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="20"
-                                            height="20"
-                                            viewBox="0 0 24 24"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        >
-                                            <polyline points="9 18 15 12 9 6"></polyline>
-                                        </svg>
-                                    </div>
-                                </Link>
+                        <div className="flex flex-col gap-1 overflow-y-auto rounded-xl bg-[#0D0D0D] p-1.5 text-white custom-scrollbar sm:gap-2 sm:p-3 flex-1 h-[min(42vh,320px)] xs:h-[min(44vh,340px)] sm:h-[380px] md:h-[460px] lg:h-[560px] xl:h-auto">
+                            {newMangas?.map((manga, i) => (
+                                <TopMangaSidebarItem
+                                    key={manga?.id ?? i}
+                                    manga={manga}
+                                    index={i}
+                                />
                             ))}
                         </div>
                     </div>
                 </div>
             </SectionContainer>
             <SectionContainer>
-                {recommendedAnime ? (
-                    <div className="relative overflow-hidden rounded-3xl my-6 md:my-20 group">
+                {recommendedManga ? (
+                    <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl my-4 sm:my-6 md:my-20 group">
                         {/* Background with Gradient */}
                         <div
                             className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
                             style={{
-                                backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.4) 100%), url(${recommendedAnime?.background_image})`,
+                                backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 50%, rgba(0,0,0,0.4) 100%), url(${recommendedManga?.background_image})`,
                             }}
                         />
 
-                        <div className="relative z-10 flex md:flex-row flex-col-reverse items-center justify-between p-6 md:p-12 lg:p-16 gap-6 md:gap-10">
+                        <div className="relative z-10 flex flex-col-reverse items-center justify-between gap-4 px-4 py-5 sm:gap-6 sm:p-6 md:flex-row md:gap-10 md:p-12 lg:p-16">
                             {/* Left Content */}
-                            <div className="flex-1 max-w-2xl text-white space-y-4 md:space-y-6 text-center md:text-left">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-wider">
-                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                            <div className="flex-1 max-w-2xl text-white space-y-3 text-center sm:space-y-4 md:space-y-6 md:text-left">
+                                <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider backdrop-blur-md sm:gap-2 sm:px-3 sm:py-1 sm:text-xs">
+                                    <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-green-500 sm:h-2 sm:w-2"></span>
                                     Recommended
                                 </div>
 
-                                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black leading-tight drop-shadow-2xl">
-                                    {recommendedAnime?.name}
+                                <h1 className="text-2xl font-black leading-tight drop-shadow-2xl sm:text-3xl md:text-5xl lg:text-6xl">
+                                    {recommendedManga?.name}
                                 </h1>
 
-                                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                                    {recommendedAnime?.tags.map((tag, i) => (
+                                <div className="flex flex-wrap justify-center gap-2 md:justify-start sm:gap-3">
+                                    {recommendedManga?.tags.map((tag, i) => (
                                         <Link
                                             key={i}
                                             href={window.route("group.animes", {
                                                 tags: tag.name,
+                                                filter: "mangas",
                                             })}
-                                            className="px-4 py-1.5 rounded-lg bg-white/5 hover:bg-white/20 border border-white/10 text-sm font-medium transition-all hover:scale-105"
+                                            className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium transition-all hover:scale-105 hover:bg-white/20 sm:rounded-lg sm:px-4 sm:py-1.5 sm:text-sm"
                                         >
                                             #{tag.name}
                                         </Link>
                                     ))}
                                 </div>
 
-                                <div className="flex flex-wrap gap-4 pt-4 justify-center md:justify-start">
-                                    <Button
-                                        text="Watch Now"
-                                        className="!bg-primary hover:!bg-primary/90 !px-8 !py-3 !rounded-xl !text-white !font-bold shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-1 transition-all"
-                                        href={window.route(
-                                            "group.anime.detail",
-                                            {
-                                                anime: recommendedAnime,
-                                            }
-                                        )}
-                                        Icon={
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="20"
-                                                height="20"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                            >
-                                                <path d="M8 5v14l11-7z" />
-                                            </svg>
-                                        }
-                                    />
+                                <div className="flex flex-wrap justify-center gap-2 pt-1 sm:gap-3 sm:pt-3 md:justify-start">
                                     <Link
                                         href={window.route(
-                                            "group.anime.detail",
+                                            "group.manga.detail",
                                             {
-                                                anime: recommendedAnime,
-                                            }
+                                                manga: recommendedManga,
+                                            },
                                         )}
-                                        className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white font-bold backdrop-blur-sm transition-all hover:-translate-y-1"
+                                        className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary/90 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
                                     >
-                                        <span>Details</span>
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            width="18"
-                                            height="18"
+                                            className="h-4 w-4 shrink-0"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            aria-hidden
+                                        >
+                                            <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                        Read now
+                                    </Link>
+                                    <Link
+                                        href={window.route(
+                                            "group.manga.detail",
+                                            {
+                                                manga: recommendedManga,
+                                            },
+                                        )}
+                                        className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/15 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
+                                    >
+                                        Details
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-4 w-4 shrink-0"
                                             viewBox="0 0 24 24"
                                             fill="none"
                                             stroke="currentColor"
                                             strokeWidth="2"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
+                                            aria-hidden
                                         >
                                             <path d="M5 12h14M12 5l7 7-7 7" />
                                         </svg>
@@ -451,14 +479,14 @@ function Index({
                             </div>
 
                             {/* Right Character Image */}
-                            <div className="relative w-full max-w-[300px] md:max-w-[400px] h-[250px] md:h-[400px] flex items-center justify-center">
-                                <div className="absolute inset-0 bg-primary/20 blur-[100px] rounded-full"></div>
+                            <div className="relative flex h-[140px] w-full max-w-[200px] shrink-0 items-center justify-center sm:h-[180px] sm:max-w-[240px] md:h-[400px] md:max-w-[400px]">
+                                <div className="absolute inset-0 rounded-full bg-primary/20 blur-[80px] md:blur-[100px]"></div>
                                 <img
-                                    className="relative z-10 w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-float"
+                                    className="relative z-10 h-full w-full object-contain object-bottom drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)] animate-float md:drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
                                     src={
-                                        recommendedAnime?.transparent_background
+                                        recommendedManga?.transparent_background
                                     }
-                                    alt={recommendedAnime?.name}
+                                    alt=""
                                 />
                             </div>
                         </div>
@@ -481,10 +509,11 @@ function Index({
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <span className="text-lg">Continue Watching</span>
+                        <span className="text-lg">Continue reading</span>
                     </div>
                     <div className="mt-4">
                         <Carousel
+                            id="continue-reading"
                             breakpoints={{
                                 0: {
                                     slidesPerView: 3,
@@ -506,92 +535,240 @@ function Index({
                             pagination={false}
                             navigation={true}
                         >
-                            {continueWatchingAnimes?.map((anime) => (
-                                <SwiperSlide key={anime.id}>
-                                    <MovieCard key={anime.id} anime={anime} />
+                            {continueReadingMangas?.map((manga) => (
+                                <SwiperSlide key={manga.id}>
+                                    <MangaCard key={manga.id} manga={manga} />
                                 </SwiperSlide>
                             ))}
                         </Carousel>
                     </div>
                 </div>
             </SectionContainer>
+            <SectionContainer className="bg-gradient-to-b from-sky-950/20 to-transparent">
+                <div className="mt-6 sm:mt-8">
+                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+                        <div className="flex items-center gap-3 font-semibold text-sky-400">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/25">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden
+                                >
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M12 6v6l4 2" />
+                                </svg>
+                            </span>
+                            <div>
+                                <span className="text-lg text-sky-100">
+                                    Latest manga
+                                </span>
+                                <p className="text-xs font-medium text-zinc-500 sm:text-sm">
+                                    Newest series added to the group
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        {latestMangas?.length > 0 ? (
+                            <Carousel
+                                id="latest-manga"
+                                breakpoints={{
+                                    0: {
+                                        slidesPerView: 3,
+                                        spaceBetween: 10,
+                                    },
+                                    640: {
+                                        slidesPerView: 4,
+                                        spaceBetween: 15,
+                                    },
+                                    1024: {
+                                        slidesPerView: 5,
+                                        spaceBetween: 20,
+                                    },
+                                    1280: {
+                                        slidesPerView: 6,
+                                        spaceBetween: 20,
+                                    },
+                                }}
+                                pagination={false}
+                                navigation={true}
+                                loop={false}
+                            >
+                                {latestMangas.map((manga) => (
+                                    <SwiperSlide key={manga.id}>
+                                        <MangaCard manga={manga} />
+                                    </SwiperSlide>
+                                ))}
+                            </Carousel>
+                        ) : (
+                            <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/40 py-12 text-center">
+                                <p className="font-medium text-zinc-500">
+                                    No manga to show here yet.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </SectionContainer>
+            <SectionContainer className="bg-gradient-to-b from-zinc-950/80 to-transparent">
+                <div className="mt-6 sm:mt-8">
+                    <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+                        <div className="flex items-center gap-3 font-semibold text-orange-400">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/25">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden
+                                >
+                                    <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.647 2 5.5 2 8.5a7 7 0 1 1-14 0c0-1.953.667-3.833 2-5.5z" />
+                                </svg>
+                            </span>
+                            <div>
+                                <span className="text-lg text-orange-100">
+                                    Hot manga
+                                </span>
+                                <p className="text-xs font-medium text-zinc-500 sm:text-sm">
+                                    Top picks by likes and reads
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="mt-4">
+                        {hotMangas?.length > 0 ? (
+                            <Carousel
+                                id="hot-manga"
+                                breakpoints={{
+                                    0: {
+                                        slidesPerView: 3,
+                                        spaceBetween: 10,
+                                    },
+                                    640: {
+                                        slidesPerView: 4,
+                                        spaceBetween: 15,
+                                    },
+                                    1024: {
+                                        slidesPerView: 5,
+                                        spaceBetween: 20,
+                                    },
+                                    1280: {
+                                        slidesPerView: 6,
+                                        spaceBetween: 20,
+                                    },
+                                }}
+                                pagination={false}
+                                navigation={true}
+                                loop={false}
+                            >
+                                {hotMangas.map((manga) => (
+                                    <SwiperSlide key={manga.id}>
+                                        <MangaCard manga={manga} />
+                                    </SwiperSlide>
+                                ))}
+                            </Carousel>
+                        ) : (
+                            <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/40 py-12 text-center">
+                                <p className="font-medium text-zinc-500">
+                                    No manga to show here yet.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </SectionContainer>
             <SectionContainer>
-                {recommendedAnime ? (
-                    <div className="relative w-full rounded-3xl overflow-hidden mt-16 group bg-[#0D0D0D] border border-white/5">
+                {recommendedManga ? (
+                    <div className="relative mt-6 w-full overflow-hidden rounded-xl border border-white/5 bg-[#0D0D0D] group sm:mt-10 sm:rounded-2xl md:rounded-3xl lg:mt-16">
                         {/* Background Effects */}
                         <div className="absolute top-0 right-0 w-3/4 h-full bg-gradient-to-l from-primary/5 to-transparent opacity-60"></div>
                         <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-primary/10 rounded-full blur-[128px]"></div>
 
-                        <div className="relative z-10 flex lg:flex-row flex-col items-center gap-10 lg:gap-20 p-8 md:p-12">
+                        <div className="relative z-10 flex flex-col items-center gap-3 p-3 sm:gap-6 sm:p-6 md:gap-8 md:p-12 lg:flex-row lg:gap-20">
                             {/* Left Visuals - Composition of Poster and Character */}
-                            <div className="lg:w-5/12 w-full flex justify-center items-center relative min-h-[300px] md:min-h-[400px]">
+                            <div className="relative flex h-32 w-full shrink-0 items-end justify-center sm:h-auto sm:min-h-[220px] md:min-h-[340px] lg:min-h-[400px] lg:w-5/12">
                                 {/* Back Glow */}
-                                <div className="absolute w-64 h-64 bg-primary/30 rounded-full blur-[80px] center"></div>
+                                <div className="absolute h-36 w-36 rounded-full bg-primary/25 blur-[48px] sm:h-52 sm:w-52 sm:bg-primary/30 sm:blur-[60px] md:h-64 md:w-64 md:blur-[80px]"></div>
 
                                 {/* Poster Image (Tilted) */}
-                                <div className="relative w-40 md:w-64 aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl shadow-black/50 rotate-[-12deg] group-hover:rotate-[-6deg] transition-all duration-700 z-10 border-[6px] border-[#1a1a1a]">
+                                <div className="relative z-10 aspect-[2/3] w-[4.75rem] overflow-hidden rounded-lg border-[3px] border-[#1a1a1a] shadow-xl shadow-black/50 rotate-[-8deg] transition-all duration-700 group-hover:rotate-[-5deg] sm:w-32 sm:rounded-xl sm:border-4 sm:rotate-[-10deg] md:w-56 md:rounded-2xl md:border-[5px] lg:w-64 lg:border-[6px]">
                                     <img
-                                        src={recommendedAnime?.thumbnail}
-                                        className="w-full h-full object-cover"
-                                        alt={recommendedAnime?.name}
+                                        src={recommendedManga?.thumbnail}
+                                        className="h-full w-full object-cover"
+                                        alt={recommendedManga?.name}
                                     />
                                 </div>
 
                                 {/* Character Image (Overlapping) */}
-                                <div className="absolute bottom-0 -right-4 lg:-right-12 w-48 md:w-80 h-auto z-20 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-float">
+                                <div className="absolute bottom-0 -right-1 z-20 w-[42%] max-w-[6.5rem] animate-float sm:-right-2 sm:max-w-none sm:w-36 md:w-72 lg:-right-12 lg:w-80 drop-shadow-[0_8px_20px_rgba(0,0,0,0.4)] md:drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                                     <img
                                         src={
-                                            recommendedAnime?.transparent_background
+                                            recommendedManga?.transparent_background
                                         }
-                                        className="w-full h-full object-contain transform scale-110 lg:scale-125"
+                                        className="max-h-[5.5rem] w-full object-contain object-bottom sm:max-h-none sm:scale-105 md:scale-110 lg:scale-125"
                                         alt=""
                                     />
                                 </div>
                             </div>
 
                             {/* Right Content */}
-                            <div className="lg:w-7/12 w-full text-white text-center lg:text-left space-y-6">
-                                <div className="space-y-3">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary uppercase tracking-wider">
-                                        <span className="relative flex h-2 w-2">
+                            <div className="w-full space-y-2.5 text-center text-white sm:space-y-4 md:space-y-5 lg:w-7/12 lg:text-left lg:space-y-6">
+                                <div className="space-y-1.5 sm:space-y-2 md:space-y-3">
+                                    <div className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[10px] md:px-3 md:py-1.5 md:text-xs">
+                                        <span className="relative flex h-1.5 w-1.5 sm:h-2 sm:w-2">
                                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                                            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary sm:h-2 sm:w-2"></span>
                                         </span>
                                         Editor's Choice
                                     </div>
                                     <Link
                                         href={window.route(
-                                            "group.anime.detail",
-                                            { anime: recommendedAnime }
+                                            "group.manga.detail",
+                                            { manga: recommendedManga },
                                         )}
-                                        className="block group-hover:text-primary transition-colors duration-300"
+                                        className="block transition-colors duration-300 group-hover:text-primary"
                                     >
-                                        <h2 className="text-3xl md:text-5xl lg:text-6xl font-black leading-[0.9] tracking-tight">
-                                            {recommendedAnime?.name}
+                                        <h2 className="text-xl font-black leading-snug tracking-tight line-clamp-2 sm:text-2xl sm:line-clamp-none md:text-5xl lg:text-6xl md:leading-[0.9]">
+                                            {recommendedManga?.name}
                                         </h2>
                                     </Link>
                                 </div>
 
-                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 text-sm font-medium text-zinc-400">
-                                    <span className="text-white">Series</span>
+                                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] font-medium text-zinc-400 sm:gap-3 sm:text-xs md:text-sm lg:justify-start">
+                                    <span className="text-white">Manga</span>
                                     <span className="w-1 h-1 rounded-full bg-zinc-600"></span>
                                     <span>
-                                        {recommendedAnime?.created_at
+                                        {recommendedManga?.created_at
                                             ? new Date(
-                                                  recommendedAnime.created_at
+                                                  recommendedManga.created_at,
                                               ).getFullYear()
                                             : new Date().getFullYear()}
                                     </span>
                                     <span className="w-1 h-1 rounded-full bg-zinc-600"></span>
                                     <div className="flex gap-2">
-                                        {recommendedAnime?.tags
+                                        {recommendedManga?.tags
                                             .slice(0, 4)
                                             .map((tag, i) => (
                                                 <Link
                                                     key={i}
                                                     href={window.route(
                                                         "group.animes",
-                                                        { tags: tag.name }
+                                                        {
+                                                            tags: tag.name,
+                                                            filter: "mangas",
+                                                        },
                                                     )}
                                                     className="hover:text-white transition-colors"
                                                 >
@@ -601,54 +778,52 @@ function Index({
                                     </div>
                                 </div>
 
-                                <p className="text-zinc-400 text-base leading-relaxed line-clamp-3 md:line-clamp-4 max-w-2xl mx-auto lg:mx-0">
-                                    {recommendedAnime?.description}
+                                <p className="mx-auto max-w-2xl text-xs leading-snug text-zinc-400 line-clamp-2 sm:text-sm sm:leading-relaxed sm:line-clamp-3 md:text-base md:line-clamp-4 lg:mx-0">
+                                    {recommendedManga?.description}
                                 </p>
 
-                                <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-4">
-                                    <Button
-                                        text="Start Watching"
-                                        className="!bg-primary hover:!bg-primary/90 !text-white !px-8 !py-4 !rounded-xl !text-base !font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 transition-all"
+                                <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5 sm:gap-3 sm:pt-2 lg:justify-start">
+                                    <Link
                                         href={window.route(
-                                            "group.anime.detail",
+                                            "group.manga.detail",
                                             {
-                                                anime: recommendedAnime,
+                                                manga: recommendedManga,
                                                 scrollTo: "chapters",
-                                            }
+                                            },
                                         )}
-                                        Icon={
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="24"
-                                                height="24"
-                                                viewBox="0 0 24 24"
-                                                fill="currentColor"
-                                            >
-                                                <path d="M8 5v14l11-7z" />
-                                            </svg>
-                                        }
-                                    />
+                                        className="inline-flex w-auto shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary/90 sm:px-4 sm:py-2 sm:text-sm md:px-6 md:py-3 md:text-base"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4"
+                                            viewBox="0 0 24 24"
+                                            fill="currentColor"
+                                            aria-hidden
+                                        >
+                                            <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                        Start reading
+                                    </Link>
 
                                     <Button
                                         outline
                                         text={
-                                            recommendedAnime.isSavedByCurrentUser
+                                            recommendedManga.isSavedByCurrentUser
                                                 ? "Saved"
                                                 : "Watchlist"
                                         }
-                                        className="!px-8 !py-4 !rounded-xl !text-base !font-bold !border-zinc-700 hover:!border-white hover:!bg-white hover:!text-black transition-all hover:-translate-y-1"
+                                        className="!inline-flex !w-auto shrink-0 !justify-center !rounded-lg !border-zinc-700 !px-3 !py-1.5 !text-xs !font-bold transition-all hover:!border-white hover:!bg-white hover:!text-black sm:!px-4 sm:!py-2 sm:!text-sm md:!px-8 md:!py-3 md:!text-base"
                                         onClick={() =>
-                                            saveToWatchList(recommendedAnime)
+                                            saveToCollection(recommendedManga)
                                         }
                                         type="button"
                                         Icon={
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
-                                                width="20"
-                                                height="20"
+                                                className="h-4 w-4 shrink-0"
                                                 viewBox="0 0 24 24"
                                                 fill={
-                                                    recommendedAnime.isSavedByCurrentUser
+                                                    recommendedManga.isSavedByCurrentUser
                                                         ? "currentColor"
                                                         : "none"
                                                 }
@@ -687,10 +862,10 @@ function Index({
                         </div>
                         <div>
                             <h2 className="text-2xl font-black text-white uppercase tracking-wide">
-                                New Episodes
+                                New chapters
                             </h2>
                             <p className="text-zinc-400 text-sm font-medium">
-                                Freshly uploaded content for you
+                                Latest chapter uploads
                             </p>
                         </div>
                     </div>
@@ -718,7 +893,7 @@ function Index({
                             ) : (
                                 <div className="py-12 text-center rounded-2xl bg-zinc-900/50 border border-zinc-800 border-dashed">
                                     <p className="text-zinc-500 font-medium">
-                                        No new episodes uploaded today.
+                                        No new chapters uploaded today.
                                     </p>
                                 </div>
                             )}
@@ -746,61 +921,12 @@ function Index({
                             ) : (
                                 <div className="py-12 text-center rounded-2xl bg-zinc-900/50 border border-zinc-800 border-dashed">
                                     <p className="text-zinc-500 font-medium">
-                                        No episodes from yesterday.
+                                        No chapters from yesterday.
                                     </p>
                                 </div>
                             )}
                         </div>
                     </div>
-                </div>
-            </SectionContainer>
-            <SectionContainer>
-                <div className="mt-5">
-                    <div className="flex items-center gap-4 text-yellow-400 font-semibold">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 15 15"
-                        >
-                            <path
-                                fill="currentColor"
-                                fillRule="evenodd"
-                                d="M0 7.5a7.5 7.5 0 1 1 6.965 7.481l.053-.998l.49.017a6.5 6.5 0 1 0-4.65-1.951l.006.007l.136.15V10h1v4H0v-1h2.37l-.234-.258A7.477 7.477 0 0 1 0 7.5Zm7 0V3h1v4.293l2.854 2.853l-.708.708l-3-3A.5.5 0 0 1 7 7.5Z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
-                        <span className="text-lg">Popular Series</span>
-                    </div>
-                    <Carousel
-                        breakpoints={{
-                            0: {
-                                slidesPerView: 3,
-                                spaceBetween: 10,
-                            },
-                            640: {
-                                slidesPerView: 4,
-                                spaceBetween: 15,
-                            },
-                            1024: {
-                                slidesPerView: 5,
-                                spaceBetween: 20,
-                            },
-                            1280: {
-                                slidesPerView: 6,
-                                spaceBetween: 20,
-                            },
-                        }}
-                        id="popular-series"
-                        pagination={false}
-                        navigation={true}
-                    >
-                        {popularAnimes?.map((anime) => (
-                            <SwiperSlide key={anime.id}>
-                                <MovieCard key={anime?.id} anime={anime} />
-                            </SwiperSlide>
-                        ))}
-                    </Carousel>
                 </div>
             </SectionContainer>
             <SectionContainer className={"bg-black mt-8"} padding={false}>
@@ -819,10 +945,10 @@ function Index({
                                 clipRule="evenodd"
                             />
                         </svg>
-                        <span className="text-lg">Popular Manga</span>
+                        <span className="text-lg">Trending Manga</span>
                     </div>
                     <Carousel
-                        id="popular-manga"
+                        id="trending-manga"
                         breakpoints={{
                             0: {
                                 slidesPerView: 3,
@@ -885,22 +1011,22 @@ function Index({
                     </div>
 
                     <div className="space-y-12">
-                        {/* New Animes (Top Item) */}
-                        {newAnimes?.length > 0 && (
+                        {/* New manga (top trending hero) */}
+                        {newMangas?.length > 0 && (
                             <div className="relative group overflow-hidden rounded-3xl bg-[#0D0D0D] border border-white/10 shadow-2xl">
                                 {/* Background Image with Overlay */}
                                 <div className="absolute inset-0 z-0">
                                     <img
-                                        src={newAnimes[0]?.background_image}
+                                        src={newMangas[0]?.thumbnail}
                                         className="w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700"
                                         alt=""
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-r from-black via-black/90 to-transparent"></div>
                                 </div>
 
-                                <div className="relative z-10 flex lg:flex-row flex-col items-center gap-8 lg:gap-16 p-6 md:p-12">
+                                <div className="relative z-10 flex flex-col items-center gap-6 p-4 sm:gap-8 sm:p-6 md:p-12 lg:flex-row lg:gap-16">
                                     {/* Left Content */}
-                                    <div className="lg:w-7/12 w-full space-y-4 md:space-y-6">
+                                    <div className="w-full space-y-3 sm:space-y-4 md:space-y-6 lg:w-7/12">
                                         <div className="flex items-center gap-3">
                                             <span className="px-3 py-1 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-wider shadow-lg shadow-primary/25">
                                                 #1 Trending
@@ -916,94 +1042,92 @@ function Index({
                                                 >
                                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
                                                 </svg>
-                                                {newAnimes[0]?.rating || "N/A"}
+                                                {newMangas[0]?.rating || "N/A"}
                                             </span>
                                         </div>
 
                                         <Link
-                                            href="#"
+                                            href={window.route(
+                                                "group.manga.detail",
+                                                { manga: newMangas[0] },
+                                            )}
                                             className="block group-hover:text-primary transition-colors"
                                         >
                                             <h1 className="text-2xl md:text-5xl font-black text-white leading-tight">
-                                                {newAnimes[0]?.name}
+                                                {newMangas[0]?.name}
                                             </h1>
                                         </Link>
 
                                         <div className="flex flex-wrap gap-2">
-                                            {newAnimes[0]?.tags.map(
+                                            {newMangas[0]?.tags.map(
                                                 (tag, i) => (
                                                     <Tag
                                                         key={tag.id}
                                                         className="!bg-white/5 !border-white/10 !text-zinc-300 hover:!bg-white/10 transition-colors"
                                                         tag={tag}
                                                     />
-                                                )
+                                                ),
                                             )}
                                         </div>
 
                                         <p className="text-zinc-400 text-sm md:text-base leading-relaxed line-clamp-3 max-w-2xl">
-                                            {newAnimes[0]?.description}
+                                            {newMangas[0]?.description}
                                         </p>
 
-                                        <div className="flex flex-wrap gap-4 pt-2">
-                                            <Button
-                                                className="!bg-primary hover:!bg-primary/90 !text-white !px-6 !py-3 !rounded-xl !text-sm !font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-1 transition-all"
-                                                text="Start Watching"
+                                        <div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 pt-1 md:mx-0 md:max-w-none lg:flex-row lg:flex-wrap lg:gap-3 lg:pt-2">
+                                            <Link
                                                 href={window.route(
-                                                    "group.anime.detail",
+                                                    "group.manga.detail",
                                                     {
-                                                        anime: newAnimes[0],
+                                                        manga: newMangas[0],
                                                         scrollTo: "chapters",
-                                                    }
+                                                    },
                                                 )}
-                                                Icon={
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path d="M8 5v14l11-7z" />
-                                                    </svg>
-                                                }
-                                            />
-                                            <Button
-                                                outline
-                                                text={
-                                                    newAnimes[0]
-                                                        .isSavedByCurrentUser
-                                                        ? "Saved"
-                                                        : "Watchlist"
-                                                }
-                                                className="!px-6 !py-3 !rounded-xl !text-sm !font-bold !border-zinc-700 hover:!border-white hover:!bg-white hover:!text-black transition-all hover:-translate-y-1 text-white"
+                                                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary/90 lg:w-auto lg:px-5 lg:py-2.5"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-4 w-4 shrink-0"
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    aria-hidden
+                                                >
+                                                    <path d="M8 5v14l11-7z" />
+                                                </svg>
+                                                Start reading
+                                            </Link>
+                                            <button
                                                 type="button"
                                                 onClick={() =>
-                                                    saveToWatchList(
-                                                        newAnimes[0]
+                                                    saveToCollection(
+                                                        newMangas[0],
                                                     )
                                                 }
-                                                Icon={
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="18"
-                                                        height="18"
-                                                        viewBox="0 0 24 24"
-                                                        fill={
-                                                            newAnimes[0]
-                                                                .isSavedByCurrentUser
-                                                                ? "currentColor"
-                                                                : "none"
-                                                        }
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                                                    </svg>
-                                                }
-                                            />
+                                                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-600 bg-transparent px-4 py-2 text-sm font-bold text-white transition-all hover:border-white hover:bg-white hover:text-black lg:w-auto lg:px-5 lg:py-2.5"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-4 w-4 shrink-0"
+                                                    viewBox="0 0 24 24"
+                                                    fill={
+                                                        newMangas[0]
+                                                            .isSavedByCurrentUser
+                                                            ? "currentColor"
+                                                            : "none"
+                                                    }
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    aria-hidden
+                                                >
+                                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                {newMangas[0]
+                                                    .isSavedByCurrentUser
+                                                    ? "Saved"
+                                                    : "Watchlist"}
+                                            </button>
                                         </div>
                                     </div>
 
@@ -1011,17 +1135,17 @@ function Index({
                                     <div className="lg:w-5/12 w-full flex justify-center lg:justify-end relative mt-6 lg:mt-0">
                                         <div className="relative w-48 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-[4px] border-white/10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
                                             <img
-                                                src={newAnimes[0]?.thumbnail}
+                                                src={newMangas[0]?.thumbnail}
                                                 className="w-full h-full object-cover"
                                                 alt=""
                                             />
                                         </div>
-                                        {newAnimes[0]
+                                        {newMangas[0]
                                             ?.transparent_background && (
                                             <div className="absolute -bottom-6 -right-6 w-56 md:w-96 z-20 pointer-events-none">
                                                 <img
                                                     src={
-                                                        newAnimes[0]
+                                                        newMangas[0]
                                                             ?.transparent_background
                                                     }
                                                     className="w-full h-full object-contain drop-shadow-2xl"
@@ -1034,15 +1158,15 @@ function Index({
                             </div>
                         )}
 
-                        {/* Trend Animes (Secondary Item) */}
-                        {trendAnimes?.length > 0 && (
+                        {/* Trending manga (secondary hero) */}
+                        {trendMangas?.length > 0 && (
                             <div className="relative group overflow-hidden rounded-3xl bg-[#0D0D0D] border border-white/10 shadow-2xl">
                                 {/* Background Image with Overlay */}
                                 <div className="absolute inset-0 z-0">
                                     <img
                                         src={
-                                            trendAnimes[0]?.background_image ||
-                                            trendAnimes[0]?.thumbnail
+                                            trendMangas[0]?.background_image ||
+                                            trendMangas[0]?.thumbnail
                                         }
                                         className="w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700"
                                         alt=""
@@ -1050,12 +1174,12 @@ function Index({
                                     <div className="absolute inset-0 bg-gradient-to-l from-black via-black/90 to-transparent"></div>
                                 </div>
 
-                                <div className="relative z-10 flex lg:flex-row-reverse flex-col items-center gap-8 lg:gap-16 p-6 md:p-12">
+                                <div className="relative z-10 flex flex-col items-center gap-6 p-4 text-center sm:gap-8 sm:p-6 md:p-12 lg:flex-row-reverse lg:gap-16 lg:text-right">
                                     {/* Content (Right Side) */}
-                                    <div className="lg:w-7/12 w-full space-y-4 md:space-y-6 text-right">
-                                        <div className="flex items-center justify-end gap-3">
+                                    <div className="w-full space-y-3 sm:space-y-4 md:space-y-6 lg:w-7/12">
+                                        <div className="flex items-center justify-center gap-3 lg:justify-end">
                                             <span className="text-zinc-400 font-medium text-sm flex items-center gap-1">
-                                                {trendAnimes[0]?.rating ||
+                                                {trendMangas[0]?.rating ||
                                                     "N/A"}
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -1075,93 +1199,88 @@ function Index({
 
                                         <Link
                                             href={window.route(
-                                                "group.anime.detail",
+                                                "group.manga.detail",
                                                 {
-                                                    anime: trendAnimes[0],
-                                                }
+                                                    manga: trendMangas[0],
+                                                },
                                             )}
                                             className="block group-hover:text-purple-500 transition-colors"
                                         >
                                             <h1 className="text-2xl md:text-5xl font-black text-white leading-tight">
-                                                {trendAnimes[0].name}
+                                                {trendMangas[0].name}
                                             </h1>
                                         </Link>
 
-                                        <div className="flex flex-wrap justify-end gap-2">
-                                            {trendAnimes[0]?.tags.map(
+                                        <div className="flex flex-wrap justify-center gap-2 lg:justify-end">
+                                            {trendMangas[0]?.tags.map(
                                                 (tag, i) => (
                                                     <Tag
                                                         key={tag.id}
                                                         className="!bg-white/5 !border-white/10 !text-zinc-300 hover:!bg-white/10 transition-colors"
                                                         tag={tag}
                                                     />
-                                                )
+                                                ),
                                             )}
                                         </div>
 
-                                        <p className="text-zinc-400 text-sm md:text-base leading-relaxed line-clamp-3 max-w-2xl ml-auto">
-                                            {trendAnimes[0].description}
+                                        <p className="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-400 line-clamp-3 md:text-base lg:ml-auto lg:mr-0">
+                                            {trendMangas[0].description}
                                         </p>
 
-                                        <div className="flex flex-wrap justify-end gap-4 pt-2">
-                                            <Button
-                                                className="!bg-purple-600 hover:!bg-purple-700 !text-white !px-6 !py-3 !rounded-xl !text-sm !font-bold shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:-translate-y-1 transition-all"
+                                        <div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 pt-1 md:max-w-none lg:flex-row lg:flex-wrap lg:justify-end lg:gap-3 lg:pt-2">
+                                            <Link
                                                 href={window.route(
-                                                    "group.anime.detail",
+                                                    "group.manga.detail",
                                                     {
-                                                        anime: trendAnimes[0],
+                                                        manga: trendMangas[0],
                                                         scrollTo: "chapters",
-                                                    }
+                                                    },
                                                 )}
-                                                text="Start Watching"
-                                                Icon={
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="20"
-                                                        height="20"
-                                                        viewBox="0 0 24 24"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path d="M8 5v14l11-7z" />
-                                                    </svg>
-                                                }
-                                            />
-                                            <Button
-                                                outline
-                                                text={
-                                                    trendAnimes[0]
-                                                        .isSavedByCurrentUser
-                                                        ? "Saved"
-                                                        : "Watchlist"
-                                                }
-                                                className="!px-6 !py-3 !rounded-xl !text-sm !font-bold !border-zinc-700 hover:!border-white hover:!bg-white hover:!text-black transition-all hover:-translate-y-1 text-white"
+                                                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-purple-600 px-4 py-2 text-sm font-bold text-white shadow-md shadow-purple-600/25 transition-all hover:bg-purple-700 lg:w-auto lg:px-5 lg:py-2.5"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-4 w-4 shrink-0"
+                                                    viewBox="0 0 24 24"
+                                                    fill="currentColor"
+                                                    aria-hidden
+                                                >
+                                                    <path d="M8 5v14l11-7z" />
+                                                </svg>
+                                                Start reading
+                                            </Link>
+                                            <button
                                                 type="button"
                                                 onClick={() =>
-                                                    saveToWatchList(
-                                                        trendAnimes[0]
+                                                    saveToCollection(
+                                                        trendMangas[0],
                                                     )
                                                 }
-                                                Icon={
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        width="18"
-                                                        height="18"
-                                                        viewBox="0 0 24 24"
-                                                        fill={
-                                                            trendAnimes[0]
-                                                                .isSavedByCurrentUser
-                                                                ? "currentColor"
-                                                                : "none"
-                                                        }
-                                                        stroke="currentColor"
-                                                        strokeWidth="2"
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                    >
-                                                        <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                                                    </svg>
-                                                }
-                                            />
+                                                className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-600 bg-transparent px-4 py-2 text-sm font-bold text-white transition-all hover:border-white hover:bg-white hover:text-black lg:w-auto lg:px-5 lg:py-2.5"
+                                            >
+                                                <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    className="h-4 w-4 shrink-0"
+                                                    viewBox="0 0 24 24"
+                                                    fill={
+                                                        trendMangas[0]
+                                                            .isSavedByCurrentUser
+                                                            ? "currentColor"
+                                                            : "none"
+                                                    }
+                                                    stroke="currentColor"
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    aria-hidden
+                                                >
+                                                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                                                </svg>
+                                                {trendMangas[0]
+                                                    .isSavedByCurrentUser
+                                                    ? "Saved"
+                                                    : "Watchlist"}
+                                            </button>
                                         </div>
                                     </div>
 
@@ -1169,17 +1288,17 @@ function Index({
                                     <div className="lg:w-5/12 w-full flex justify-center lg:justify-start relative mt-6 lg:mt-0">
                                         <div className="relative w-48 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-[4px] border-white/10 -rotate-3 group-hover:rotate-0 transition-transform duration-500">
                                             <img
-                                                src={trendAnimes[0].thumbnail}
+                                                src={trendMangas[0].thumbnail}
                                                 className="w-full h-full object-cover"
                                                 alt=""
                                             />
                                         </div>
-                                        {trendAnimes[0]
+                                        {trendMangas[0]
                                             .transparent_background && (
                                             <div className="absolute -bottom-6 -left-6 w-56 md:w-96 z-20 pointer-events-none">
                                                 <img
                                                     src={
-                                                        trendAnimes[0]
+                                                        trendMangas[0]
                                                             .transparent_background
                                                     }
                                                     className="w-full h-full object-contain drop-shadow-2xl"
@@ -1359,7 +1478,7 @@ function Index({
                                             onSuccess: () => {
                                                 reset();
                                             },
-                                        }
+                                        },
                                     );
                                 }}
                                 className="group relative px-8 py-4 bg-white text-black font-black rounded-xl shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_30px_rgba(255,255,255,0.4)] transition-all duration-300 hover:-translate-y-1 active:scale-95 whitespace-nowrap overflow-hidden"

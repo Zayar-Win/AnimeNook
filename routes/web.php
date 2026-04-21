@@ -29,7 +29,6 @@ use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\GroupMiddleware;
 use App\Http\Middleware\SubscriptionMiddleware;
-use App\Models\Anime;
 use App\Models\Banner;
 use App\Models\Blog;
 use App\Models\Chapter;
@@ -74,26 +73,32 @@ if ($isProduction) {
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
             $group = Group::where('subdomain', 'delta')->first();
-            $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
-            $banners = Banner::with('bannerable')->get();
-            $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
-            $recommendedAnime = Anime::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
-            $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
-            $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
+            $trendMangas = Manga::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
+            $banners = Banner::with('bannerable')
+                ->where('group_id', $group->id)
+                ->where('bannerable_type', Manga::class)
+                ->orderBy('order', 'asc')
+                ->get();
+            $newMangas = Manga::with('tags')->where('group_id', $group->id)->latest()->take(5)->get();
+            $recommendedManga = Manga::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
+            $continueReadingMangas = Manga::select('mangas.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('mangas.group_id', $group->id)->take(4)->get();
             $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
+            $hotMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderByDesc('likes_count')->orderByDesc('views_count')->take(12)->get();
+            $latestMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->latest()->take(12)->get();
             $today = Carbon::today()->toDateString();
             $yesterday = Carbon::yesterday()->toDateString();
-            $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
-            $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+            $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('chapterable_type', Manga::class)->whereDate('created_at', $today)->take(6)->get();
+            $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('chapterable_type', Manga::class)->whereDate('created_at', $yesterday)->take(6)->get();
 
             return inertia('Group/Index', [
-                'trendAnimes' => $trendAnimes,
+                'trendMangas' => $trendMangas,
                 'banners' => $banners,
-                'newAnimes' => $newAnimes,
-                'recommendedAnime' => $recommendedAnime,
-                'continueWatchingAnimes' => $continueWatchingAnimes,
-                'popularAnimes' => $popularAnimes,
+                'newMangas' => $newMangas,
+                'recommendedManga' => $recommendedManga,
+                'continueReadingMangas' => $continueReadingMangas,
                 'popularMangas' => $popularMangas,
+                'hotMangas' => $hotMangas,
+                'latestMangas' => $latestMangas,
                 'newEpisodes' => [
                     'today' => $todayNewEpisodes,
                     'yesterday' => $yesterdayNewEpisodes,
@@ -215,26 +220,32 @@ if ($isProduction) {
     Route::prefix('/{group:subdomain}')->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
-            $trendAnimes = Anime::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
-            $banners = Banner::with('bannerable')->get();
-            $newAnimes = Anime::with('tags')->where('group_id', $group->id)->latest()->take(6)->get();
-            $recommendedAnime = Anime::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
-            $continueWatchingAnimes = Anime::select('animes.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('animes.group_id', $group->id)->take(4)->get();
-            $popularAnimes = Anime::with('tags')->where('group_id', $group->id)->withCount(['comments',  'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(4)->get();
+            $trendMangas = Manga::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
+            $banners = Banner::with('bannerable')
+                ->where('group_id', $group->id)
+                ->where('bannerable_type', Manga::class)
+                ->orderBy('order', 'asc')
+                ->get();
+            $newMangas = Manga::with('tags')->where('group_id', $group->id)->latest()->take(6)->get();
+            $recommendedManga = Manga::with('tags')->where('group_id', $group->id)->where('is_recommended', true)->latest()->first();
+            $continueReadingMangas = Manga::select('mangas.*')->with(['tags', 'chapters', 'comments'])->withCount(['chapters', 'comments', 'ratings'])->where('mangas.group_id', $group->id)->take(4)->get();
             $popularMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderBy('views_count', 'desc')->take(8)->get();
+            $hotMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->orderByDesc('likes_count')->orderByDesc('views_count')->take(12)->get();
+            $latestMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->latest()->take(12)->get();
             $today = Carbon::today()->toDateString();
             $yesterday = Carbon::yesterday()->toDateString();
-            $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $today)->take(6)->get();
-            $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->whereDate('created_at', $yesterday)->take(6)->get();
+            $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('chapterable_type', Manga::class)->whereDate('created_at', $today)->take(6)->get();
+            $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('chapterable_type', Manga::class)->whereDate('created_at', $yesterday)->take(6)->get();
 
             return inertia('Group/Index', [
-                'trendAnimes' => $trendAnimes,
+                'trendMangas' => $trendMangas,
                 'banners' => $banners,
-                'newAnimes' => $newAnimes,
-                'recommendedAnime' => $recommendedAnime,
-                'continueWatchingAnimes' => $continueWatchingAnimes,
-                'popularAnimes' => $popularAnimes,
+                'newMangas' => $newMangas,
+                'recommendedManga' => $recommendedManga,
+                'continueReadingMangas' => $continueReadingMangas,
                 'popularMangas' => $popularMangas,
+                'hotMangas' => $hotMangas,
+                'latestMangas' => $latestMangas,
                 'newEpisodes' => [
                     'today' => $todayNewEpisodes,
                     'yesterday' => $yesterdayNewEpisodes,

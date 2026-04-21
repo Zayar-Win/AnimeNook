@@ -11,6 +11,7 @@ use App\Models\Manga;
 use App\Models\Status;
 use App\Models\Tag;
 use App\Models\Taggable;
+use Illuminate\Http\Request;
 use App\Notifications\NewMangaChapterUpload;
 use App\Notifications\SavedContentUpdatedNotification;
 use Illuminate\Http\UploadedFile;
@@ -23,12 +24,41 @@ class GroupAdminMangaController extends Controller
 {
     public function __construct(private Uploader $uploader) {}
 
-    public function index(Group $group)
+    public function index(Group $group, Request $request)
     {
-        $mangas = $group->mangas()->latest()->paginate(15);
+        $data = [
+            'search' => trim((string) $request->input('search', '')),
+            'status_id' => $request->filled('status_id') ? $request->input('status_id') : null,
+        ];
+
+        $filters = validator($data, [
+            'search' => ['nullable', 'string', 'max:255'],
+            'status_id' => ['nullable', 'integer', Rule::exists('statuses', 'id')],
+        ])->validated();
+
+        $query = $group->mangas();
+
+        if (($filters['search'] ?? '') !== '') {
+            $like = '%'.$filters['search'].'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('name', 'like', $like)
+                    ->orWhere('description', 'like', $like);
+            });
+        }
+
+        if (! empty($filters['status_id'])) {
+            $query->where('status_id', $filters['status_id']);
+        }
+
+        $mangas = $query->latest()->paginate(15)->withQueryString();
 
         return inertia('Group/Admin/Mangas/Index', [
             'mangas' => $mangas,
+            'filters' => [
+                'search' => $filters['search'] ?? '',
+                'status_id' => isset($filters['status_id']) ? (string) $filters['status_id'] : '',
+            ],
+            'statuses' => Status::orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -83,9 +113,53 @@ class GroupAdminMangaController extends Controller
         return redirect(route('group.admin.mangas'))->with('success', 'Manga Series Created Successful.');
     }
 
-    public function edit(Group $group, Manga $manga)
+    public function edit(Group $group, Manga $manga, Request $request)
     {
-        $chapters = Chapter::with('season')->where('chapterable_id', $manga->id)->where('chapterable_type', Manga::class)->where('group_id', $group->id)->latest()->paginate(20);
+        $seasonInput = [
+            'season_search' => trim((string) $request->input('season_search', '')),
+            'season_chapters' => $request->input('season_chapters', 'any'),
+        ];
+        $seasonValidated = validator($seasonInput, [
+            'season_search' => ['nullable', 'string', 'max:255'],
+            'season_chapters' => ['nullable', 'in:any,with,none'],
+        ])->validated();
+
+        $chaptersMode = $seasonValidated['season_chapters'] ?? 'any';
+        if (! in_array($chaptersMode, ['any', 'with', 'none'], true)) {
+            $chaptersMode = 'any';
+        }
+
+        $seasonQuery = $manga->seasons()->with('seasonable')->withCount('chapters');
+
+        if (($seasonValidated['season_search'] ?? '') !== '') {
+            $term = $seasonValidated['season_search'];
+            $like = '%'.$term.'%';
+            $seasonQuery->where(function ($q) use ($like, $term) {
+                $q->where('title', 'like', $like);
+                if (ctype_digit($term)) {
+                    $q->orWhere('season_number', (int) $term);
+                }
+            });
+        }
+
+        if ($chaptersMode === 'with') {
+            $seasonQuery->has('chapters');
+        } elseif ($chaptersMode === 'none') {
+            $seasonQuery->doesntHave('chapters');
+        }
+
+        $seasons = $seasonQuery->orderBy('season_number')
+            ->paginate(10, ['*'], 'seasons_page')
+            ->withQueryString();
+
+        $chapters = Chapter::with('season')
+            ->where('chapterable_id', $manga->id)
+            ->where('chapterable_type', Manga::class)
+            ->where('group_id', $group->id)
+            ->latest()
+            ->paginate(20, ['*'], 'chapters_page')
+            ->withQueryString();
+
         $manga = Manga::where('id', $manga->id)->with(['tags'])->first();
 
         return inertia('Group/Admin/Mangas/MangaForm', [
@@ -94,7 +168,11 @@ class GroupAdminMangaController extends Controller
             'chapters' => $chapters,
             'statuses' => Status::all(),
             'tags' => Tag::all(),
-            'seasons' => $manga->seasons()->with('seasonable')->withCount('chapters')->paginate(10),
+            'seasons' => $seasons,
+            'seasonFilters' => [
+                'search' => $seasonValidated['season_search'] ?? '',
+                'chapters' => $chaptersMode,
+            ],
         ]);
     }
 
@@ -148,11 +226,56 @@ class GroupAdminMangaController extends Controller
         return back()->with('success', 'Manga deleted successful.');
     }
 
-    public function chapterCreate(Group $group, Manga $manga)
+    private function paginatedSeasonsForChapterForm(Manga $manga, Request $request): array
     {
+        $input = [
+            'season_search' => trim((string) $request->input('season_search', '')),
+            'season_order' => $request->input('season_order', 'asc'),
+        ];
+        $filters = validator($input, [
+            'season_search' => ['nullable', 'string', 'max:255'],
+            'season_order' => ['nullable', 'in:asc,desc'],
+        ])->validated();
+
+        $order = ($filters['season_order'] ?? 'asc') === 'desc' ? 'desc' : 'asc';
+        $query = $manga->seasons()->orderBy('season_number', $order);
+
+        if (($filters['season_search'] ?? '') !== '') {
+            $term = $filters['season_search'];
+            $like = '%'.$term.'%';
+            $query->where(function ($q) use ($like, $term) {
+                $q->where('title', 'like', $like);
+                if (ctype_digit($term)) {
+                    $q->orWhere('season_number', (int) $term);
+                }
+            });
+        }
+
+        $paginator = $query
+            ->paginate(12, ['*'], 'chapter_seasons_page')
+            ->withQueryString();
+
+        return [
+            $paginator,
+            [
+                'search' => $filters['season_search'] ?? '',
+                'order' => $order,
+            ],
+        ];
+    }
+
+    public function chapterCreate(Group $group, Manga $manga, Request $request)
+    {
+        [$seasons, $seasonListFilters] = $this->paginatedSeasonsForChapterForm($manga, $request);
+
         return inertia('Group/Admin/Mangas/ChapterForm', [
             'manga' => $manga,
-            'seasons' => $manga->seasons,
+            'seasons' => $seasons,
+            'seasonListFilters' => $seasonListFilters,
+            'type' => 'create',
+            'chapter' => null,
+            'images' => [],
+            'selectedSeasonSummary' => null,
         ]);
     }
 
@@ -243,14 +366,27 @@ class GroupAdminMangaController extends Controller
         return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chpater created Successful.');
     }
 
-    public function editChapter(Group $group, Manga $manga, Chapter $chapter)
+    public function editChapter(Group $group, Manga $manga, Chapter $chapter, Request $request)
     {
+        $chapter->load('season');
+        [$seasons, $seasonListFilters] = $this->paginatedSeasonsForChapterForm($manga, $request);
+
+        $selectedSeasonSummary = $chapter->season
+            ? [
+                'id' => $chapter->season->id,
+                'title' => $chapter->season->title,
+                'season_number' => $chapter->season->season_number,
+            ]
+            : null;
+
         return inertia('Group/Admin/Mangas/ChapterForm', [
             'chapter' => $chapter,
             'images' => $chapter->images()->orderBy('order', 'desc')->get(),
             'type' => 'edit',
             'manga' => $manga,
-            'seasons' => $manga->seasons,
+            'seasons' => $seasons,
+            'seasonListFilters' => $seasonListFilters,
+            'selectedSeasonSummary' => $selectedSeasonSummary,
         ]);
     }
 

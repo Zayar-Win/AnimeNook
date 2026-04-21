@@ -1,13 +1,23 @@
 import { Link } from "@inertiajs/react";
 import React from "react";
 
-const Button = ({ href, text, className, onClick, outline, Icon, type }) => {
+const Button = ({
+    href,
+    text,
+    className,
+    onClick,
+    outline,
+    Icon,
+    type,
+    title,
+}) => {
     return (
         <>
             {type === "button" || type === "submit" ? (
                 <button
                     onClick={onClick}
                     type={type}
+                    title={title}
                     className={`flex items-center justify-center flex-grow-0 gap-3 ${
                         outline
                             ? "border-2 border-black bg-transparent"
@@ -18,7 +28,7 @@ const Button = ({ href, text, className, onClick, outline, Icon, type }) => {
                     <span>{text}</span>
                 </button>
             ) : (
-                <Link href={href} className="inline-block">
+                <Link href={href} title={title} className="inline-block w-full sm:w-auto">
                     <div
                         className={` cursor-pointer flex items-center gap-3 justify-center flex-grow-0 text-white px-4 py-2 rounded-lg font-semibold ${className} ${
                             outline

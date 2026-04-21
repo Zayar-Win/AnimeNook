@@ -5,7 +5,7 @@ import FilePondUploader from "@/Components/FilePondUploader";
 import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
-import { useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import React from "react";
 
 const EpisodeForm = ({ anime, episode, type, seasons }) => {
@@ -29,30 +29,40 @@ const EpisodeForm = ({ anime, episode, type, seasons }) => {
     return (
         <div className="bg-[#0a0a0a] min-h-screen p-8 text-white flex items-center justify-center">
             <div className="w-full max-w-4xl">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="p-3 bg-primary/10 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(237,100,0,0.15)]">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        >
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                        </svg>
+                <div className="mb-8 flex flex-col gap-4 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(237,100,0,0.15)]">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <div className="flex flex-col">
+                            <h1 className="text-3xl font-black text-white tracking-tight leading-none">
+                                {type === "edit"
+                                    ? "Edit Episode"
+                                    : "New Episode"}
+                            </h1>
+                            <p className="mt-1 text-sm font-medium text-zinc-400">
+                                {anime?.name}
+                            </p>
+                        </div>
                     </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-3xl font-black text-white tracking-tight leading-none">
-                            {type === "edit" ? "Edit Episode" : "New Episode"}
-                        </h1>
-                        <p className="text-zinc-400 text-sm font-medium mt-1">
-                            {anime?.name}
-                        </p>
-                    </div>
+                    <Link
+                        href={`${window.route("group.admin.animes.edit", { anime })}?tab=episodes`}
+                        className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-white/10 px-4 text-xs font-bold text-zinc-300 transition hover:border-white/20 hover:bg-white/5 hover:text-white sm:text-sm"
+                    >
+                        Back to anime
+                    </Link>
                 </div>
 
                 <form

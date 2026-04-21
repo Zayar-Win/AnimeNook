@@ -32,6 +32,10 @@ const Sidebar = ({
         }));
     };
 
+    const closeMobileSidebar = () => {
+        setIsOpenMobileSidebar?.(false);
+    };
+
     const handleClickOutside = (e) => {
         if (e.target.parentNode.classList.contains("menu")) return;
         setIsOpenMobileSidebar(false);
@@ -49,7 +53,10 @@ const Sidebar = ({
             <div className="flex flex-col h-full">
                 {/* Header */}
                 <div className="p-6">
-                    <Link href={window.route("group.home")}>
+                    <Link
+                        href={window.route("group.home")}
+                        onClick={closeMobileSidebar}
+                    >
                         <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                             <div className="w-10 h-10 shrink-0 rounded-lg overflow-hidden ring-2 ring-white/10">
                                 <img
@@ -119,6 +126,7 @@ const Sidebar = ({
                                                         childLink.routeName
                                                     )}
                                                     key={childLink.name}
+                                                    onClick={closeMobileSidebar}
                                                     className={`block pl-12 pr-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                                                         window
                                                             .route()
@@ -138,6 +146,7 @@ const Sidebar = ({
                                     <Link
                                         key={link.name}
                                         href={window.route(link.routeName)}
+                                        onClick={closeMobileSidebar}
                                         className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                                             window
                                                 .route()
@@ -166,6 +175,7 @@ const Sidebar = ({
                         <div className="space-y-1">
                             <Link
                                 href={window.route("group.admin.setting")}
+                                onClick={closeMobileSidebar}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                                     window
                                         .route()
@@ -182,6 +192,7 @@ const Sidebar = ({
 
                             <Link
                                 href={window.route("group.admin.dashboard")}
+                                onClick={closeMobileSidebar}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                                     window
                                         .route()

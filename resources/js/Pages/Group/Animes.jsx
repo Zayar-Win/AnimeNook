@@ -74,11 +74,11 @@ const Animes = ({ data, filters, tags, paginateData }) => {
         setAnimesAndMangas(data);
     }, [data]);
     return (
-        <SectionContainer className={"bg-black min-h-screen py-10"}>
-            <div className="w-[90%] mx-auto">
+        <SectionContainer className={"bg-black min-h-screen py-6 sm:py-10"}>
+            <div className="mx-auto w-full max-w-[1600px] px-3 sm:w-[90%] sm:px-0">
                 {/* Search & Filter Header */}
-                <div className="flex md:flex-row flex-col gap-6 mb-12 items-center justify-between">
-                    <div className="flex items-center relative gap-3 px-5 py-3 xl:max-w-[500px] xl:min-w-[500px] md:min-w-[380px] w-full bg-[#1a1a1a] rounded-2xl border border-white/10 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(237,100,0,0.2)] transition-all duration-300">
+                <div className="mb-8 flex flex-col items-center justify-between gap-4 sm:mb-12 md:flex-row md:gap-6">
+                    <div className="flex w-full items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1a] px-4 py-2.5 transition-all duration-300 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(237,100,0,0.2)] sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-3 md:min-w-[380px] xl:max-w-[500px] xl:min-w-[500px]">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-5 h-5 text-zinc-500"
@@ -107,11 +107,11 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                         />
                     </div>
 
-                    <div className="flex items-center w-full md:w-auto md:justify-end justify-between gap-4 text-white overflow-visible">
-                        <div className="group relative sort z-40 items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl hover:bg-[#252525] hover:border-white/20 transition-all cursor-pointer">
-                            <div className="flex items-center gap-2 text-zinc-400 group-hover:text-white transition-colors">
-                                <Sort className="w-5 h-5" />
-                                <span className="uppercase font-bold text-xs tracking-wider">
+                    <div className="flex w-full items-center justify-between gap-2 overflow-visible text-white sm:gap-4 md:w-auto md:justify-end">
+                        <div className="group sort relative z-40 cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2 transition-all hover:border-white/20 hover:bg-[#252525] sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5">
+                            <div className="flex items-center gap-1.5 text-zinc-400 transition-colors group-hover:text-white sm:gap-2">
+                                <Sort className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
                                     Sort By
                                 </span>
                             </div>
@@ -145,10 +145,10 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                             </ul>
                         </div>
 
-                        <div className="group relative filter z-40 items-center gap-2 px-4 py-2.5 bg-[#1a1a1a] border border-white/10 rounded-xl hover:bg-[#252525] hover:border-white/20 transition-all cursor-pointer">
-                            <div className="flex items-center gap-2 text-zinc-400 group-hover:text-white transition-colors">
-                                <Filter className="w-5 h-5" />
-                                <span className="uppercase font-bold text-xs tracking-wider">
+                        <div className="group filter relative z-40 cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2 transition-all hover:border-white/20 hover:bg-[#252525] sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5">
+                            <div className="flex items-center gap-1.5 text-zinc-400 transition-colors group-hover:text-white sm:gap-2">
+                                <Filter className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
                                     Filter
                                 </span>
                             </div>
@@ -199,8 +199,8 @@ const Animes = ({ data, filters, tags, paginateData }) => {
 
                 {/* Tags Filter — single row, horizontal scroll */}
                 {tags.length > 0 && (
-                    <div className="mb-12">
-                        <div className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">
+                    <div className="mb-8 sm:mb-12">
+                        <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500 sm:text-xs">
                             Filter by Genres
                         </div>
                         <div
@@ -225,7 +225,7 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                                         });
                                         setIsFilter(true);
                                     }}
-                                    className={`shrink-0 cursor-pointer px-4 py-1.5 rounded-full border text-xs font-bold transition-all duration-300 whitespace-nowrap ${
+                                    className={`shrink-0 cursor-pointer whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-bold transition-all duration-300 sm:px-4 sm:py-1.5 sm:text-xs ${
                                         filterTags.includes(tag.name)
                                             ? "bg-primary border-primary text-white shadow-[0_0_15px_rgba(237,100,0,0.4)]"
                                             : "bg-[#1a1a1a] border-white/10 text-zinc-400 hover:border-white/30 hover:text-white"
@@ -242,11 +242,11 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                 <div>
                     {animesAndMangas?.length > 0 ? (
                         <div>
-                            <h1 className="text-3xl font-black text-white mb-8 flex items-center gap-3">
-                                <span className="w-1.5 h-8 bg-primary rounded-full"></span>
+                            <h1 className="mb-5 flex items-center gap-2 text-xl font-black text-white sm:mb-8 sm:gap-3 sm:text-2xl md:text-3xl">
+                                <span className="h-6 w-1 rounded-full bg-primary sm:h-8 sm:w-1.5"></span>
                                 Browse Content
                             </h1>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+                            <div className="grid grid-cols-3 gap-2 sm:gap-3 md:grid-cols-4 md:gap-4 lg:grid-cols-5 lg:gap-5 xl:grid-cols-5 xl:gap-6">
                                 {animesAndMangas?.map((data, i) =>
                                     data.type === "anime" ? (
                                         <div key={i} className="h-full">

@@ -15,7 +15,7 @@ class Manga extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type'];
+    protected $appends = ['latestWatchedChapter', 'isSavedByCurrentUser', 'type', 'totalChaptersCount'];
 
     public function getSlugOptions(): SlugOptions
     {
@@ -66,6 +66,11 @@ class Manga extends Model
     public function chapters()
     {
         return $this->morphMany(Chapter::class, 'chapterable');
+    }
+
+    public function getTotalChaptersCountAttribute()
+    {
+        return $this->chapters()->count();
     }
 
     public function tags()

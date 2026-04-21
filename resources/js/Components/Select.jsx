@@ -3,6 +3,9 @@ import ReactSelect from "react-select";
 import InputLabel from "./InputLabel";
 import InputError from "./InputError";
 
+const menuPortalTarget =
+    typeof document !== "undefined" ? document.body : null;
+
 const Select = ({
     options,
     label,
@@ -23,20 +26,37 @@ const Select = ({
         );
     }
 
+    const hasError = Boolean(errorMessage);
+
     const customStyles = {
         control: (provided, state) => ({
             ...provided,
-            backgroundColor: "#1a1a1a",
-            borderColor: state.isFocused
-                ? "var(--primary-color)"
-                : "rgba(255, 255, 255, 0.1)",
+            outline: "none",
+            cursor: "pointer",
+            backgroundColor: "#141414",
+            borderWidth: 1,
+            borderStyle: "solid",
+            borderColor: hasError
+                ? "rgba(239, 68, 68, 0.65)"
+                : state.isFocused
+                  ? "rgba(161, 161, 170, 0.45)"
+                  : "rgba(255, 255, 255, 0.1)",
             borderRadius: "0.75rem",
-            padding: "0.25rem",
-            boxShadow: state.isFocused
-                ? "0 0 0 1px var(--primary-color)"
-                : "none",
+            minHeight: 46,
+            paddingLeft: 2,
+            paddingRight: 2,
+            boxShadow: hasError
+                ? "0 0 0 2px rgba(239, 68, 68, 0.2)"
+                : state.isFocused
+                  ? "0 0 0 2px rgba(237, 100, 0, 0.22)"
+                  : "none",
+            transition: "border-color 0.15s ease, box-shadow 0.15s ease",
             "&:hover": {
-                borderColor: "rgba(255, 255, 255, 0.2)",
+                borderColor: hasError
+                    ? "rgba(239, 68, 68, 0.75)"
+                    : state.isFocused
+                      ? "rgba(161, 161, 170, 0.5)"
+                      : "rgba(255, 255, 255, 0.16)",
             },
         }),
         menu: (provided) => ({
@@ -44,20 +64,31 @@ const Select = ({
             backgroundColor: "#1a1a1a",
             border: "1px solid rgba(255, 255, 255, 0.1)",
             borderRadius: "0.75rem",
-            padding: "0.5rem",
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.5)",
+            padding: "0.375rem",
+            boxShadow:
+                "0 18px 40px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255,255,255,0.06)",
+            overflow: "hidden",
+            zIndex: 2,
         }),
+        menuList: (provided) => ({
+            ...provided,
+            maxHeight: "min(50vh, 260px)",
+            padding: "2px",
+        }),
+        menuPortal: (base) => ({ ...base, zIndex: 2000 }),
         option: (provided, state) => ({
             ...provided,
             backgroundColor: state.isSelected
                 ? "var(--primary-color)"
                 : state.isFocused
-                ? "rgba(255, 255, 255, 0.05)"
-                : "transparent",
-            color: state.isSelected ? "white" : "#d4d4d8",
+                  ? "rgba(255, 255, 255, 0.06)"
+                  : "transparent",
+            color: state.isSelected ? "white" : "#e4e4e7",
             cursor: "pointer",
             borderRadius: "0.5rem",
-            margin: "0.25rem 0",
+            margin: "2px 0",
+            padding: "10px 12px",
+            fontSize: "0.875rem",
             ":active": {
                 backgroundColor: state.isSelected
                     ? "var(--primary-color)"
@@ -66,7 +97,7 @@ const Select = ({
         }),
         singleValue: (provided) => ({
             ...provided,
-            color: "white",
+            color: "#fafafa",
         }),
         multiValue: (provided) => ({
             ...provided,
@@ -87,7 +118,25 @@ const Select = ({
         }),
         input: (provided) => ({
             ...provided,
-            color: "white",
+            color: "#fafafa",
+        }),
+        placeholder: (provided) => ({
+            ...provided,
+            color: "#71717a",
+        }),
+        indicatorSeparator: () => ({
+            display: "none",
+        }),
+        dropdownIndicator: (provided, state) => ({
+            ...provided,
+            color: state.isFocused ? "#a1a1aa" : "#71717a",
+            padding: "0 10px",
+            ":hover": { color: "#d4d4d8" },
+        }),
+        clearIndicator: (provided) => ({
+            ...provided,
+            color: "#71717a",
+            ":hover": { color: "#e4e4e7" },
         }),
     };
 
@@ -104,11 +153,16 @@ const Select = ({
                     defaultValue={defaultValue}
                     isDisabled={isDisabled}
                     styles={customStyles}
+                    menuPortalTarget={menuPortalTarget}
+                    menuPosition="fixed"
+                    blurInputOnSelect
                     theme={(theme) => ({
                         ...theme,
                         colors: {
                             ...theme.colors,
                             neutral50: "#a1a1aa",
+                            neutral20: "rgba(255,255,255,0.08)",
+                            neutral30: "rgba(255,255,255,0.12)",
                         },
                     })}
                 />

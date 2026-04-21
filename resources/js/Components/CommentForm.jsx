@@ -434,74 +434,81 @@ const CommentForm = ({
     return (
         <div className={`w-full ${className}`}>
             {(type === "create" || type === "reply") && (
-                <p className="text-xs text-zinc-500 mb-2">
-                    Type <span className="text-primary font-semibold">@</span>{" "}
+                <p className="mb-2 text-xs text-zinc-500">
+                    Type <span className="font-semibold text-primary">@</span>{" "}
                     to mention someone
                 </p>
             )}
-            <div className="grow h-[150px] w-full">
-                <ReactQuill
-                    ref={quillRef}
-                    value={data.comment}
-                    onChange={handleQuillChange}
-                    onChangeSelection={handleSelectionChange}
-                    theme="snow"
-                />
-                {errors?.comment && (
-                    <span className="text-red-500">{errors?.comment}</span>
-                )}
-            </div>
 
-            {mentionDropdown}
+            <div className="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/50 shadow-inner">
+                <div className="quill-comment-box dark-form w-full">
+                    <ReactQuill
+                        ref={quillRef}
+                        value={data.comment}
+                        onChange={handleQuillChange}
+                        onChangeSelection={handleSelectionChange}
+                        theme="snow"
+                    />
+                    {errors?.comment && (
+                        <p className="border-t border-white/5 px-3 py-2 text-sm text-red-400 sm:px-4">
+                            {errors?.comment}
+                        </p>
+                    )}
+                </div>
 
-            {(type === "create" || type === "reply") &&
-                mentionChips.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                        {mentionChips.map((m) => (
-                            <button
-                                key={m.id}
-                                type="button"
-                                onClick={() => removeMention(m.id)}
-                                className="inline-flex items-center gap-1 rounded-full bg-primary/15 border border-primary/30 px-2.5 py-0.5 text-xs font-semibold text-primary hover:bg-primary/25"
-                            >
-                                @{m.name}
-                                <span className="text-zinc-500">×</span>
-                            </button>
-                        ))}
-                    </div>
-                )}
+                {mentionDropdown}
 
-            <div className="flex justify-end xs:mt-0 mt-5">
-                <Button
-                    type={"button"}
-                    className={"!bg-primary my-2 !px-10"}
-                    text={
-                        type === "create"
-                            ? "Comment"
-                            : type === "reply"
-                            ? "Reply"
-                            : "Update"
-                    }
-                    onClick={() =>
-                        post(
-                            type === "create" || type === "reply"
-                                ? window.route("group.comment.create")
-                                : window.route("group.comment.update"),
-                            {
-                                preserveScroll: true,
-                                onSuccess: () => {
-                                    reset();
-                                    mentionedIdsRef.current = [];
-                                    activeMentionRef.current = null;
-                                    setMentionChips([]);
-                                    setMentionOpen(false);
-                                    setMentionHits([]);
-                                    onSuccess();
+                {(type === "create" || type === "reply") &&
+                    mentionChips.length > 0 && (
+                        <div className="flex flex-wrap gap-2 border-t border-white/5 px-3 py-3 sm:px-4">
+                            {mentionChips.map((m) => (
+                                <button
+                                    key={m.id}
+                                    type="button"
+                                    onClick={() => removeMention(m.id)}
+                                    className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/15 px-2.5 py-0.5 text-xs font-semibold text-primary hover:bg-primary/25"
+                                >
+                                    @{m.name}
+                                    <span className="text-zinc-500">×</span>
+                                </button>
+                            ))}
+                        </div>
+                    )}
+
+                <div className="flex justify-end border-t border-white/10 bg-zinc-900/40 px-4 py-4 sm:px-5 sm:py-4">
+                    <Button
+                        type={"button"}
+                        className={
+                            "!my-0 !bg-primary !px-8 sm:!px-10 !py-2.5 shadow-md shadow-primary/20"
+                        }
+                        text={
+                            type === "create"
+                                ? "Comment"
+                                : type === "reply"
+                                  ? "Reply"
+                                  : "Update"
+                        }
+                        onClick={() =>
+                            post(
+                                type === "create" || type === "reply"
+                                    ? window.route("group.comment.create")
+                                    : window.route("group.comment.update"),
+                                {
+                                    preserveScroll: true,
+                                    onSuccess: () => {
+                                        reset();
+                                        mentionedIdsRef.current = [];
+                                        activeMentionRef.current = null;
+                                        setMentionChips([]);
+                                        setMentionOpen(false);
+                                        setMentionHits([]);
+                                        onSuccess();
+                                    },
                                 },
-                            },
-                        )
-                    }
-                />
+                            )
+                        }
+                    />
+                </div>
             </div>
         </div>
     );

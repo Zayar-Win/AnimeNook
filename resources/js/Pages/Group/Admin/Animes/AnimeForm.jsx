@@ -42,7 +42,15 @@ const columns = [
     },
 ];
 
-const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
+const AnimeForm = ({
+    type,
+    statuses,
+    anime,
+    episodes,
+    seasons,
+    tags,
+    seasonFilters,
+}) => {
     const [statusOptions, setStatusOptions] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedEpisode, setSelectedEpisode] = useState(null);
@@ -155,36 +163,44 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
                             </p>
                         </div>
                     </div>
-                    {type === "edit" && activeTab !== "details" && (
-                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                            {activeTab === "seasons" && (
-                                <Button
-                                    href={window.route(
-                                        "group.admin.anime.seasons.create",
-                                        {
-                                            anime: anime.slug,
+                    <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center md:w-auto md:shrink-0 md:justify-end">
+                        <Link
+                            href={window.route("group.admin.animes")}
+                            className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-white/10 px-4 text-xs font-bold text-zinc-300 transition hover:border-white/20 hover:bg-white/5 hover:text-white sm:text-sm"
+                        >
+                            Back to anime list
+                        </Link>
+                        {type === "edit" && activeTab !== "details" && (
+                            <>
+                                {activeTab === "seasons" && (
+                                    <Button
+                                        href={window.route(
+                                            "group.admin.anime.seasons.create",
+                                            {
+                                                anime: anime.slug,
+                                            }
+                                        )}
+                                        text={"Create Season"}
+                                        className={
+                                            "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1 w-full sm:w-auto text-center justify-center"
                                         }
-                                    )}
-                                    text={"Create Season"}
-                                    className={
-                                        "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1 w-full sm:w-auto text-center justify-center"
-                                    }
-                                />
-                            )}
-                            {activeTab === "episodes" && (
-                                <Button
-                                    href={window.route(
-                                        "group.admin.animes.episodes.create",
-                                        { anime }
-                                    )}
-                                    text={"Create Episode"}
-                                    className={
-                                        "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1 w-full sm:w-auto text-center justify-center"
-                                    }
-                                />
-                            )}
-                        </div>
-                    )}
+                                    />
+                                )}
+                                {activeTab === "episodes" && (
+                                    <Button
+                                        href={window.route(
+                                            "group.admin.animes.episodes.create",
+                                            { anime }
+                                        )}
+                                        text={"Create Episode"}
+                                        className={
+                                            "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1 w-full sm:w-auto text-center justify-center"
+                                        }
+                                    />
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {/* Navigation Tabs */}
@@ -370,17 +386,18 @@ const AnimeForm = ({ type, statuses, anime, episodes, seasons, tags }) => {
                                         Manage Seasons
                                     </h2>
                                 </div>
-                                <div className="p-6">
-                                    {seasons?.data.length > 0 ? (
+                                <div className="p-4 sm:p-6">
+                                    {seasons ? (
                                         <Season
                                             seasons={seasons}
                                             serie={anime}
-                                            type={"anime"}
+                                            type="anime"
+                                            seasonFilters={seasonFilters}
                                         />
                                     ) : (
                                         <div className="flex flex-col items-center justify-center py-12 text-zinc-500">
                                             <p className="font-medium">
-                                                No seasons created yet.
+                                                No seasons data.
                                             </p>
                                         </div>
                                     )}

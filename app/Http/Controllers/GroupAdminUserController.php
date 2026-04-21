@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\helpers\Uploader;
 use App\Models\Group;
+use App\Models\Role;
 use App\Models\User;
 use App\Notifications\AdminNewUserNotification;
 use Illuminate\Http\Request;
@@ -16,10 +17,48 @@ class GroupAdminUserController extends Controller
 
     public function index(Group $group)
     {
-        $users = $group->users()->latest()->paginate(10);
+        $data = [
+            'search' => trim((string) request('search', '')),
+            'role_id' => request()->filled('role_id') ? (int) request('role_id') : null,
+            'type' => request()->filled('type') && in_array(request('type'), ['free', 'paid'], true)
+                ? request('type')
+                : null,
+        ];
+
+        $filters = validator($data, [
+            'search' => ['nullable', 'string', 'max:255'],
+            'role_id' => ['nullable', 'integer', 'exists:roles,id'],
+            'type' => ['nullable', 'in:free,paid'],
+        ])->validated();
+
+        $query = $group->users()->with('role');
+
+        if (($filters['search'] ?? '') !== '') {
+            $like = '%'.$filters['search'].'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('name', 'like', $like)
+                    ->orWhere('email', 'like', $like);
+            });
+        }
+
+        if (! empty($filters['role_id'])) {
+            $query->where('role_id', $filters['role_id']);
+        }
+
+        if (! empty($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        $users = $query->latest()->paginate(10)->withQueryString();
 
         return inertia('Group/Admin/Users/Index', [
             'users' => $users,
+            'filters' => [
+                'search' => $filters['search'] ?? '',
+                'role_id' => $filters['role_id'] ?? null,
+                'type' => $filters['type'] ?? null,
+            ],
+            'roles' => Role::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 

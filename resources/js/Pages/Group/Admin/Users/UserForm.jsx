@@ -3,33 +3,18 @@ import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import Select from "@/Components/Select";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
-import { useForm } from "@inertiajs/react";
+import { Link, useForm } from "@inertiajs/react";
 import React, { useEffect, useState } from "react";
 
 const UserForm = ({ type, user }) => {
     const roleOptions = [
-        {
-            label: "User",
-            value: 1,
-        },
-        {
-            label: "Editor",
-            value: 2,
-        },
-        {
-            label: "Admin",
-            value: 3,
-        },
+        { label: "User", value: 1 },
+        { label: "Editor", value: 2 },
+        { label: "Admin", value: 3 },
     ];
     const typeOptions = [
-        {
-            label: "Free",
-            value: "free",
-        },
-        {
-            label: "Paid",
-            value: "paid",
-        },
+        { label: "Free", value: "free" },
+        { label: "Paid", value: "paid" },
     ];
     const [profileImageUrl, setProfileImageUrl] = useState(
         user?.profile_picture
@@ -42,6 +27,7 @@ const UserForm = ({ type, user }) => {
         type: "free",
         password: "",
     });
+
     useEffect(() => {
         if (data.profile_picture && typeof data.profile_picture !== "string") {
             setProfileImageUrl(URL.createObjectURL(data.profile_picture));
@@ -49,28 +35,39 @@ const UserForm = ({ type, user }) => {
     }, [data.profile_picture]);
 
     useEffect(() => {
-        if (type === "edit") {
-            setData((data) => {
-                return {
-                    ...data,
-                    name: user.name,
-                    email: user.email,
-                    profile_picture: user.profile_picture,
-                    role_id: user.role_id,
-                    type: user.type,
-                    password: user.password,
-                };
-            });
+        if (type === "edit" && user) {
+            setData((prev) => ({
+                ...prev,
+                name: user.name,
+                email: user.email,
+                profile_picture: user.profile_picture,
+                role_id: user.role_id,
+                type: user.type,
+                password: user.password,
+            }));
         }
-    }, [type]);
+    }, [type, user?.id, setData]);
 
     return (
-        <div className="bg-[#0a0a0a] min-h-screen p-8 text-white">
-            <div className="max-w-4xl mx-auto">
-                <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
-                    <h1 className="text-3xl font-black tracking-tight text-white">
-                        {type === "edit" ? "Edit" : "Create New"} User
-                    </h1>
+        <div className="min-h-screen bg-[#0a0a0a] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+            <div className="mx-auto w-full max-w-4xl">
+                <div className="mb-6 flex flex-col gap-3 border-b border-white/10 pb-5 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:pb-6">
+                    <div className="min-w-0">
+                        <h1 className="text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl">
+                            {type === "edit" ? "Edit user" : "Create user"}
+                        </h1>
+                        <p className="mt-1 text-xs text-zinc-500 sm:text-sm">
+                            {type === "edit"
+                                ? "Update profile, role, and account type."
+                                : "Add a new member to this group."}
+                        </p>
+                    </div>
+                    <Link
+                        href={window.route("group.admin.users")}
+                        className="shrink-0 self-start rounded-lg border border-white/10 px-3 py-2 text-xs font-bold text-zinc-300 transition hover:border-white/20 hover:bg-white/5 hover:text-white sm:self-auto sm:px-4 sm:text-sm"
+                    >
+                        ← Back to list
+                    </Link>
                 </div>
 
                 <form
@@ -87,28 +84,29 @@ const UserForm = ({ type, user }) => {
                             }
                         );
                     }}
-                    className="bg-[#1a1a1a] rounded-2xl p-8 border border-white/5 shadow-xl shadow-black/50"
+                    className="rounded-xl border border-white/5 bg-[#1a1a1a] p-4 shadow-xl shadow-black/50 sm:rounded-2xl sm:p-6 lg:p-8"
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-8">
-                        <div className="col-span-1 md:col-span-2 flex justify-center mb-6">
-                            <div className="relative group cursor-pointer">
-                                <div className="w-32 h-32 rounded-full overflow-hidden ring-4 ring-white/10 group-hover:ring-primary transition-all duration-300 shadow-2xl">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-x-8 md:gap-y-8 lg:gap-x-10">
+                        <div className="col-span-1 flex flex-col items-center md:col-span-2">
+                            <div className="group relative cursor-pointer touch-manipulation">
+                                <div className="h-28 w-28 overflow-hidden rounded-full shadow-2xl ring-4 ring-white/10 transition-all duration-300 group-hover:ring-primary group-active:ring-primary/80 sm:h-32 sm:w-32">
                                     <img
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         src={
                                             profileImageUrl
                                                 ? profileImageUrl
                                                 : "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
                                         }
-                                        alt="Profile Preview"
+                                        alt=""
                                     />
-                                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-100 transition-opacity duration-300 sm:bg-black/50 sm:opacity-0 sm:group-hover:opacity-100">
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
-                                            className="w-8 h-8 text-white"
+                                            className="h-7 w-7 text-white sm:h-8 sm:w-8"
                                             fill="none"
                                             viewBox="0 0 24 24"
                                             stroke="currentColor"
+                                            aria-hidden
                                         >
                                             <path
                                                 strokeLinecap="round"
@@ -127,20 +125,25 @@ const UserForm = ({ type, user }) => {
                                 </div>
                                 <input
                                     type="file"
+                                    accept="image/*"
                                     onChange={(e) =>
                                         setData(
                                             "profile_picture",
-                                            e.target.files[0]
+                                            e.target.files?.[0] ?? null
                                         )
                                     }
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                                    aria-label="Upload profile picture"
                                 />
                             </div>
+                            <p className="mt-2 text-center text-[11px] text-zinc-500 sm:hidden">
+                                Tap image to change photo
+                            </p>
                         </div>
 
                         <div className="col-span-1 md:col-span-2">
-                            <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-6 border-b border-white/5 pb-2">
-                                Basic Information
+                            <h3 className="mb-4 border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-primary sm:mb-6 sm:text-sm">
+                                Basic information
                             </h3>
                         </div>
 
@@ -159,9 +162,9 @@ const UserForm = ({ type, user }) => {
                             onChange={(e) => setData("email", e.target.value)}
                         />
 
-                        <div className="col-span-1 md:col-span-2 mt-4">
-                            <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-6 border-b border-white/5 pb-2">
-                                Account Settings
+                        <div className="col-span-1 mt-2 md:col-span-2 md:mt-4">
+                            <h3 className="mb-4 border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-primary sm:mb-6 sm:text-sm">
+                                Account settings
                             </h3>
                         </div>
 
@@ -173,18 +176,20 @@ const UserForm = ({ type, user }) => {
                             onChange={(role) => setData("role_id", role.value)}
                         />
                         <Select
-                            label={"Account Type"}
+                            label="Account type"
                             options={typeOptions}
                             selected={data.type}
                             errorMessage={errors?.type}
-                            onChange={(type) => setData("type", type.value)}
+                            onChange={(accountType) =>
+                                setData("type", accountType.value)
+                            }
                         />
 
                         <div className="col-span-1 md:col-span-2">
                             <Input
                                 label="Password"
                                 type="password"
-                                vlaue={data.password}
+                                value={data.password}
                                 placeholder={
                                     type === "edit"
                                         ? "Leave blank to keep current password"
@@ -198,15 +203,19 @@ const UserForm = ({ type, user }) => {
                         </div>
                     </div>
 
-                    <div className="flex justify-end mt-10 pt-6 border-t border-white/5">
+                    <div className="mt-8 flex flex-col-reverse gap-3 border-t border-white/5 pt-6 sm:mt-10 sm:flex-row sm:justify-end sm:gap-4">
+                        <Link
+                            href={window.route("group.admin.users")}
+                            className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-white/15 text-sm font-bold text-zinc-300 transition hover:border-white/25 hover:bg-white/5 hover:text-white sm:h-auto sm:w-auto sm:px-6"
+                        >
+                            Cancel
+                        </Link>
                         <Button
-                            type={"submit"}
+                            type="submit"
                             text={
-                                type === "edit" ? "Update User" : "Create User"
+                                type === "edit" ? "Update user" : "Create user"
                             }
-                            className={
-                                "!bg-primary hover:!bg-primary/90 !px-10 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1"
-                            }
+                            className="!h-11 !w-full !rounded-xl !px-6 !py-3 !text-sm !font-bold !normal-case transition-all hover:-translate-y-0.5 sm:!h-auto sm:!w-auto sm:!px-10 !bg-primary hover:!bg-primary/90 shadow-lg shadow-primary/20"
                         />
                     </div>
                 </form>

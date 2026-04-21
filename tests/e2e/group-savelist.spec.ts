@@ -26,6 +26,20 @@ async function ensureAnimeUnsavedFromDetail(page: Page) {
     }
 }
 
+async function ensureMangaUnsavedFromDetail(page: Page) {
+    await navigateGroup(page, `/mangas/${E2E_MANGA_SLUG}`);
+    const collBtn = page
+        .getByRole("button", { name: /Add to Collection|Saved/ })
+        .first();
+    const label = await collBtn.textContent();
+    if (label?.includes("Saved")) {
+        await collBtn.click();
+        await expect(
+            page.getByRole("button", { name: "Add to Collection" }).first(),
+        ).toBeVisible({ timeout: 15_000 });
+    }
+}
+
 test.describe("Group savelist", () => {
     test("guest visiting savelist is redirected to login", async ({ page }) => {
         await navigateGroup(page, "/savelist");
@@ -139,22 +153,22 @@ test.describe("Group savelist", () => {
             ).toBeVisible({ timeout: 15_000 });
         });
 
-        test("can save anime from home card bookmark", async ({
+        test("can save manga from home bookmark (trending or continue row)", async ({
             page,
             request,
         }) => {
-            await skipUnlessSeededAnime(request);
+            await skipUnlessSeededManga(request);
             await loginGroupTenant(page, E2E_USER_EMAIL, E2E_USER_PASSWORD);
-            await ensureAnimeUnsavedFromDetail(page);
+            await ensureMangaUnsavedFromDetail(page);
 
             await navigateGroup(page, "/");
             const rising = page
                 .locator("div")
                 .filter({ hasText: "Rising Star" })
-                .filter({ hasText: "E2E Anime Fixture" });
-            const popularCard = page
-                .locator("#popular-series")
-                .locator(`a[href*="/animes/${E2E_ANIME_SLUG}"]`)
+                .filter({ hasText: "E2E Manga Fixture" });
+            const continueReadingCard = page
+                .locator("#continue-reading")
+                .locator(`a[href*="/mangas/${E2E_MANGA_SLUG}"]`)
                 .first();
 
             if ((await rising.count()) > 0) {
@@ -162,12 +176,12 @@ test.describe("Group savelist", () => {
                     .getByRole("button", { name: /Watchlist|Saved/ })
                     .first()
                     .click();
-            } else if ((await popularCard.count()) > 0) {
-                await popularCard.locator("button").first().click();
+            } else if ((await continueReadingCard.count()) > 0) {
+                await continueReadingCard.locator("button").first().click();
             } else {
                 test.skip(
                     true,
-                    "E2E anime not on home (trending/popular); seed or adjust fixtures.",
+                    "E2E manga not on home (trending/continue); seed or adjust fixtures.",
                 );
             }
 

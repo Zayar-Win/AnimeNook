@@ -32,7 +32,7 @@ const MangaCard = ({ manga }) => {
         <div className="group relative w-full">
             <Link href={window.route("group.manga.detail", manga)}>
                 {/* Image Container */}
-                <div className="relative aspect-[3/4] overflow-hidden rounded-xl bg-zinc-900">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-zinc-900 sm:aspect-[3/4] sm:rounded-xl">
                     <img
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         src={manga?.thumbnail || mangaThumbnailUrl}
@@ -44,12 +44,12 @@ const MangaCard = ({ manga }) => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
 
                     {/* Top Badges */}
-                    <div className="absolute top-2 left-2 flex flex-col gap-1.5">
-                        <div className="bg-purple-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm shadow-sm">
+                    <div className="absolute left-1 top-1 flex flex-col gap-1 sm:left-2 sm:top-2 sm:gap-1.5">
+                        <div className="rounded bg-purple-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm backdrop-blur-sm sm:rounded-md sm:px-2 sm:text-[10px]">
                             Ch {manga?.chapters_count || "?"}
                         </div>
                         {manga?.latestWatchedChapter && (
-                            <div className="bg-green-600/90 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm shadow-sm">
+                            <div className="rounded bg-green-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white shadow-sm backdrop-blur-sm sm:rounded-md sm:px-2 sm:text-[10px]">
                                 Read:{" "}
                                 {manga?.latestWatchedChapter?.chapter_number}
                             </div>
@@ -57,14 +57,12 @@ const MangaCard = ({ manga }) => {
                     </div>
 
                     {/* Rating Badge */}
-                    <div className="absolute top-2 right-2 bg-black/60 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm flex items-center gap-1">
+                    <div className="absolute right-1 top-1 flex items-center gap-0.5 rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur-sm sm:right-2 sm:top-2 sm:gap-1 sm:rounded-md sm:px-2 sm:text-[10px]">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="10"
-                            height="10"
+                            className="h-2.5 w-2.5 shrink-0 text-yellow-400 sm:h-3 sm:w-3"
                             viewBox="0 0 24 24"
                             fill="currentColor"
-                            className="text-yellow-400"
                         >
                             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
                         </svg>
@@ -95,13 +93,13 @@ const MangaCard = ({ manga }) => {
                 </div>
 
                 {/* Content */}
-                <div className="mt-3 space-y-1">
-                    <h3 className="text-white font-bold text-sm leading-tight line-clamp-1 group-hover:text-purple-600 transition-colors">
+                <div className="mt-1.5 space-y-0.5 sm:mt-3 sm:space-y-1">
+                    <h3 className="line-clamp-2 text-[11px] font-bold leading-snug text-white transition-colors group-hover:text-purple-600 sm:line-clamp-1 sm:text-sm sm:leading-tight">
                         {manga?.name}
                     </h3>
 
-                    <div className="flex items-center justify-between text-xs text-zinc-500">
-                        <span className="truncate max-w-[70%]">
+                    <div className="flex items-center justify-between gap-1 text-[10px] text-zinc-500 sm:text-xs">
+                        <span className="max-w-[65%] truncate sm:max-w-[70%]">
                             Manga •{" "}
                             {new Date(
                                 manga?.updated_at || Date.now()
@@ -119,8 +117,7 @@ const MangaCard = ({ manga }) => {
                             {manga?.isSavedByCurrentUser ? (
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
+                                    className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4"
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
                                 >
@@ -129,8 +126,7 @@ const MangaCard = ({ manga }) => {
                             ) : (
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
+                                    className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4"
                                     viewBox="0 0 24 24"
                                     fill="none"
                                     stroke="currentColor"

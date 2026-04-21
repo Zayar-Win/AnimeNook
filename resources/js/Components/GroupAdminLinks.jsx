@@ -45,6 +45,7 @@ export const sidebarLinks = [
             },
         ],
     },
+    /*
     {
         name: "Animes",
         routeName: "group.admin.animes",
@@ -62,6 +63,7 @@ export const sidebarLinks = [
             </svg>
         ),
     },
+    */
     {
         name: "Banners",
         routeName: "group.admin.banners",

@@ -84,6 +84,20 @@ body {
     font-style: normal;
 }
 
+/* Comment form: let editor grow so toolbar + content don’t overlap the submit row */
+.dark-form.quill-comment-box .ql-container {
+    height: auto !important;
+    min-height: 7.5rem;
+}
+.dark-form.quill-comment-box .ql-editor {
+    min-height: 7.5rem;
+}
+@media (min-width: 640px) {
+    .dark-form.quill-comment-box .ql-editor {
+        min-height: 9rem;
+    }
+}
+
 .hover-effect {
     position: relative;
     overflow: hidden;

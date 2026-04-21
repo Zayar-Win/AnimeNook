@@ -28,6 +28,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
         });
     };
     const [isSeasonBoxOpen, setIsSeasonBoxOpen] = useState(false);
+    const [synopsisExpanded, setSynopsisExpanded] = useState(false);
     const seasonBoxRef = useRef(null);
     useOnClickOutside(seasonBoxRef, function (e) {
         if (e.target.parentElement.classList.contains("seasonbox-toggle"))
@@ -55,6 +56,19 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
         );
     };
 
+    const shareManga = async () => {
+        const url = window.location.href;
+        try {
+            if (navigator.share) {
+                await navigator.share({ title: manga.name, url });
+            } else if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(url);
+            }
+        } catch {
+            /* dismissed share sheet or clipboard denied */
+        }
+    };
+
     useEffect(() => {
         const createView = async () => {
             await axios.post(window.route("group.views.store"), {
@@ -74,17 +88,28 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
     const continueChapterId =
         manga?.latestWatchedChapter?.id ?? manga?.chapters?.[0]?.id;
 
+    const synopsisText = (manga?.description ?? "").trim();
+    const synopsisNeedsToggle = synopsisText.length > 200;
+
+    const continueEp = manga?.latestWatchedChapter?.chapter_number;
+    const continueReadingLabel =
+        continueEp != null ? `Resume Ep ${continueEp}` : "Start Reading";
+    const continueReadingTitle =
+        continueEp != null
+            ? `Continue reading episode ${continueEp}`
+            : undefined;
+
     return (
         <>
             <SectionContainer className={"bg-black text-white"}>
-                <div className="flex flex-col md:flex-row gap-8 lg:gap-12 py-10">
-                    {/* Cover Image Section */}
-                    <div className="md:w-[30%] shrink-0">
-                        <div className="sticky top-24">
-                            <div className="relative group rounded-xl overflow-hidden shadow-2xl shadow-primary/20">
+                <div className="flex flex-col gap-5 py-6 md:flex-row md:gap-8 md:py-10 lg:gap-12">
+                    {/* Cover Image Section — narrow max width on mobile so 2/3 aspect does not dominate the viewport */}
+                    <div className="flex w-full shrink-0 justify-center md:block md:w-[30%] md:justify-start">
+                        <div className="sticky top-24 w-full max-w-[11.5rem] sm:max-w-[13.5rem] md:max-w-none">
+                            <div className="relative group overflow-hidden rounded-xl shadow-2xl shadow-primary/20">
                                 <img
                                     src={manga?.thumbnail || mangaThumbnailUrl}
-                                    className="w-full aspect-[2/3] object-cover transition-transform duration-500 group-hover:scale-105"
+                                    className="aspect-[2/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                     alt={manga.name}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -93,14 +118,14 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                     </div>
 
                     {/* Content Section */}
-                    <div className="md:w-[70%] space-y-8">
+                    <div className="md:w-[70%] space-y-4 md:space-y-8">
                         {/* Header */}
-                        <div className="space-y-4">
-                            <div className="flex flex-wrap items-start justify-between gap-4">
-                                <h1 className="text-3xl md:text-5xl font-black text-white leading-tight">
+                        <div className="space-y-2 md:space-y-4">
+                            <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-4">
+                                <h1 className="text-2xl font-black leading-tight text-white sm:text-3xl md:text-5xl">
                                     {manga.name}
                                 </h1>
-                                <span className="px-4 py-1.5 rounded-full bg-primary/20 border border-primary/50 text-primary font-bold text-sm uppercase tracking-wider shadow-[0_0_15px_rgba(237,100,0,0.3)]">
+                                <span className="shrink-0 rounded-full border border-primary/50 bg-primary/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary shadow-[0_0_15px_rgba(237,100,0,0.3)] sm:px-4 sm:py-1.5 sm:text-sm">
                                     {manga.status.name}
                                 </span>
                             </div>
@@ -111,32 +136,32 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                             </div>
                         </div>
 
-                        {/* Stats Grid */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 backdrop-blur-sm">
-                            <div className="flex flex-col items-center justify-center gap-1 p-2">
-                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                        {/* Stats: one compact row on mobile; roomier from sm */}
+                        <div className="grid grid-cols-4 gap-1.5 rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-sm sm:gap-3 sm:rounded-2xl sm:p-5">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 py-1 sm:gap-1 sm:p-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Rating
                                 </span>
-                                <div className="flex items-center gap-1.5 text-white">
+                                <div className="flex items-center gap-1 text-white sm:gap-1.5">
                                     <svg
-                                        className="w-5 h-5 text-yellow-500 fill-yellow-500"
+                                        className="h-3.5 w-3.5 shrink-0 fill-yellow-500 text-yellow-500 sm:h-5 sm:w-5"
                                         viewBox="0 0 24 24"
                                     >
                                         <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                                     </svg>
-                                    <span className="text-xl font-black">
+                                    <span className="text-sm font-black tabular-nums sm:text-xl">
                                         {manga?.rating}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center justify-center gap-1 p-2 border-l border-white/10">
-                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-white/10 px-0.5 py-1 sm:gap-1 sm:p-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Views
                                 </span>
-                                <div className="flex items-center gap-1.5 text-white">
+                                <div className="flex items-center gap-1 text-white sm:gap-1.5">
                                     <svg
-                                        className="w-5 h-5 text-blue-500"
+                                        className="h-3.5 w-3.5 shrink-0 text-blue-500 sm:h-5 sm:w-5"
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
@@ -154,34 +179,34 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                                         />
                                     </svg>
-                                    <span className="text-xl font-black">
+                                    <span className="text-sm font-black tabular-nums sm:text-xl">
                                         {manga?.views_count}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center justify-center gap-1 p-2 border-l border-white/10">
-                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-white/10 px-0.5 py-1 sm:gap-1 sm:p-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Likes
                                 </span>
-                                <div className="flex items-center gap-1.5 text-white">
+                                <div className="flex items-center gap-1 text-white sm:gap-1.5">
                                     <svg
-                                        className="w-5 h-5 text-pink-500 fill-pink-500"
+                                        className="h-3.5 w-3.5 shrink-0 fill-pink-500 text-pink-500 sm:h-5 sm:w-5"
                                         viewBox="0 0 24 24"
                                     >
                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                     </svg>
-                                    <span className="text-xl font-black">
+                                    <span className="text-sm font-black tabular-nums sm:text-xl">
                                         {manga?.likes_count}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col items-center justify-center gap-1 p-2 border-l border-white/10">
-                                <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-white/10 px-0.5 py-1 sm:gap-1 sm:p-2">
+                                <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Uploaded
                                 </span>
-                                <span className="text-sm font-bold text-white text-center">
+                                <span className="text-center text-[11px] font-bold leading-tight text-white sm:text-sm">
                                     {formateDate(manga?.created_at, {
                                         month: "short",
                                         year: "numeric",
@@ -191,72 +216,92 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         </div>
 
                         {/* Interactive Rating */}
-                        <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
-                            <span className="font-bold text-zinc-400">
+                        <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 sm:rounded-xl sm:p-4">
+                            <span className="shrink-0 text-xs font-bold text-zinc-400 sm:text-base">
                                 Your Rating
                             </span>
-                            <Rating ratingHandler={ratingHandler} />
+                            <div className="min-w-0 origin-right scale-[0.78] sm:scale-100">
+                                <Rating ratingHandler={ratingHandler} />
+                            </div>
                         </div>
 
                         {/* Description */}
-                        <div className="space-y-3">
-                            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                                <span className="w-1 h-6 bg-primary rounded-full"></span>
+                        <div className="space-y-2">
+                            <h3 className="flex items-center gap-2 text-base font-bold text-white sm:text-lg">
+                                <span className="h-5 w-1 shrink-0 rounded-full bg-primary sm:h-6"></span>
                                 Synopsis
                             </h3>
-                            <p className="text-zinc-300 leading-relaxed text-lg font-light">
-                                {manga?.description}
+                            <p
+                                className={`text-sm font-light leading-relaxed text-zinc-300 sm:text-base ${
+                                    synopsisNeedsToggle && !synopsisExpanded
+                                        ? "line-clamp-4 sm:line-clamp-5"
+                                        : ""
+                                }`}
+                            >
+                                {synopsisText || "—"}
                             </p>
+                            {synopsisNeedsToggle && (
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        setSynopsisExpanded((v) => !v)
+                                    }
+                                    className="text-sm font-semibold text-primary transition-colors hover:text-primary/80 hover:underline"
+                                >
+                                    {synopsisExpanded
+                                        ? "See less"
+                                        : "See more…"}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-4 my-8">
+                <div
+                    className={`my-6 grid gap-3 sm:my-8 sm:flex sm:flex-wrap sm:items-stretch sm:gap-4 ${
+                        continueChapterId
+                            ? "grid-cols-2"
+                            : "grid-cols-3"
+                    }`}
+                >
                     {continueChapterId && (
-                        <Link
+                        <Button
                             href={chapterReaderHref(continueChapterId)}
-                            className="flex-1 sm:flex-none"
-                        >
-                            <Button
-                                className="!bg-primary hover:!bg-primary/90 !px-8 !py-4 !rounded-xl w-full !gap-3 shadow-lg shadow-primary/20 transition-all hover:-translate-y-1"
-                                text={
-                                    manga?.latestWatchedChapter
-                                        ? `Continue Reading Ep ${manga?.latestWatchedChapter.chapter_number}`
-                                        : "Start Reading"
-                                }
-                                type="button"
-                                Icon={
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        className="w-6 h-6"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            fill="currentColor"
-                                            d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"
-                                        />
-                                    </svg>
-                                }
-                            />
-                        </Link>
+                            title={continueReadingTitle}
+                            className="!flex !h-full !min-h-[3rem] w-full !items-center !justify-center !gap-2 !rounded-xl !px-3 !py-3 text-sm !font-semibold !whitespace-nowrap shadow-lg shadow-primary/20 transition-all hover:-translate-y-1 sm:!min-h-0 sm:!gap-3 sm:!px-8 sm:!py-4 sm:text-base !bg-primary hover:!bg-primary/90 sm:w-auto"
+                            text={continueReadingLabel}
+                            Icon={
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 shrink-0 sm:h-6 sm:w-6"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        fill="currentColor"
+                                        d="M8 19V5l11 7l-11 7Zm2-7Zm0 3.35L15.25 12L10 8.65v6.7Z"
+                                    />
+                                </svg>
+                            }
+                        />
                     )}
 
                     <Button
-                        text={
+                        text={manga.isSavedByCurrentUser ? "Saved" : "Save"}
+                        title={
                             manga.isSavedByCurrentUser
-                                ? "Saved"
-                                : "Add to Collection"
+                                ? undefined
+                                : "Add to your collection"
                         }
                         type={"button"}
                         onClick={saveToCollection}
-                        className={`!px-8 !py-4 !rounded-xl !gap-2 border transition-all hover:-translate-y-1 ${
+                        className={`!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !px-3 !py-3 text-sm !font-semibold transition-all hover:-translate-y-1 sm:!px-8 sm:!py-4 sm:text-base ${
                             manga.isSavedByCurrentUser
-                                ? "!bg-green-600 border-green-500 text-white shadow-lg shadow-green-600/20"
-                                : "!bg-white/5 border-white/10 text-white hover:!bg-white hover:!text-black"
+                                ? "!bg-green-600 border border-green-500 text-white shadow-lg shadow-green-600/20"
+                                : "!bg-white/5 border border-white/10 text-white hover:!bg-white hover:!text-black"
                         }`}
                         Icon={
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="w-5 h-5"
+                                className="h-5 w-5 shrink-0"
                                 viewBox="0 0 24 24"
                             >
                                 <path
@@ -271,14 +316,14 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         text={manga.isLikeByCurrentUser ? "Liked" : "Like"}
                         type={"button"}
                         onClick={() => likeManga()}
-                        className={`!px-8 !py-4 !rounded-xl !gap-2 border transition-all hover:-translate-y-1 ${
+                        className={`!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !px-3 !py-3 text-sm !font-semibold transition-all hover:-translate-y-1 sm:!px-8 sm:!py-4 sm:text-base ${
                             manga.isLikeByCurrentUser
-                                ? "!bg-pink-600 border-pink-500 text-white shadow-lg shadow-pink-600/20"
-                                : "!bg-white/5 border-white/10 text-white hover:!bg-white hover:!text-black"
+                                ? "!bg-pink-600 border border-pink-500 text-white shadow-lg shadow-pink-600/20"
+                                : "!bg-white/5 border border-white/10 text-white hover:!bg-white hover:!text-black"
                         }`}
                         Icon={
                             <Liked
-                                className={`w-5 h-5 ${
+                                className={`h-5 w-5 shrink-0 ${
                                     manga.isLikeByCurrentUser
                                         ? "text-white"
                                         : "fill-current"
@@ -289,11 +334,13 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
 
                     <Button
                         text={"Share"}
-                        className="!bg-white/5 !px-8 !py-4 !rounded-xl !gap-2 border border-white/10 text-white hover:!bg-white hover:!text-black transition-all hover:-translate-y-1"
+                        type="button"
+                        onClick={shareManga}
+                        className="!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !border !border-white/10 !bg-white/5 !px-3 !py-3 text-sm !font-semibold text-white transition-all hover:-translate-y-1 hover:!bg-white hover:!text-black sm:!px-8 sm:!py-4 sm:text-base"
                         Icon={
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="w-5 h-5"
+                                className="h-5 w-5 shrink-0"
                                 viewBox="0 0 24 24"
                             >
                                 <path

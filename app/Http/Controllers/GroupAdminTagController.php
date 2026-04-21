@@ -9,10 +9,47 @@ use Illuminate\Validation\Rule;
 
 class GroupAdminTagController extends Controller
 {
-    public function index(Group $group)
+    public function index(Group $group, Request $request)
     {
+        $data = [
+            'search' => trim((string) $request->input('search', '')),
+            'sort' => $request->input('sort', 'name_asc'),
+        ];
+
+        $filters = validator($data, [
+            'search' => ['nullable', 'string', 'max:255'],
+            'sort' => ['nullable', 'in:name_asc,name_desc,slug_asc,slug_desc'],
+        ])->validated();
+
+        $query = $group->tags();
+
+        if (($filters['search'] ?? '') !== '') {
+            $like = '%'.$filters['search'].'%';
+            $query->where(function ($q) use ($like) {
+                $q->where('name', 'like', $like)
+                    ->orWhere('slug', 'like', $like);
+            });
+        }
+
+        $sort = $filters['sort'] ?? 'name_asc';
+        [$column, $direction] = match ($sort) {
+            'name_desc' => ['name', 'desc'],
+            'slug_asc' => ['slug', 'asc'],
+            'slug_desc' => ['slug', 'desc'],
+            default => ['name', 'asc'],
+        };
+        $query->orderBy($column, $direction);
+
+        $tags = $query->paginate(15)->withQueryString();
+
         return inertia('Group/Admin/Tags/Index', [
-            'tags' => $group->tags()->paginate(15)
+            'tags' => $tags,
+            'filters' => [
+                'search' => $filters['search'] ?? '',
+                'sort' => in_array($sort, ['name_asc', 'name_desc', 'slug_asc', 'slug_desc'], true)
+                    ? $sort
+                    : 'name_asc',
+            ],
         ]);
     }
 

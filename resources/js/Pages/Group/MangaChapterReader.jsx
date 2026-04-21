@@ -18,6 +18,17 @@ const MangaChapterReader = ({
             chapter: chapterId,
         });
 
+    const chapterHeading = (() => {
+        const n = chapter.chapter_number;
+        const t = (chapter.title ?? "").trim();
+        if (t && n != null && n !== "") {
+            return `Ch. ${n} — ${t}`;
+        }
+        if (t) return t;
+        if (n != null && n !== "") return `Chapter ${n}`;
+        return "Chapter";
+    })();
+
     return (
         <SectionContainer className="bg-black text-white min-h-screen pb-16">
             <div className="sticky top-0 z-20 bg-black/90 backdrop-blur-md border-b border-white/10 py-4 mb-8">
@@ -88,6 +99,12 @@ const MangaChapterReader = ({
                         )}
                     </div>
                 </div>
+            </div>
+
+            <div className="max-w-6xl mx-auto mb-5 sm:mb-6">
+                <h1 className="text-lg sm:text-2xl font-bold text-white tracking-tight break-words">
+                    {chapterHeading}
+                </h1>
             </div>
 
             {!readerMode && (

@@ -4,15 +4,49 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Subscriber;
-use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class GroupAdminSubscriberController extends Controller
 {
-    public function index(Group $group){
-        $subscribers = $group->subscribers()->latest()->paginate(15);
-        return inertia('Group/Admin/Subscribers/Index',[
-            'subscribers' => $subscribers
+    public function index(Group $group)
+    {
+        $data = [
+            'search' => trim((string) request('search', '')),
+            'period' => request('period'),
+        ];
+
+        $filters = validator($data, [
+            'search' => ['nullable', 'string', 'max:255'],
+            'period' => ['nullable', 'in:7d,30d,90d'],
+        ])->validated();
+
+        $query = $group->subscribers();
+
+        if (($filters['search'] ?? '') !== '') {
+            $like = '%'.$filters['search'].'%';
+            $query->where('email', 'like', $like);
+        }
+
+        if (! empty($filters['period'])) {
+            $days = match ($filters['period']) {
+                '7d' => 7,
+                '30d' => 30,
+                '90d' => 90,
+                default => null,
+            };
+            if ($days !== null) {
+                $query->where('created_at', '>=', now()->subDays($days));
+            }
+        }
+
+        $subscribers = $query->latest()->paginate(15)->withQueryString();
+
+        return inertia('Group/Admin/Subscribers/Index', [
+            'subscribers' => $subscribers,
+            'filters' => [
+                'search' => $filters['search'] ?? '',
+                'period' => $filters['period'] ?? null,
+            ],
         ]);
     }
 

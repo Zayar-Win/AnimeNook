@@ -95,6 +95,8 @@ class E2ESeeder extends Seeder
             $manga = Manga::factory()->create([
                 'group_id' => $group->id,
                 'name' => 'E2E Manga Fixture',
+                'is_trending' => true,
+                'is_recommended' => true,
             ]);
             $season = Season::factory()->create([
                 'group_id' => $group->id,
@@ -116,6 +118,11 @@ class E2ESeeder extends Seeder
                 'chapter_id' => $mangaChapter->id,
                 'path' => 'https://placehold.co/800x1200/1a1a1a/ed6400/png?text=E2E+Page+1',
                 'order' => 0,
+            ]);
+        } else {
+            $manga->update([
+                'is_trending' => true,
+                'is_recommended' => true,
             ]);
         }
     }

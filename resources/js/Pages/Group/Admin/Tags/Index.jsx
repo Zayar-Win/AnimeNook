@@ -4,24 +4,282 @@ import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router } from "@inertiajs/react";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
-const columns = [
-    {
-        field: "Name",
-    },
-    {
-        field: "Slug",
-        minWidth: "50px",
-    },
-    {
-        field: "Action",
-    },
-];
+const columns = [{ field: "Name" }, { field: "Slug" }, { field: "Action" }];
 
-const Index = ({ tags }) => {
+function AdminPagination({ meta }) {
+    if (!meta?.links?.length || (meta?.last_page ?? 1) <= 1) return null;
+
+    return (
+        <nav
+            className="mt-6 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2"
+            aria-label="Pagination"
+        >
+            {meta.links.map((link, i) => {
+                const isDisabled = !link.url;
+                const active = link.active;
+                const content = (
+                    <span
+                        className={`inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-bold sm:min-h-10 sm:min-w-10 sm:px-3 sm:text-sm ${
+                            active
+                                ? "bg-primary text-white shadow-md shadow-primary/20"
+                                : "border border-white/10 bg-[#1a1a1a] text-zinc-300 hover:border-white/20 hover:bg-white/5"
+                        } ${isDisabled ? "pointer-events-none opacity-35" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: link.label }}
+                    />
+                );
+                if (isDisabled) {
+                    return (
+                        <span key={i} className="inline-flex">
+                            {content}
+                        </span>
+                    );
+                }
+                return (
+                    <Link
+                        key={i}
+                        href={link.url}
+                        preserveScroll
+                        className="inline-flex"
+                    >
+                        {content}
+                    </Link>
+                );
+            })}
+        </nav>
+    );
+}
+
+function TagFiltersToolbar({
+    search,
+    setSearch,
+    searchInputRef,
+    sort,
+    setSort,
+    onClear,
+    hasActiveFilters,
+    fetchWithState,
+}) {
+    return (
+        <div className="mb-5 rounded-2xl border border-white/5 bg-[#1a1a1a]/80 p-4 shadow-inner sm:p-5">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12 lg:items-end lg:gap-4">
+                <div className="lg:col-span-6">
+                    <label
+                        htmlFor="tag-search"
+                        className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-zinc-500"
+                    >
+                        Search
+                    </label>
+                    <div className="relative">
+                        <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                aria-hidden
+                            >
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="m21 21-4.35-4.35" />
+                            </svg>
+                        </span>
+                        <input
+                            ref={searchInputRef}
+                            id="tag-search"
+                            type="search"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            placeholder="Search by name or slug…"
+                            autoComplete="off"
+                            className="w-full rounded-xl border border-white/10 bg-[#141414] py-2.5 pl-10 pr-3 text-sm text-white placeholder-zinc-600 outline-none ring-primary/30 transition focus:border-zinc-500 focus:ring-2"
+                        />
+                    </div>
+                </div>
+                <div className="sm:col-span-1 lg:col-span-4">
+                    <label
+                        htmlFor="tag-sort"
+                        className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-zinc-500"
+                    >
+                        Sort
+                    </label>
+                    <select
+                        id="tag-sort"
+                        value={sort}
+                        onChange={(e) => {
+                            const v = e.target.value;
+                            setSort(v);
+                            fetchWithState({
+                                page: 1,
+                                search,
+                                sort: v,
+                            });
+                        }}
+                        className="h-[42px] w-full cursor-pointer rounded-xl border border-white/10 bg-[#141414] px-3 text-sm text-white outline-none ring-primary/30 transition focus:border-zinc-500 focus:ring-2"
+                    >
+                        <option value="name_asc">Name A–Z</option>
+                        <option value="name_desc">Name Z–A</option>
+                        <option value="slug_asc">Slug A–Z</option>
+                        <option value="slug_desc">Slug Z–A</option>
+                    </select>
+                </div>
+                <div className="flex items-end lg:col-span-2">
+                    <button
+                        type="button"
+                        onClick={onClear}
+                        disabled={!hasActiveFilters}
+                        className="h-[42px] w-full rounded-xl border border-white/10 px-3 text-xs font-bold text-zinc-300 transition hover:border-white/20 hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 sm:text-sm"
+                    >
+                        Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function TagRowActions({ tag, onDelete }) {
+    return (
+        <div className="flex items-center justify-end gap-1 sm:gap-3">
+            <Link
+                href={window.route("group.admin.tags.edit", { tag })}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 transition-all duration-300 hover:bg-primary/10 hover:text-primary sm:h-auto sm:w-auto sm:p-2"
+                title="Edit tag"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                >
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+            </Link>
+            <button
+                type="button"
+                onClick={() => onDelete(tag)}
+                className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-400 transition-all duration-300 hover:bg-red-500/10 hover:text-red-500 sm:h-auto sm:w-auto sm:p-2"
+                title="Delete tag"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+            </button>
+        </div>
+    );
+}
+
+const SORT_DEFAULT = "name_asc";
+
+const Index = ({ tags, filters = {} }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedTag, setSelectedTag] = useState(null);
+    const [search, setSearch] = useState(filters?.search ?? "");
+    const [sort, setSort] = useState(
+        ["name_asc", "name_desc", "slug_asc", "slug_desc"].includes(
+            filters?.sort
+        )
+            ? filters.sort
+            : SORT_DEFAULT
+    );
+    const searchInputRef = useRef(null);
+    const rows = tags?.data ?? [];
+
+    const buildQuery = (overrides = {}) => {
+        const page = overrides.page ?? 1;
+        const s =
+            overrides.search !== undefined ? overrides.search : search;
+        const so = overrides.sort !== undefined ? overrides.sort : sort;
+        const sortVal =
+            ["name_asc", "name_desc", "slug_asc", "slug_desc"].includes(so)
+                ? so
+                : SORT_DEFAULT;
+        return {
+            page,
+            ...(String(s).trim() ? { search: String(s).trim() } : {}),
+            ...(sortVal && sortVal !== SORT_DEFAULT ? { sort: sortVal } : {}),
+        };
+    };
+
+    const fetchWithState = (overrides = {}) => {
+        router.get(
+            window.route("group.admin.tags"),
+            buildQuery(overrides),
+            {
+                preserveState: true,
+                replace: true,
+                preserveScroll: true,
+            }
+        );
+    };
+
+    useEffect(() => {
+        if (document.activeElement === searchInputRef.current) return;
+        setSearch(filters?.search ?? "");
+    }, [filters?.search]);
+
+    useEffect(() => {
+        const next = ["name_asc", "name_desc", "slug_asc", "slug_desc"].includes(
+            filters?.sort
+        )
+            ? filters.sort
+            : SORT_DEFAULT;
+        setSort(next);
+    }, [filters?.sort]);
+
+    useEffect(() => {
+        const id = setTimeout(() => {
+            const applied = (filters?.search ?? "").trim();
+            if (search.trim() === applied) return;
+            fetchWithState({ page: 1, search, sort });
+        }, 420);
+        return () => clearTimeout(id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search]);
+
+    const hasActiveFilters =
+        Boolean(search.trim()) ||
+        (sort && sort !== SORT_DEFAULT);
+
+    const clearFilters = () => {
+        setSearch("");
+        setSort(SORT_DEFAULT);
+        router.get(
+            window.route("group.admin.tags"),
+            { page: 1 },
+            { preserveState: true, replace: true, preserveScroll: true }
+        );
+    };
+
+    const openDelete = (tag) => {
+        setSelectedTag(tag);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteHandler = () => {
         router.post(
             window.route("group.admin.tags.delete", { tag: selectedTag }),
@@ -34,127 +292,133 @@ const Index = ({ tags }) => {
             }
         );
     };
+
+    const emptyMessage = hasActiveFilters
+        ? "No tags match your search or sort."
+        : "No tags yet. Create one to get started.";
+
     return (
-        <div className="bg-[#0a0a0a] min-h-screen p-8 text-white">
-            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/10">
-                <div className="p-3 bg-primary/10 rounded-xl border border-primary/20 shadow-[0_0_15px_rgba(237,100,0,0.15)]">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="w-8 h-8 text-primary"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                    >
-                        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                        <line x1="7" y1="7" x2="7.01" y2="7"></line>
-                    </svg>
+        <div className="min-h-screen bg-[#0a0a0a] px-4 pb-8 pt-4 text-white sm:px-5 sm:pt-6 lg:px-8">
+            <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
+                    <div className="shrink-0 rounded-xl border border-primary/20 bg-primary/10 p-2.5 shadow-[0_0_15px_rgba(237,100,0,0.15)] sm:p-3">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-7 w-7 text-primary sm:h-8 sm:w-8"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden
+                        >
+                            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                        </svg>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        <h1 className="text-2xl font-black leading-tight tracking-tight sm:text-3xl">
+                            Tags
+                        </h1>
+                        <p className="mt-1 text-xs font-medium text-zinc-400 sm:text-sm">
+                            Organize content with tags
+                        </p>
+                    </div>
                 </div>
-                <div className="flex flex-col">
-                    <h1 className="text-3xl font-black text-white tracking-tight leading-none">
-                        Tags Management
-                    </h1>
-                    <p className="text-zinc-400 text-sm font-medium mt-1">
-                        Organize content with tags and categories
-                    </p>
-                </div>
-                <div className="ml-auto">
+                <div className="w-full shrink-0 sm:w-auto">
                     <Button
                         href={window.route("group.admin.tags.create")}
-                        text={"Create Tag"}
-                        className={
-                            "!bg-primary hover:!bg-primary/90 !px-6 !py-3 !rounded-xl !text-sm !font-bold transition-all shadow-lg shadow-primary/20 hover:-translate-y-1"
-                        }
+                        text="Create Tag"
+                        className="!block !w-full !rounded-xl !bg-primary !px-4 !py-3 !text-center !text-sm !font-bold !text-white shadow-lg shadow-primary/20 transition-all hover:!bg-primary/90 hover:-translate-y-0.5 sm:!inline-block sm:!w-auto sm:!px-6"
                     />
                 </div>
             </div>
 
-            <div className="bg-[#1a1a1a] border border-white/5 rounded-2xl shadow-xl shadow-black/50 overflow-hidden">
-                <Table datas={tags} columns={columns}>
-                    <TableData>
-                        {(tag) => (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-white/5 text-white border border-white/10">
+            <TagFiltersToolbar
+                search={search}
+                setSearch={setSearch}
+                searchInputRef={searchInputRef}
+                sort={sort}
+                setSort={setSort}
+                onClear={clearFilters}
+                hasActiveFilters={hasActiveFilters}
+                fetchWithState={fetchWithState}
+            />
+
+            {tags?.total != null && tags.total > 0 && (
+                <p className="mb-3 text-center text-xs text-zinc-500 sm:text-left sm:text-sm">
+                    Showing{" "}
+                    <span className="font-semibold text-zinc-300">
+                        {tags.from ?? 0}–{tags.to ?? 0}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-semibold text-zinc-300">
+                        {tags.total}
+                    </span>
+                </p>
+            )}
+
+            <div className="space-y-3 md:hidden">
+                {rows.length === 0 ? (
+                    <div className="rounded-2xl border border-dashed border-white/10 bg-[#1a1a1a]/80 px-4 py-12 text-center">
+                        <p className="text-base font-bold text-zinc-400">
+                            No tags
+                        </p>
+                        <p className="mt-1 text-sm text-zinc-500">
+                            {emptyMessage}
+                        </p>
+                    </div>
+                ) : (
+                    rows.map((tag) => (
+                        <article
+                            key={tag.id}
+                            className="rounded-2xl border border-white/5 bg-[#1a1a1a] p-4 shadow-lg shadow-black/30"
+                        >
+                            <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-bold text-white">
                                 {tag.name}
                             </span>
-                        )}
-                    </TableData>
-                    <TableData>
-                        {(tag) => (
-                            <p className="text-zinc-400 font-mono text-sm">
+                            <p className="mt-2 break-all font-mono text-xs text-zinc-400 sm:text-sm">
                                 {tag.slug}
                             </p>
-                        )}
-                    </TableData>
-                    <TableData>
-                        {(tag) => (
-                            <div className="flex items-center gap-3">
-                                <Link
-                                    href={window.route(
-                                        "group.admin.tags.edit",
-                                        {
-                                            tag,
-                                        }
-                                    )}
-                                    className="p-2 rounded-lg text-zinc-400 hover:text-primary hover:bg-primary/10 transition-all duration-300 group"
-                                    title="Edit Tag"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                                    </svg>
-                                </Link>
-                                <button
-                                    onClick={() => {
-                                        setIsDeleteModalOpen(true);
-                                        setSelectedTag(tag);
-                                    }}
-                                    className="p-2 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-500/10 transition-all duration-300"
-                                    title="Delete Tag"
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="18"
-                                        height="18"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                        <line
-                                            x1="10"
-                                            y1="11"
-                                            x2="10"
-                                            y2="17"
-                                        ></line>
-                                        <line
-                                            x1="14"
-                                            y1="11"
-                                            x2="14"
-                                            y2="17"
-                                        ></line>
-                                    </svg>
-                                </button>
+                            <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
+                                <span className="text-[11px] font-medium uppercase tracking-wider text-zinc-500">
+                                    Actions
+                                </span>
+                                <TagRowActions tag={tag} onDelete={openDelete} />
                             </div>
-                        )}
-                    </TableData>
-                </Table>
+                        </article>
+                    ))
+                )}
             </div>
+
+            <div className="hidden md:block">
+                <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#1a1a1a] shadow-xl shadow-black/50">
+                    <Table datas={tags} columns={columns}>
+                        <TableData>
+                            {(tag) => (
+                                <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-bold text-white">
+                                    {tag.name}
+                                </span>
+                            )}
+                        </TableData>
+                        <TableData>
+                            {(tag) => (
+                                <p className="max-w-md break-all font-mono text-sm text-zinc-400">
+                                    {tag.slug}
+                                </p>
+                            )}
+                        </TableData>
+                        <TableData>
+                            {(tag) => (
+                                <TagRowActions tag={tag} onDelete={openDelete} />
+                            )}
+                        </TableData>
+                    </Table>
+                </div>
+            </div>
+
+            <AdminPagination meta={tags} />
 
             {isDeleteModalOpen && (
                 <DeleteModal

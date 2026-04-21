@@ -15,6 +15,7 @@ use App\Models\Taggable;
 use App\Notifications\NewEpisodeUpload;
 use App\Notifications\SavedContentUpdatedNotification;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
 
 class GroupAdminAnimeController extends Controller
@@ -79,9 +80,52 @@ class GroupAdminAnimeController extends Controller
         return redirect(route('group.admin.animes'))->with('success', 'Anime Series Created Successful.');
     }
 
-    public function edit(Group $group, Anime $anime)
+    public function edit(Group $group, Anime $anime, Request $request)
     {
-        $episodes = Chapter::with('season')->where('chapterable_type', Anime::class)->where('chapterable_id', $anime->id)->paginate(20);
+        $seasonInput = [
+            'season_search' => trim((string) $request->input('season_search', '')),
+            'season_chapters' => $request->input('season_chapters', 'any'),
+        ];
+        $seasonValidated = validator($seasonInput, [
+            'season_search' => ['nullable', 'string', 'max:255'],
+            'season_chapters' => ['nullable', 'in:any,with,none'],
+        ])->validated();
+
+        $chaptersMode = $seasonValidated['season_chapters'] ?? 'any';
+        if (! in_array($chaptersMode, ['any', 'with', 'none'], true)) {
+            $chaptersMode = 'any';
+        }
+
+        $seasonQuery = $anime->seasons()->with('seasonable')->withCount('chapters');
+
+        if (($seasonValidated['season_search'] ?? '') !== '') {
+            $term = $seasonValidated['season_search'];
+            $like = '%'.$term.'%';
+            $seasonQuery->where(function ($q) use ($like, $term) {
+                $q->where('title', 'like', $like);
+                if (ctype_digit($term)) {
+                    $q->orWhere('season_number', (int) $term);
+                }
+            });
+        }
+
+        if ($chaptersMode === 'with') {
+            $seasonQuery->has('chapters');
+        } elseif ($chaptersMode === 'none') {
+            $seasonQuery->doesntHave('chapters');
+        }
+
+        $seasons = $seasonQuery->orderBy('season_number')
+            ->paginate(15, ['*'], 'seasons_page')
+            ->withQueryString();
+
+        $episodes = Chapter::with('season')
+            ->where('chapterable_type', Anime::class)
+            ->where('chapterable_id', $anime->id)
+            ->latest()
+            ->paginate(20, ['*'], 'episodes_page')
+            ->withQueryString();
+
         $anime = Anime::where('id', $anime->id)->with(['tags'])->first();
 
         return inertia('Group/Admin/Animes/AnimeForm', [
@@ -89,7 +133,11 @@ class GroupAdminAnimeController extends Controller
             'type' => 'edit',
             'episodes' => $episodes,
             'statuses' => Status::all(),
-            'seasons' => $anime->seasons()->with('seasonable')->withCount('chapters')->paginate(15),
+            'seasons' => $seasons,
+            'seasonFilters' => [
+                'search' => $seasonValidated['season_search'] ?? '',
+                'chapters' => $chaptersMode,
+            ],
             'tags' => Tag::all(),
         ]);
     }
