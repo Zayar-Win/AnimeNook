@@ -184,185 +184,192 @@ function Index({
                         </div>
                         {/* Full-bleed slider below xl (SectionContainer uses px-3 / lg:px-10) */}
                         <div className="relative left-1/2 w-screen max-w-[100vw] -translate-x-1/2 xl:left-0 xl:w-full xl:max-w-none xl:translate-x-0">
-                            <div className="h-[min(42vh,320px)] xs:h-[min(44vh,340px)] sm:h-[380px] md:h-[460px] lg:h-[560px] xl:h-[640px] relative group overflow-hidden shadow-2xl shadow-black/50 rounded-none xl:rounded-2xl">
-                                <Carousel id={"banner-swiper"}>
-                                    {banners?.map((banner, i) => (
-                                        <SwiperSlide
-                                            key={i}
-                                            className="w-full h-full"
-                                        >
-                                            <div className="relative w-full h-full">
-                                                {/* Background Image */}
-                                                <div className="absolute inset-0">
-                                                    <img
-                                                        className="w-full h-full object-cover"
-                                                        src={
-                                                            banner?.bannerable
-                                                                ?.thumbnail
-                                                        }
-                                                        alt={
-                                                            banner?.bannerable
-                                                                ?.name
-                                                        }
-                                                    />
-                                                    {/* Modern Gradient Overlay */}
-                                                    <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
-                                                </div>
-
-                                                {/* Content */}
-                                                <div className="relative z-20 h-full flex flex-col justify-center px-4 xxs:px-5 sm:px-10 lg:px-16 xl:px-20 max-w-4xl">
-                                                    <div className="space-y-3 sm:space-y-4 lg:space-y-6 animate-fade-in-up">
-                                                        {/* Tags */}
-                                                        <div className="flex flex-wrap items-center gap-2">
-                                                            <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-lg shadow-primary/20">
-                                                                Featured
-                                                            </span>
-                                                            {banner?.bannerable?.tags
-                                                                ?.slice(0, 3)
-                                                                .map(
-                                                                    (
-                                                                        tag,
-                                                                        i,
-                                                                    ) => (
-                                                                        <Tag
-                                                                            key={
-                                                                                i
-                                                                            }
-                                                                            tag={
-                                                                                tag
-                                                                            }
-                                                                            className="!bg-white/10 !border-white/10 !text-zinc-200 hover:!bg-white/20 transition-colors"
-                                                                        />
-                                                                    ),
-                                                                )}
-                                                        </div>
-
-                                                        {/* Title */}
-                                                        <h1 className="text-2xl xxs:text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight sm:leading-[0.9] tracking-tight drop-shadow-lg line-clamp-2">
-                                                            {
+                            <div className="relative rounded-none shadow-[0_18px_45px_-20px_rgba(15,23,42,0.35),0_8px_22px_-14px_rgba(15,23,42,0.25)] xl:rounded-2xl dark:shadow-[0_22px_52px_-22px_rgba(0,0,0,0.1),0_10px_26px_-16px_rgba(244,63,94,0.28)]">
+                                <div className="h-[min(42vh,320px)] xs:h-[min(44vh,340px)] sm:h-[380px] md:h-[460px] lg:h-[560px] xl:h-[640px] relative group overflow-hidden rounded-none xl:rounded-2xl">
+                                    <Carousel id={"banner-swiper"}>
+                                        {banners?.map((banner, i) => (
+                                            <SwiperSlide
+                                                key={i}
+                                                className="w-full h-full"
+                                            >
+                                                <div className="relative w-full h-full">
+                                                    {/* Background Image */}
+                                                    <div className="absolute inset-0">
+                                                        <img
+                                                            className="w-full h-full object-cover"
+                                                            src={
+                                                                banner
+                                                                    ?.bannerable
+                                                                    ?.thumbnail
+                                                            }
+                                                            alt={
                                                                 banner
                                                                     ?.bannerable
                                                                     ?.name
                                                             }
-                                                        </h1>
+                                                        />
+                                                        {/* Modern Gradient Overlay */}
+                                                        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent"></div>
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+                                                    </div>
 
-                                                        {/* Info Row */}
-                                                        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base font-medium text-zinc-300">
-                                                            <div className="flex items-center gap-2">
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    width="20"
-                                                                    height="20"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="currentColor"
-                                                                    className="text-primary"
-                                                                >
-                                                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-                                                                </svg>
-                                                                <span className="text-white">
-                                                                    {bannerChaptersLine(
+                                                    {/* Content */}
+                                                    <div className="relative z-20 h-full flex flex-col justify-center px-4 xxs:px-5 sm:px-10 lg:px-16 xl:px-20 max-w-4xl">
+                                                        <div className="space-y-3 sm:space-y-4 lg:space-y-6 animate-fade-in-up">
+                                                            {/* Tags */}
+                                                            <div className="flex flex-wrap items-center gap-2">
+                                                                <span className="px-3 py-1 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded-md shadow-lg shadow-primary/20">
+                                                                    Featured
+                                                                </span>
+                                                                {banner?.bannerable?.tags
+                                                                    ?.slice(
+                                                                        0,
+                                                                        3,
+                                                                    )
+                                                                    .map(
+                                                                        (
+                                                                            tag,
+                                                                            i,
+                                                                        ) => (
+                                                                            <Tag
+                                                                                key={
+                                                                                    i
+                                                                                }
+                                                                                tag={
+                                                                                    tag
+                                                                                }
+                                                                                className="!bg-white/10 !border-white/10 !text-zinc-200 hover:!bg-white/20 transition-colors"
+                                                                            />
+                                                                        ),
+                                                                    )}
+                                                            </div>
+
+                                                            {/* Title */}
+                                                            <h1 className="text-2xl xxs:text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white leading-tight sm:leading-[0.9] tracking-tight drop-shadow-lg line-clamp-2">
+                                                                {
+                                                                    banner
+                                                                        ?.bannerable
+                                                                        ?.name
+                                                                }
+                                                            </h1>
+
+                                                            {/* Info Row */}
+                                                            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm md:text-base font-medium text-zinc-300">
+                                                                <div className="flex items-center gap-2">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="20"
+                                                                        height="20"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="currentColor"
+                                                                        className="text-primary"
+                                                                    >
+                                                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
+                                                                    </svg>
+                                                                    <span className="text-white">
+                                                                        {bannerChaptersLine(
+                                                                            banner?.bannerable,
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="20"
+                                                                        height="20"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="currentColor"
+                                                                        className="text-yellow-400"
+                                                                    >
+                                                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
+                                                                    </svg>
+                                                                    <span>
+                                                                        {banner
+                                                                            ?.bannerable
+                                                                            ?.rating ||
+                                                                            "4.8"}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            {/* Description */}
+                                                            <p className="text-zinc-400 text-sm sm:text-base md:text-lg leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-3 max-w-2xl">
+                                                                {
+                                                                    banner
+                                                                        ?.bannerable
+                                                                        .description
+                                                                }
+                                                            </p>
+
+                                                            {/* Actions — compact, equal visual weight (Button Link is w-full on mobile) */}
+                                                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-3">
+                                                                <Link
+                                                                    href={bannerableDetailHref(
                                                                         banner?.bannerable,
                                                                     )}
-                                                                </span>
+                                                                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary/90 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
+                                                                >
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="h-4 w-4 shrink-0"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        aria-hidden
+                                                                    >
+                                                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                                                                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                                                                    </svg>
+                                                                    Read now
+                                                                </Link>
+                                                                <Link
+                                                                    href={bannerableDetailHref(
+                                                                        banner?.bannerable,
+                                                                    )}
+                                                                    className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/15 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
+                                                                >
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        className="h-4 w-4 shrink-0"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        aria-hidden
+                                                                    >
+                                                                        <circle
+                                                                            cx="12"
+                                                                            cy="12"
+                                                                            r="10"
+                                                                        />
+                                                                        <line
+                                                                            x1="12"
+                                                                            y1="16"
+                                                                            x2="12"
+                                                                            y2="12"
+                                                                        />
+                                                                        <line
+                                                                            x1="12"
+                                                                            y1="8"
+                                                                            x2="12.01"
+                                                                            y2="8"
+                                                                        />
+                                                                    </svg>
+                                                                    More Info
+                                                                </Link>
                                                             </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    width="20"
-                                                                    height="20"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="currentColor"
-                                                                    className="text-yellow-400"
-                                                                >
-                                                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
-                                                                </svg>
-                                                                <span>
-                                                                    {banner
-                                                                        ?.bannerable
-                                                                        ?.rating ||
-                                                                        "4.8"}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Description */}
-                                                        <p className="text-zinc-400 text-sm sm:text-base md:text-lg leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-3 max-w-2xl">
-                                                            {
-                                                                banner
-                                                                    ?.bannerable
-                                                                    .description
-                                                            }
-                                                        </p>
-
-                                                        {/* Actions — compact, equal visual weight (Button Link is w-full on mobile) */}
-                                                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 pt-3">
-                                                            <Link
-                                                                href={bannerableDetailHref(
-                                                                    banner?.bannerable,
-                                                                )}
-                                                                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all hover:bg-primary/90 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
-                                                            >
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    className="h-4 w-4 shrink-0"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    strokeWidth="2"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    aria-hidden
-                                                                >
-                                                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                                                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                                                                </svg>
-                                                                Read now
-                                                            </Link>
-                                                            <Link
-                                                                href={bannerableDetailHref(
-                                                                    banner?.bannerable,
-                                                                )}
-                                                                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white backdrop-blur-sm transition-all hover:bg-white/15 hover:-translate-y-0.5 sm:px-5 sm:py-2.5"
-                                                            >
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    className="h-4 w-4 shrink-0"
-                                                                    viewBox="0 0 24 24"
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    strokeWidth="2"
-                                                                    strokeLinecap="round"
-                                                                    strokeLinejoin="round"
-                                                                    aria-hidden
-                                                                >
-                                                                    <circle
-                                                                        cx="12"
-                                                                        cy="12"
-                                                                        r="10"
-                                                                    />
-                                                                    <line
-                                                                        x1="12"
-                                                                        y1="16"
-                                                                        x2="12"
-                                                                        y2="12"
-                                                                    />
-                                                                    <line
-                                                                        x1="12"
-                                                                        y1="8"
-                                                                        x2="12.01"
-                                                                        y2="8"
-                                                                    />
-                                                                </svg>
-                                                                More Info
-                                                            </Link>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </SwiperSlide>
-                                    ))}
-                                </Carousel>
+                                            </SwiperSlide>
+                                        ))}
+                                    </Carousel>
+                                </div>
                             </div>
                         </div>
                     </div>
