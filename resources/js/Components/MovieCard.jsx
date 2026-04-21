@@ -32,7 +32,7 @@ const MovieCard = ({ anime }) => {
         <div className="group relative w-full">
             <Link href={window.route("group.anime.detail", { anime })}>
                 {/* Image Container */}
-                <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-zinc-900 sm:aspect-[3/4] sm:rounded-xl">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-zinc-200 sm:aspect-[3/4] sm:rounded-xl dark:bg-zinc-900">
                     <img
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         src={anime?.thumbnail}
@@ -89,11 +89,11 @@ const MovieCard = ({ anime }) => {
 
                 {/* Content */}
                 <div className="mt-1.5 space-y-0.5 sm:mt-3 sm:space-y-1">
-                    <h3 className="line-clamp-2 text-[11px] font-bold leading-snug text-white transition-colors group-hover:text-primary sm:line-clamp-1 sm:text-sm sm:leading-tight">
+                    <h3 className="line-clamp-2 text-[11px] font-bold leading-snug text-zinc-900 transition-colors group-hover:text-primary sm:line-clamp-1 sm:text-sm sm:leading-tight dark:text-white">
                         {anime?.name}
                     </h3>
 
-                    <div className="flex items-center justify-between gap-1 text-[10px] text-zinc-500 sm:text-xs">
+                    <div className="flex items-center justify-between gap-1 text-[10px] text-zinc-600 sm:text-xs dark:text-zinc-500">
                         <span className="max-w-[65%] truncate sm:max-w-[70%]">
                             {anime?.type || "Anime"} •{" "}
                             {new Date(anime?.created_at).getFullYear()}
@@ -104,7 +104,7 @@ const MovieCard = ({ anime }) => {
                             className={`transition-colors hover:text-primary ${
                                 anime?.isSavedByCurrentUser
                                     ? "text-primary"
-                                    : "text-zinc-400"
+                                    : "text-zinc-500 dark:text-zinc-400"
                             }`}
                         >
                             {anime?.isSavedByCurrentUser ? (

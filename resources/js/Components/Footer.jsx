@@ -8,7 +8,7 @@ const FooterLink = ({ href, children }) => (
     <li>
         <Link
             href={href}
-            className="text-zinc-400 hover:text-primary hover:pl-2 transition-all duration-300 inline-block text-[15px] font-medium"
+            className="inline-block text-[15px] font-medium text-zinc-600 transition-all duration-300 hover:pl-2 hover:text-primary dark:text-zinc-400"
         >
             {children}
         </Link>
@@ -18,7 +18,7 @@ const FooterLink = ({ href, children }) => (
 const SocialLink = ({ href, icon, colorClass }) => (
     <a
         href={href}
-        className={`w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 transition-all duration-300 ${colorClass} hover:text-white hover:-translate-y-1`}
+        className={`flex h-10 w-10 items-center justify-center rounded-full bg-zinc-200/80 text-zinc-600 transition-all duration-300 dark:bg-white/5 dark:text-zinc-400 ${colorClass} hover:-translate-y-1 hover:text-zinc-900 dark:hover:text-white`}
     >
         {icon}
     </a>
@@ -30,7 +30,7 @@ const Footer = () => {
     return (
         <SectionContainer
             padding={false}
-            className="bg-[#050505] border-t border-white/5 relative overflow-hidden"
+            className="relative overflow-hidden border-t border-zinc-200 bg-white dark:border-white/5 dark:bg-[#050505]"
         >
             {/* Ambient Background */}
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[128px] pointer-events-none"></div>
@@ -41,11 +41,11 @@ const Footer = () => {
                     <div className="lg:col-span-5 space-y-6">
                         <div className="flex items-center gap-3">
                             <Logo logo={LogoImg} className="!w-12 h-auto" />
-                            <span className="text-2xl font-black text-white tracking-tight">
+                            <span className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
                                 AnimeNook
                             </span>
                         </div>
-                        <p className="text-zinc-400 text-sm leading-relaxed max-w-sm">
+                        <p className="max-w-sm text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
                             Your ultimate destination for anime streaming. Join
                             our community and explore thousands of titles in HD
                             quality.
@@ -127,7 +127,7 @@ const Footer = () => {
 
                     {/* Navigation - Spans 4 cols */}
                     <div className="lg:col-span-4 lg:col-start-7">
-                        <h3 className="text-white font-bold text-lg mb-6">
+                        <h3 className="mb-6 text-lg font-bold text-zinc-900 dark:text-white">
                             Explore
                         </h3>
                         <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
@@ -144,19 +144,8 @@ const Footer = () => {
                             >
                                 Most Popular
                             </FooterLink>
-                            <FooterLink
-                                href={window.route("group.animes", {
-                                    filter: "animes",
-                                })}
-                            >
-                                Browse Anime
-                            </FooterLink>
-                            <FooterLink
-                                href={window.route("group.animes", {
-                                    filter: "mangas",
-                                })}
-                            >
-                                Read Manga
+                            <FooterLink href={window.route("group.animes")}>
+                                Manga List
                             </FooterLink>
                             <FooterLink
                                 href={window.route("group.animes", {
@@ -170,7 +159,7 @@ const Footer = () => {
 
                     {/* Account - Spans 2 cols */}
                     <div className="lg:col-span-2">
-                        <h3 className="text-white font-bold text-lg mb-6">
+                        <h3 className="mb-6 text-lg font-bold text-zinc-900 dark:text-white">
                             Account
                         </h3>
                         <ul className="space-y-3">
@@ -185,14 +174,14 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="text-zinc-500 text-sm">
+                <div className="flex flex-col items-center justify-between gap-4 border-t border-zinc-200 pt-8 dark:border-white/5 md:flex-row">
+                    <p className="text-sm text-zinc-500 dark:text-zinc-500">
                         © {new Date().getFullYear()} AnimeNook. All rights
                         reserved.
                     </p>
-                    <p className="text-zinc-600 text-sm flex items-center gap-1">
+                    <p className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-600">
                         Developed by{" "}
-                        <span className="text-zinc-400 hover:text-white transition-colors cursor-pointer font-medium">
+                        <span className="cursor-pointer font-medium text-zinc-700 transition-colors hover:text-primary dark:text-zinc-400 dark:hover:text-white">
                             Zayarwin
                         </span>
                     </p>

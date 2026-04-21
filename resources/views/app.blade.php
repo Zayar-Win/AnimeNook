@@ -18,25 +18,46 @@
     <title inertia>{{ config('app.name', 'AnimeNook') }}</title>
 
     @php
-        use App\Models\Group;
+    use App\Models\Group;
 
-        $routeGroup = request()->route('group');
-        if ($routeGroup !== null && is_string($routeGroup)) {
-            $routeGroup = Group::where('subdomain', $routeGroup)->first();
-        }
+    $routeGroup = request()->route('group');
+    if ($routeGroup !== null && is_string($routeGroup)) {
+    $routeGroup = Group::where('subdomain', $routeGroup)->first();
+    }
 
-        $rawPrimary = $routeGroup?->groupSetting?->primary_color;
-        $primaryColorCss = '#ED6400';
-        if (is_string($rawPrimary) && preg_match('/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/', trim($rawPrimary))) {
-            $primaryColorCss = trim($rawPrimary);
-        }
+    $rawPrimary = $routeGroup?->groupSetting?->primary_color;
+    $primaryColorCss = '#ED6400';
+    if (is_string($rawPrimary) && preg_match('/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/', trim($rawPrimary))) {
+    $primaryColorCss = trim($rawPrimary);
+    }
     @endphp
     <style>
         :root {
-            --primary-color: {{ $primaryColorCss }};
+            --primary-color: {
+                    {
+                    $primaryColorCss
+                }
+            }
+
+            ;
             --secondary-color: black;
         }
     </style>
+    <script>
+        (function () {
+            try {
+                var k = 'animenook-user-theme';
+                var v = localStorage.getItem(k);
+                if (v === 'light') {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                }
+            } catch (e) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <!-- Fonts -->
     <link rel="shortcut icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSE3eqXFJ5p0I63-LffwzHVorIJob3GgUMSjQ&usqp=CAU" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.bunny.net">

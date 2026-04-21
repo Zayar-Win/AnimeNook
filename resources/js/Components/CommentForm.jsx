@@ -382,7 +382,7 @@ const CommentForm = ({
         createPortal(
             <div
                 data-mention-dropdown
-                className="fixed z-[300] w-[min(100vw-2rem,280px)] max-h-48 overflow-y-auto rounded-xl border border-white/15 bg-zinc-900 shadow-2xl shadow-black/60 py-1"
+                className="fixed z-[300] max-h-48 w-[min(100vw-2rem,280px)] overflow-y-auto rounded-xl border border-zinc-200 bg-white py-1 shadow-xl shadow-zinc-900/10 dark:border-white/15 dark:bg-zinc-900 dark:shadow-2xl dark:shadow-black/60"
                 style={{
                     top: mentionCoords.top,
                     left: mentionCoords.left,
@@ -411,10 +411,10 @@ const CommentForm = ({
                             type="button"
                             onMouseDown={(e) => e.preventDefault()}
                             onClick={() => applyMention(u)}
-                            className={`w-full flex items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
+                            className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors ${
                                 idx === selectedMentionIdx
-                                    ? "bg-primary/20 text-white"
-                                    : "text-white hover:bg-white/10"
+                                    ? "bg-primary/20 text-zinc-900 dark:text-white"
+                                    : "text-zinc-900 hover:bg-zinc-100 dark:text-white dark:hover:bg-white/10"
                             }`}
                         >
                             <img
@@ -440,8 +440,8 @@ const CommentForm = ({
                 </p>
             )}
 
-            <div className="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/50 shadow-inner">
-                <div className="quill-comment-box dark-form w-full">
+            <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-inner dark:border-white/10 dark:bg-zinc-950/50">
+                <div className="quill-comment-box comment-quill w-full">
                     <ReactQuill
                         ref={quillRef}
                         value={data.comment}
@@ -450,7 +450,7 @@ const CommentForm = ({
                         theme="snow"
                     />
                     {errors?.comment && (
-                        <p className="border-t border-white/5 px-3 py-2 text-sm text-red-400 sm:px-4">
+                        <p className="border-t border-zinc-100 px-3 py-2 text-sm text-red-500 sm:px-4 dark:border-white/5 dark:text-red-400">
                             {errors?.comment}
                         </p>
                     )}
@@ -460,7 +460,7 @@ const CommentForm = ({
 
                 {(type === "create" || type === "reply") &&
                     mentionChips.length > 0 && (
-                        <div className="flex flex-wrap gap-2 border-t border-white/5 px-3 py-3 sm:px-4">
+                        <div className="flex flex-wrap gap-2 border-t border-zinc-100 px-3 py-3 sm:px-4 dark:border-white/5">
                             {mentionChips.map((m) => (
                                 <button
                                     key={m.id}
@@ -475,7 +475,7 @@ const CommentForm = ({
                         </div>
                     )}
 
-                <div className="flex justify-end border-t border-white/10 bg-zinc-900/40 px-4 py-4 sm:px-5 sm:py-4">
+                <div className="flex justify-end border-t border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-5 sm:py-4 dark:border-white/10 dark:bg-zinc-900/40">
                     <Button
                         type={"button"}
                         className={

@@ -6,6 +6,7 @@ use App\Models\Anime;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Rating;
+use App\Models\Status;
 use Inertia\Inertia;
 
 class AnimeController extends Controller
@@ -13,75 +14,76 @@ class AnimeController extends Controller
     public function index(Group $group)
     {
         $filters = [
-            'search' => request()->get('search'),
-            'sort' => request()->get('sort'),
-            'filter' => request()->get('filter'),
+            'search' => request()->get('search', ''),
+            'sort' => request()->get('sort', 'newest'),
             'tags' => request()->get('tags'),
-            'isApi' => request()->get('isApi')
+            'status' => request()->get('status'),
+            'isApi' => request()->get('isApi'),
         ];
 
+        $sort = $filters['sort'] ?: 'newest';
 
-        $animes = Anime::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
-            $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
-                ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
-        })->when($filters['sort'] === 'newest', function ($query) {
-            $query->orderBy('created_at', 'desc');
-        })
-            ->when($filters['tags'] ?? null, function ($query, $tags) {
-                $tags = explode(',', $tags);
-                $query->whereHas('tags', function ($query) use ($tags) {
-                    $query->whereIn('name', $tags);
+        $mangasQuery = Manga::with('tags')
+            ->where('group_id', $group->id)
+            ->when($filters['search'] !== null && $filters['search'] !== '', function ($query) use ($filters) {
+                $s = $filters['search'];
+                $query->where(function ($q) use ($s) {
+                    $q->where('name', 'LIKE', '%' . $s . '%')
+                        ->orWhere('description', 'LIKE', '%' . $s . '%');
                 });
             })
-            ->when($filters['sort'] === 'popularity', function ($query) {
-                $query->orderBy('views_count', 'desc');
-            })->paginate(12, ['*'], 'animepage');
-        $mangas = Manga::with('tags')->where('group_id', $group->id)->where(function ($query) use ($filters) {
-            $query->where('name', 'LIKE', '%' . $filters['search'] . '%')
-                ->orWhere('description', 'LIKE', '%' . $filters['search'] . '%');
-        })->when($filters['sort'] === 'newest', function ($query) {
-            $query->orderBy('created_at', 'desc');
-        })
             ->when($filters['tags'] ?? null, function ($query, $tags) {
-                $tags = explode(',', $tags);
-                $query->whereHas('tags', function ($query) use ($tags) {
-                    $query->whereIn('name', $tags);
+                $tagNames = explode(',', $tags);
+                $query->whereHas('tags', function ($q) use ($tagNames) {
+                    $q->whereIn('name', $tagNames);
                 });
             })
-            ->when($filters['sort'] === 'popularity', function ($query) {
-                $query->orderBy('views_count', 'desc');
-            })->paginate(12, ['*'], 'mangapage');
+            ->when(
+                ! empty($filters['status']) && $filters['status'] !== 'all',
+                function ($query) use ($filters) {
+                    $query->whereHas('status', function ($q) use ($filters) {
+                        $q->where('keyword', $filters['status']);
+                    });
+                }
+            );
 
-        $data = collect($animes->items())->concat($mangas->items())->shuffle();
-        if ($filters['filter'] === 'animes') {
-            $data = $animes->items();
+        if ($sort === 'most_chapters') {
+            $mangasQuery->withCount('chapters');
         }
-        if ($filters['filter'] === 'mangas') {
-            $data = $mangas->items();
-        }
+
+        match ($sort) {
+            'popularity' => $mangasQuery->orderBy('views_count', 'desc'),
+            'alphabetical' => $mangasQuery->orderBy('name', 'asc'),
+            'most_liked' => $mangasQuery->orderBy('likes_count', 'desc'),
+            'top_rated' => $mangasQuery->orderBy('rating', 'desc'),
+            'most_chapters' => $mangasQuery->orderByDesc('chapters_count'),
+            default => $mangasQuery->orderBy('created_at', 'desc'),
+        };
+
+        $mangas = $mangasQuery->paginate(12, ['*'], 'page');
+
+        $data = $mangas->items();
         $paginateData = [
-            'anime' => [
-                'currentPage' => $animes->currentPage(),
-                'lastPage' => $animes->lastPage()
-            ],
             'manga' => [
                 'currentPage' => $mangas->currentPage(),
-                'lastPage' => $animes->lastPage()
-            ]
+                'lastPage' => $mangas->lastPage(),
+            ],
         ];
-        if (!$filters['isApi']) {
+
+        if (! $filters['isApi']) {
             return Inertia::render('Group/Animes', [
                 'data' => $data,
                 'paginateData' => $paginateData,
                 'filters' => $filters,
-                'tags' => $group->tags()->get()
-            ]);
-        } else {
-            return response()->json([
-                'data' => $data,
-                'paginateData' => $paginateData,
+                'tags' => $group->tags()->get(),
+                'statuses' => Status::orderBy('name')->get(['id', 'name', 'keyword']),
             ]);
         }
+
+        return response()->json([
+            'data' => $data,
+            'paginateData' => $paginateData,
+        ]);
     }
 
     public function likeOrUnlike(Group $group, Anime $anime)

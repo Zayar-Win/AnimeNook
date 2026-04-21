@@ -35,7 +35,8 @@ body {
 }
 
 .sort:hover .sort-options,
-.filter:hover .filter-options {
+.filter:hover .filter-options,
+.status-filter:hover .status-filter-options {
     display: block;
 }
 
@@ -61,27 +62,49 @@ body {
     height: 100px !important;
 }
 
-.dark-form .ql-toolbar {
+/* Theme-aware comment editor: light by default, dark when html.dark */
+.comment-quill .ql-toolbar {
+    background-color: #fafafa !important;
+    border-color: #e4e4e7 !important;
+}
+.comment-quill .ql-toolbar .ql-stroke {
+    stroke: #52525b !important;
+}
+.comment-quill .ql-toolbar .ql-fill {
+    fill: #52525b !important;
+}
+.comment-quill .ql-toolbar .ql-picker {
+    color: #52525b !important;
+}
+.comment-quill .ql-container {
+    background-color: #ffffff !important;
+    border-color: #e4e4e7 !important;
+    color: #18181b !important;
+}
+.comment-quill .ql-editor.ql-blank::before {
+    color: #a1a1aa !important;
+    font-style: normal;
+}
+html.dark .comment-quill .ql-toolbar {
     background-color: transparent !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
 }
-.dark-form .ql-toolbar .ql-stroke {
+html.dark .comment-quill .ql-toolbar .ql-stroke {
     stroke: #a1a1aa !important;
 }
-.dark-form .ql-toolbar .ql-fill {
+html.dark .comment-quill .ql-toolbar .ql-fill {
     fill: #a1a1aa !important;
 }
-.dark-form .ql-toolbar .ql-picker {
+html.dark .comment-quill .ql-toolbar .ql-picker {
     color: #a1a1aa !important;
 }
-.dark-form .ql-container {
+html.dark .comment-quill .ql-container {
     background-color: rgba(0, 0, 0, 0.2) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     color: white !important;
 }
-.dark-form .ql-editor.ql-blank::before {
+html.dark .comment-quill .ql-editor.ql-blank::before {
     color: #71717a !important;
-    font-style: normal;
 }
 
 /* Comment form: let editor grow so toolbar + content don’t overlap the submit row */
@@ -92,8 +115,18 @@ body {
 .dark-form.quill-comment-box .ql-editor {
     min-height: 7.5rem;
 }
+.comment-quill.quill-comment-box .ql-container {
+    height: auto !important;
+    min-height: 7.5rem;
+}
+.comment-quill.quill-comment-box .ql-editor {
+    min-height: 7.5rem;
+}
 @media (min-width: 640px) {
     .dark-form.quill-comment-box .ql-editor {
+        min-height: 9rem;
+    }
+    .comment-quill.quill-comment-box .ql-editor {
         min-height: 9rem;
     }
 }

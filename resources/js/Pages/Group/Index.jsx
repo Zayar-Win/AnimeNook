@@ -14,7 +14,7 @@ import { usePage } from "@inertiajs/react";
 
 function bannerableDetailHref(bb) {
     if (!bb?.slug) {
-        return window.route("group.animes", { filter: "mangas" });
+        return window.route("group.animes");
     }
     if (bb.type === "manga") {
         return window.route("group.manga.detail", { manga: bb });
@@ -36,20 +36,20 @@ function TopMangaSidebarItem({ manga, index }) {
     return (
         <Link
             href={window.route("group.manga.detail", { manga })}
-            className="group flex min-w-0 items-center gap-2 py-2.5 pl-2 pr-1 sm:gap-3 sm:p-3 rounded-xl hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/5"
+            className="group flex min-w-0 items-center gap-2 rounded-xl border border-transparent py-2.5 pl-2 pr-1 transition-all duration-300 hover:border-zinc-200 hover:bg-zinc-100 dark:hover:border-white/5 dark:hover:bg-white/5 sm:gap-3 sm:p-3"
         >
             <span
                 className={`w-6 shrink-0 text-center text-lg font-black tabular-nums leading-none transition-colors sm:w-7 sm:text-xl ${
                     index < 3
                         ? "text-primary"
-                        : "text-zinc-600 group-hover:text-zinc-500"
+                        : "text-zinc-500 group-hover:text-zinc-700 dark:text-zinc-600 dark:group-hover:text-zinc-500"
                 }`}
             >
                 {index + 1}
             </span>
 
-            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 shadow-md ring-1 ring-white/10 transition-all group-hover:ring-primary/40 sm:h-14 sm:w-14">
-                <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-zinc-500 sm:text-sm">
+            <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-zinc-300 to-zinc-400 shadow-md ring-1 ring-zinc-200 transition-all group-hover:ring-primary/40 dark:from-zinc-700 dark:to-zinc-900 dark:ring-white/10 sm:h-14 sm:w-14">
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-black text-zinc-600 dark:text-zinc-500 sm:text-sm">
                     {initial}
                 </div>
                 {thumbOk && (
@@ -63,15 +63,15 @@ function TopMangaSidebarItem({ manga, index }) {
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col justify-center pr-0.5">
-                <h3 className="truncate text-sm font-bold text-zinc-100 transition-colors group-hover:text-primary sm:text-base">
+                <h3 className="truncate text-sm font-bold text-zinc-900 transition-colors group-hover:text-primary dark:text-zinc-100 sm:text-base">
                     {manga?.name}
                 </h3>
-                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-medium text-zinc-500 sm:gap-2 sm:text-[11px]">
-                    <div className="inline-flex items-center gap-1 rounded-full bg-white/5 px-1.5 py-0.5 sm:gap-1.5 sm:px-2">
+                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-medium text-zinc-600 sm:gap-2 sm:text-[11px] dark:text-zinc-500">
+                    <div className="inline-flex items-center gap-1 rounded-full bg-zinc-200/90 px-1.5 py-0.5 dark:bg-white/5 sm:gap-1.5 sm:px-2">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
-                            className="h-3 w-3 shrink-0 text-zinc-500 sm:h-3.5 sm:w-3.5"
+                            className="h-3 w-3 shrink-0 text-zinc-500 sm:h-3.5 sm:w-3.5 dark:text-zinc-500"
                         >
                             <path
                                 fill="currentColor"
@@ -80,7 +80,7 @@ function TopMangaSidebarItem({ manga, index }) {
                         </svg>
                         <span>{manga?.views_count ?? 0}</span>
                     </div>
-                    <div className="inline-flex items-center gap-1 rounded-full bg-white/5 px-1.5 py-0.5 sm:gap-1.5 sm:px-2">
+                    <div className="inline-flex items-center gap-1 rounded-full bg-zinc-200/90 px-1.5 py-0.5 dark:bg-white/5 sm:gap-1.5 sm:px-2">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 24 24"
@@ -96,7 +96,7 @@ function TopMangaSidebarItem({ manga, index }) {
                 </div>
             </div>
 
-            <div className="shrink-0 text-zinc-600 transition-colors group-hover:text-white">
+            <div className="shrink-0 text-zinc-400 transition-colors group-hover:text-zinc-800 dark:text-zinc-600 dark:group-hover:text-white">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 sm:h-5 sm:w-5"
@@ -370,7 +370,7 @@ function Index({
                         <div className="flex items-center justify-between mb-6 shrink-0">
                             <div className="flex items-center gap-3">
                                 <div className="w-1 h-8 bg-red-500 rounded-full"></div>
-                                <h2 className="text-xl font-black text-zinc-900 uppercase tracking-wide">
+                                <h2 className="text-xl font-black uppercase tracking-wide text-zinc-900 dark:text-white">
                                     Latest manga
                                 </h2>
                             </div>
@@ -380,7 +380,7 @@ function Index({
                                 <div className="w-2 h-2 rounded-full bg-red-500/20"></div>
                             </div>
                         </div>
-                        <div className="flex flex-col gap-1 overflow-y-auto rounded-xl bg-[#0D0D0D] p-1.5 text-white custom-scrollbar sm:gap-2 sm:p-3 flex-1 h-[min(42vh,320px)] xs:h-[min(44vh,340px)] sm:h-[380px] md:h-[460px] lg:h-[560px] xl:h-auto">
+                        <div className="flex h-[min(42vh,320px)] flex-1 flex-col gap-1 overflow-y-auto rounded-xl border border-zinc-200/90 bg-zinc-50 p-1.5 text-zinc-900 shadow-sm custom-scrollbar xs:h-[min(44vh,340px)] sm:h-[380px] sm:gap-2 sm:p-3 md:h-[460px] lg:h-[560px] xl:h-auto dark:border-transparent dark:bg-[#0D0D0D] dark:text-white">
                             {newMangas?.map((manga, i) => (
                                 <TopMangaSidebarItem
                                     key={manga?.id ?? i}
@@ -421,7 +421,6 @@ function Index({
                                             key={i}
                                             href={window.route("group.animes", {
                                                 tags: tag.name,
-                                                filter: "mangas",
                                             })}
                                             className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium transition-all hover:scale-105 hover:bg-white/20 sm:rounded-lg sm:px-4 sm:py-1.5 sm:text-sm"
                                         >
@@ -544,11 +543,11 @@ function Index({
                     </div>
                 </div>
             </SectionContainer>
-            <SectionContainer className="bg-gradient-to-b from-sky-950/20 to-transparent">
+            <SectionContainer className="bg-white dark:bg-gradient-to-b dark:from-sky-950/20 dark:to-transparent">
                 <div className="mt-6 sm:mt-8">
                     <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-                        <div className="flex items-center gap-3 font-semibold text-sky-400">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/15 text-sky-300 ring-1 ring-sky-500/25">
+                        <div className="flex items-center gap-3 font-semibold text-sky-700 dark:text-sky-400">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sky-700 ring-1 ring-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:ring-sky-500/25">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"
@@ -566,10 +565,10 @@ function Index({
                                 </svg>
                             </span>
                             <div>
-                                <span className="text-lg text-sky-100">
+                                <span className="text-lg font-bold text-zinc-900 dark:text-white">
                                     Latest manga
                                 </span>
-                                <p className="text-xs font-medium text-zinc-500 sm:text-sm">
+                                <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300 sm:text-sm">
                                     Newest series added to the group
                                 </p>
                             </div>
@@ -579,6 +578,7 @@ function Index({
                         {latestMangas?.length > 0 ? (
                             <Carousel
                                 id="latest-manga"
+                                navigationOnLightBg
                                 breakpoints={{
                                     0: {
                                         slidesPerView: 3,
@@ -608,8 +608,8 @@ function Index({
                                 ))}
                             </Carousel>
                         ) : (
-                            <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/40 py-12 text-center">
-                                <p className="font-medium text-zinc-500">
+                            <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+                                <p className="font-medium text-zinc-600 dark:text-zinc-500">
                                     No manga to show here yet.
                                 </p>
                             </div>
@@ -617,11 +617,11 @@ function Index({
                     </div>
                 </div>
             </SectionContainer>
-            <SectionContainer className="bg-gradient-to-b from-zinc-950/80 to-transparent">
+            <SectionContainer className="bg-white dark:bg-gradient-to-b dark:from-zinc-950/80 dark:to-transparent">
                 <div className="mt-6 sm:mt-8">
                     <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-                        <div className="flex items-center gap-3 font-semibold text-orange-400">
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/15 text-orange-400 ring-1 ring-orange-500/25">
+                        <div className="flex items-center gap-3 font-semibold text-orange-700 dark:text-orange-400">
+                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-orange-700 ring-1 ring-orange-200 dark:bg-orange-500/15 dark:text-orange-400 dark:ring-orange-500/25">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     width="20"
@@ -638,10 +638,10 @@ function Index({
                                 </svg>
                             </span>
                             <div>
-                                <span className="text-lg text-orange-100">
+                                <span className="text-lg font-bold text-zinc-900 dark:text-white">
                                     Hot manga
                                 </span>
-                                <p className="text-xs font-medium text-zinc-500 sm:text-sm">
+                                <p className="text-xs font-medium text-zinc-600 dark:text-zinc-500 sm:text-sm">
                                     Top picks by likes and reads
                                 </p>
                             </div>
@@ -651,6 +651,7 @@ function Index({
                         {hotMangas?.length > 0 ? (
                             <Carousel
                                 id="hot-manga"
+                                navigationOnLightBg
                                 breakpoints={{
                                     0: {
                                         slidesPerView: 3,
@@ -680,8 +681,8 @@ function Index({
                                 ))}
                             </Carousel>
                         ) : (
-                            <div className="rounded-2xl border border-dashed border-zinc-800 bg-zinc-900/40 py-12 text-center">
-                                <p className="font-medium text-zinc-500">
+                            <div className="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+                                <p className="font-medium text-zinc-600 dark:text-zinc-500">
                                     No manga to show here yet.
                                 </p>
                             </div>
@@ -767,7 +768,6 @@ function Index({
                                                         "group.animes",
                                                         {
                                                             tags: tag.name,
-                                                            filter: "mangas",
                                                         },
                                                     )}
                                                     className="hover:text-white transition-colors"
@@ -843,7 +843,9 @@ function Index({
                 ) : null}
             </SectionContainer>
             <SectionContainer
-                className={"bg-[#0a0a0a] mt-12 py-12"}
+                className={
+                    "mt-12 bg-white py-12 dark:bg-[#0a0a0a]"
+                }
                 padding={false}
             >
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -861,10 +863,10 @@ function Index({
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-white uppercase tracking-wide">
+                            <h2 className="text-2xl font-black uppercase tracking-wide text-zinc-900 dark:text-white">
                                 New chapters
                             </h2>
-                            <p className="text-zinc-400 text-sm font-medium">
+                            <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
                                 Latest chapter uploads
                             </p>
                         </div>
@@ -875,10 +877,10 @@ function Index({
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                <h3 className="text-lg font-bold text-white">
+                                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
                                     Today
                                 </h3>
-                                <div className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent"></div>
+                                <div className="h-px flex-1 bg-gradient-to-r from-zinc-300 to-transparent dark:from-zinc-800"></div>
                             </div>
 
                             {newEpisodes?.today.length > 0 ? (
@@ -891,8 +893,8 @@ function Index({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-12 text-center rounded-2xl bg-zinc-900/50 border border-zinc-800 border-dashed">
-                                    <p className="text-zinc-500 font-medium">
+                                <div className="py-12 text-center rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+                                    <p className="font-medium text-zinc-600 dark:text-zinc-500">
                                         No new chapters uploaded today.
                                     </p>
                                 </div>
@@ -902,11 +904,11 @@ function Index({
                         {/* Yesterday Section */}
                         <div>
                             <div className="flex items-center gap-3 mb-6">
-                                <span className="w-2 h-2 rounded-full bg-zinc-600"></span>
-                                <h3 className="text-lg font-bold text-zinc-300">
+                                <span className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-600"></span>
+                                <h3 className="text-lg font-bold text-zinc-800 dark:text-zinc-300">
                                     Yesterday
                                 </h3>
-                                <div className="h-px flex-1 bg-gradient-to-r from-zinc-800 to-transparent"></div>
+                                <div className="h-px flex-1 bg-gradient-to-r from-zinc-300 to-transparent dark:from-zinc-800"></div>
                             </div>
 
                             {newEpisodes?.yesterday.length > 0 ? (
@@ -919,8 +921,8 @@ function Index({
                                     ))}
                                 </div>
                             ) : (
-                                <div className="py-12 text-center rounded-2xl bg-zinc-900/50 border border-zinc-800 border-dashed">
-                                    <p className="text-zinc-500 font-medium">
+                                <div className="py-12 text-center rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50">
+                                    <p className="font-medium text-zinc-600 dark:text-zinc-500">
                                         No chapters from yesterday.
                                     </p>
                                 </div>
@@ -929,7 +931,10 @@ function Index({
                     </div>
                 </div>
             </SectionContainer>
-            <SectionContainer className={"bg-black mt-8"} padding={false}>
+            <SectionContainer
+                className={"mt-8 bg-white dark:bg-black"}
+                padding={false}
+            >
                 <div className="mt-5 sm:px-10 px-3 py-10">
                     <div className="flex items-center gap-4 text-yellow-400 font-semibold">
                         <svg

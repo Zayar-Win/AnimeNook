@@ -18,7 +18,7 @@ const Comments = ({ comments, anime, manga }) => {
                 ))
             ) : (
                 <div className="w-full py-10 flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-200 dark:bg-white/5">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             className="w-8 h-8 text-zinc-500"
@@ -34,7 +34,7 @@ const Comments = ({ comments, anime, manga }) => {
                             />
                         </svg>
                     </div>
-                    <p className="text-xl font-bold text-white mb-2">
+                    <p className="mb-2 text-xl font-bold text-zinc-900 dark:text-white">
                         No comments yet
                     </p>
                     <p className="text-zinc-500 text-sm">

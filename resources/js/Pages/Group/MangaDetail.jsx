@@ -101,7 +101,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
 
     return (
         <>
-            <SectionContainer className={"bg-black text-white"}>
+            <SectionContainer className="bg-white text-zinc-900 dark:bg-black dark:text-white">
                 <div className="flex flex-col gap-5 py-6 md:flex-row md:gap-8 md:py-10 lg:gap-12">
                     {/* Cover Image Section — narrow max width on mobile so 2/3 aspect does not dominate the viewport */}
                     <div className="flex w-full shrink-0 justify-center md:block md:w-[30%] md:justify-start">
@@ -122,7 +122,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         {/* Header */}
                         <div className="space-y-2 md:space-y-4">
                             <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-4">
-                                <h1 className="text-2xl font-black leading-tight text-white sm:text-3xl md:text-5xl">
+                                <h1 className="text-2xl font-black leading-tight text-zinc-900 sm:text-3xl md:text-5xl dark:text-white">
                                     {manga.name}
                                 </h1>
                                 <span className="shrink-0 rounded-full border border-primary/50 bg-primary/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-primary shadow-[0_0_15px_rgba(237,100,0,0.3)] sm:px-4 sm:py-1.5 sm:text-sm">
@@ -137,12 +137,12 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         </div>
 
                         {/* Stats: one compact row on mobile; roomier from sm */}
-                        <div className="grid grid-cols-4 gap-1.5 rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-sm sm:gap-3 sm:rounded-2xl sm:p-5">
+                        <div className="grid grid-cols-4 gap-1.5 rounded-xl border border-zinc-200 bg-zinc-50 p-2.5 backdrop-blur-sm sm:gap-3 sm:rounded-2xl sm:p-5 dark:border-white/10 dark:bg-white/5">
                             <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 px-0.5 py-1 sm:gap-1 sm:p-2">
                                 <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Rating
                                 </span>
-                                <div className="flex items-center gap-1 text-white sm:gap-1.5">
+                                <div className="flex items-center gap-1 text-zinc-900 sm:gap-1.5 dark:text-white">
                                     <svg
                                         className="h-3.5 w-3.5 shrink-0 fill-yellow-500 text-yellow-500 sm:h-5 sm:w-5"
                                         viewBox="0 0 24 24"
@@ -155,11 +155,11 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 </div>
                             </div>
 
-                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-white/10 px-0.5 py-1 sm:gap-1 sm:p-2">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-zinc-200 px-0.5 py-1 sm:gap-1 sm:p-2 dark:border-white/10">
                                 <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Views
                                 </span>
-                                <div className="flex items-center gap-1 text-white sm:gap-1.5">
+                                <div className="flex items-center gap-1 text-zinc-900 sm:gap-1.5 dark:text-white">
                                     <svg
                                         className="h-3.5 w-3.5 shrink-0 text-blue-500 sm:h-5 sm:w-5"
                                         fill="none"
@@ -185,11 +185,11 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 </div>
                             </div>
 
-                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-white/10 px-0.5 py-1 sm:gap-1 sm:p-2">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-zinc-200 px-0.5 py-1 sm:gap-1 sm:p-2 dark:border-white/10">
                                 <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Likes
                                 </span>
-                                <div className="flex items-center gap-1 text-white sm:gap-1.5">
+                                <div className="flex items-center gap-1 text-zinc-900 sm:gap-1.5 dark:text-white">
                                     <svg
                                         className="h-3.5 w-3.5 shrink-0 fill-pink-500 text-pink-500 sm:h-5 sm:w-5"
                                         viewBox="0 0 24 24"
@@ -202,11 +202,11 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 </div>
                             </div>
 
-                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-white/10 px-0.5 py-1 sm:gap-1 sm:p-2">
+                            <div className="flex min-w-0 flex-col items-center justify-center gap-0.5 border-l border-zinc-200 px-0.5 py-1 sm:gap-1 sm:p-2 dark:border-white/10">
                                 <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Uploaded
                                 </span>
-                                <span className="text-center text-[11px] font-bold leading-tight text-white sm:text-sm">
+                                <span className="text-center text-[11px] font-bold leading-tight text-zinc-900 sm:text-sm dark:text-white">
                                     {formateDate(manga?.created_at, {
                                         month: "short",
                                         year: "numeric",
@@ -216,8 +216,8 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         </div>
 
                         {/* Interactive Rating */}
-                        <div className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 sm:rounded-xl sm:p-4">
-                            <span className="shrink-0 text-xs font-bold text-zinc-400 sm:text-base">
+                        <div className="flex items-center justify-between gap-2 rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 sm:rounded-xl sm:p-4 dark:border-white/10 dark:bg-white/5">
+                            <span className="shrink-0 text-xs font-bold text-zinc-600 sm:text-base dark:text-zinc-400">
                                 Your Rating
                             </span>
                             <div className="min-w-0 origin-right scale-[0.78] sm:scale-100">
@@ -227,12 +227,12 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
 
                         {/* Description */}
                         <div className="space-y-2">
-                            <h3 className="flex items-center gap-2 text-base font-bold text-white sm:text-lg">
+                            <h3 className="flex items-center gap-2 text-base font-bold text-zinc-900 sm:text-lg dark:text-white">
                                 <span className="h-5 w-1 shrink-0 rounded-full bg-primary sm:h-6"></span>
                                 Synopsis
                             </h3>
                             <p
-                                className={`text-sm font-light leading-relaxed text-zinc-300 sm:text-base ${
+                                className={`text-sm font-light leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300 ${
                                     synopsisNeedsToggle && !synopsisExpanded
                                         ? "line-clamp-4 sm:line-clamp-5"
                                         : ""
@@ -296,7 +296,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         className={`!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !px-3 !py-3 text-sm !font-semibold transition-all hover:-translate-y-1 sm:!px-8 sm:!py-4 sm:text-base ${
                             manga.isSavedByCurrentUser
                                 ? "!bg-green-600 border border-green-500 text-white shadow-lg shadow-green-600/20"
-                                : "!bg-white/5 border border-white/10 text-white hover:!bg-white hover:!text-black"
+                                : "!border !border-zinc-300 !bg-white !text-zinc-900 hover:!bg-zinc-100 dark:!border-white/10 dark:!bg-white/5 dark:!text-white dark:hover:!bg-white dark:hover:!text-black"
                         }`}
                         Icon={
                             <svg
@@ -319,14 +319,14 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         className={`!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !px-3 !py-3 text-sm !font-semibold transition-all hover:-translate-y-1 sm:!px-8 sm:!py-4 sm:text-base ${
                             manga.isLikeByCurrentUser
                                 ? "!bg-pink-600 border border-pink-500 text-white shadow-lg shadow-pink-600/20"
-                                : "!bg-white/5 border border-white/10 text-white hover:!bg-white hover:!text-black"
+                                : "!border !border-zinc-300 !bg-white !text-zinc-900 hover:!bg-zinc-100 dark:!border-white/10 dark:!bg-white/5 dark:!text-white dark:hover:!bg-white dark:hover:!text-black"
                         }`}
                         Icon={
                             <Liked
                                 className={`h-5 w-5 shrink-0 ${
                                     manga.isLikeByCurrentUser
                                         ? "text-white"
-                                        : "fill-current"
+                                        : "fill-current text-zinc-700 dark:text-white"
                                 }`}
                             />
                         }
@@ -336,7 +336,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         text={"Share"}
                         type="button"
                         onClick={shareManga}
-                        className="!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !border !border-white/10 !bg-white/5 !px-3 !py-3 text-sm !font-semibold text-white transition-all hover:-translate-y-1 hover:!bg-white hover:!text-black sm:!px-8 sm:!py-4 sm:text-base"
+                        className="!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !border !border-zinc-300 !bg-white !px-3 !py-3 text-sm !font-semibold !text-zinc-900 transition-all hover:-translate-y-1 hover:!bg-zinc-100 sm:!px-8 sm:!py-4 sm:text-base dark:!border-white/10 dark:!bg-white/5 dark:!text-white dark:hover:!bg-white dark:hover:!text-black"
                         Icon={
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -351,7 +351,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         }
                     />
                 </div>
-                <div className="w-full h-px bg-white/10 my-12"></div>
+                <div className="my-12 h-px w-full bg-zinc-200 dark:bg-white/10"></div>
 
                 <div className="space-y-8">
                     {/* Season Selector / Header */}
@@ -363,17 +363,17 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                         onClick={() =>
                                             setIsSeasonBoxOpen((prev) => !prev)
                                         }
-                                        className="seasonbox-toggle w-full flex items-center justify-between gap-4 px-6 py-4 bg-[#1a1a1a] hover:bg-[#252525] border border-white/10 hover:border-primary/50 rounded-2xl transition-all duration-300 group shadow-lg shadow-black/20"
+                                        className="seasonbox-toggle group flex w-full items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 px-6 py-4 shadow-lg shadow-zinc-900/5 transition-all duration-300 hover:border-primary/50 hover:bg-zinc-100 dark:border-white/10 dark:bg-[#1a1a1a] dark:shadow-black/20 dark:hover:bg-[#252525]"
                                     >
                                         <div className="flex flex-col items-start gap-1">
                                             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-400 transition-colors">
                                                 Select Season
                                             </span>
                                             <div className="flex items-center gap-3 flex-wrap text-left">
-                                                <span className="text-xl font-black text-white uppercase tracking-tight">
+                                                <span className="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
                                                     {manga?.name}
                                                 </span>
-                                                <span className="hidden sm:block w-1.5 h-1.5 rounded-full bg-zinc-700"></span>
+                                                <span className="hidden h-1.5 w-1.5 rounded-full bg-zinc-300 sm:block dark:bg-zinc-700"></span>
                                                 <span className="text-xl font-bold text-primary">
                                                     {manga.chapters.length
                                                         ? manga.chapters[0]
@@ -383,7 +383,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                             </div>
                                         </div>
                                         <div
-                                            className={`shrink-0 p-2.5 rounded-full bg-white/5 group-hover:bg-primary group-hover:text-white text-zinc-400 transition-all duration-300 ${
+                                            className={`shrink-0 rounded-full bg-zinc-200 p-2.5 text-zinc-600 transition-all duration-300 group-hover:bg-primary group-hover:text-white dark:bg-white/5 dark:text-zinc-400 ${
                                                 isSeasonBoxOpen
                                                     ? "rotate-180"
                                                     : ""
@@ -396,7 +396,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                     {/* Dropdown Menu */}
                                     <div
                                         ref={seasonBoxRef}
-                                        className={`absolute left-0 top-[calc(100%+10px)] min-w-[320px] max-w-[90vw] bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl z-30 overflow-hidden transition-all duration-300 origin-top-left ${
+                                        className={`absolute left-0 top-[calc(100%+10px)] z-30 min-w-[320px] max-w-[90vw] origin-top-left overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1a1a] ${
                                             isSeasonBoxOpen
                                                 ? "opacity-100 scale-100 visible"
                                                 : "opacity-0 scale-95 invisible"
@@ -414,17 +414,17 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                                             }
                                                         )}
                                                         preserveScroll={true}
-                                                        className="flex items-center justify-between px-5 py-3 hover:bg-white/5 transition-colors group/item"
+                                                        className="group/item flex items-center justify-between px-5 py-3 transition-colors hover:bg-zinc-100 dark:hover:bg-white/5"
                                                     >
                                                         <div className="flex flex-col">
-                                                            <span className="font-bold text-white group-hover/item:text-primary transition-colors">
+                                                            <span className="font-bold text-zinc-900 transition-colors group-hover/item:text-primary dark:text-white">
                                                                 {season.title}
                                                             </span>
                                                             <span className="text-xs text-zinc-500">
                                                                 {manga.name}
                                                             </span>
                                                         </div>
-                                                        <span className="text-xs font-bold bg-white/5 px-2 py-1 rounded text-zinc-400">
+                                                        <span className="rounded bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-600 dark:bg-white/5 dark:text-zinc-400">
                                                             {
                                                                 season.chapters_count
                                                             }{" "}
@@ -437,7 +437,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                     </div>
                                 </div>
                             ) : (
-                                <h2 className="text-2xl font-black uppercase tracking-wide text-white">
+                                <h2 className="text-2xl font-black uppercase tracking-wide text-zinc-900 dark:text-white">
                                     Chapters
                                 </h2>
                             )}
@@ -445,7 +445,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
 
                         {/* Chapter Count Badge */}
                         {manga?.chapters.length > 0 && (
-                            <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm font-bold text-zinc-400">
+                            <div className="rounded-full border border-zinc-200 bg-zinc-100 px-4 py-1.5 text-sm font-bold text-zinc-600 dark:border-white/10 dark:bg-white/5 dark:text-zinc-400">
                                 {manga.chapters.length} Chapters Available
                             </div>
                         )}
@@ -459,14 +459,14 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                     <Link
                                         key={i}
                                         href={chapterReaderHref(chapter.id)}
-                                        className="group relative flex items-center gap-4 p-4 rounded-xl bg-[#1a1a1a] hover:bg-[#252525] border border-white/5 hover:border-primary/50 transition-all duration-300 hover:-translate-y-1"
+                                        className="group relative flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-zinc-50 dark:border-white/5 dark:bg-[#1a1a1a] dark:hover:bg-[#252525]"
                                     >
-                                        <div className="shrink-0 w-12 h-12 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white text-zinc-500 transition-colors font-black text-sm">
+                                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-black text-zinc-600 transition-colors group-hover:bg-primary group-hover:text-white dark:bg-white/5 dark:text-zinc-500">
                                             {chapter.chapter_number || i + 1}
                                         </div>
 
                                         <div className="flex flex-col min-w-0">
-                                            <h3 className="font-bold text-white truncate group-hover:text-primary transition-colors">
+                                            <h3 className="truncate font-bold text-zinc-900 transition-colors group-hover:text-primary dark:text-white">
                                                 {chapter?.title}
                                             </h3>
                                             <div className="flex items-center gap-3 text-xs text-zinc-500">
@@ -475,7 +475,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                                         chapter?.created_at
                                                     )}
                                                 </span>
-                                                <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
+                                                <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
                                                 <div className="flex items-center gap-1">
                                                     <Heart className="w-3 h-3" />
                                                     <span>
@@ -503,8 +503,8 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-20 rounded-3xl bg-[#1a1a1a]/30 border border-white/5 border-dashed">
-                                <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 text-zinc-500">
+                            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-200 bg-zinc-50 py-20 dark:border-white/5 dark:bg-[#1a1a1a]/30">
+                                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-zinc-200 text-zinc-500 dark:bg-white/5">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         className="w-8 h-8"
@@ -531,7 +531,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                         ></line>
                                     </svg>
                                 </div>
-                                <h3 className="text-lg font-bold text-white mb-1">
+                                <h3 className="mb-1 text-lg font-bold text-zinc-900 dark:text-white">
                                     No Chapters Yet
                                 </h3>
                                 <p className="text-zinc-500 text-sm">
@@ -542,15 +542,15 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                     </div>
                 </div>
             </SectionContainer>
-            <SectionContainer className={"bg-[#0D0D0D]"}>
+            <SectionContainer className="bg-white dark:bg-[#0D0D0D]">
                 <div className="pt-16" id="comments">
-                    <div className="bg-[#1a1a1a]/50 backdrop-blur-md rounded-3xl p-6 md:p-10 border border-white/5 shadow-2xl shadow-black/50">
+                    <div className="rounded-3xl border border-zinc-200 bg-zinc-50/80 p-6 shadow-xl shadow-zinc-900/5 backdrop-blur-md md:p-10 dark:border-white/5 dark:bg-[#1a1a1a]/50 dark:shadow-black/50">
                         {/* Header */}
-                        <div className="flex items-center gap-4 mb-10 pb-6 border-b border-white/5">
-                            <h2 className="text-2xl font-black text-white tracking-wide">
+                        <div className="mb-10 flex items-center gap-4 border-b border-zinc-200 pb-6 dark:border-white/5">
+                            <h2 className="text-2xl font-black tracking-wide text-zinc-900 dark:text-white">
                                 Comments
                             </h2>
-                            <span className="px-3 py-1 rounded-full bg-white/10 text-sm font-bold text-zinc-400 border border-white/5">
+                            <span className="rounded-full border border-zinc-200 bg-zinc-100 px-3 py-1 text-sm font-bold text-zinc-600 dark:border-white/5 dark:bg-white/10 dark:text-zinc-400">
                                 {manga?.comments_count || 0}
                             </span>
                         </div>
@@ -560,7 +560,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                             <div className="flex gap-6 mb-12">
                                 <div className="shrink-0 hidden sm:block">
                                     <img
-                                        className="w-12 h-12 rounded-full object-cover ring-2 ring-white/10 shadow-lg"
+                                        className="h-12 w-12 rounded-full object-cover shadow-lg ring-2 ring-zinc-200 dark:ring-white/10"
                                         src={
                                             user?.profile_picture ||
                                             "https://ui-avatars.com/api/?name=Guest&background=random"
@@ -571,7 +571,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 <div className="grow">
                                     <CommentForm
                                         manga={manga}
-                                        className="dark-form"
+                                        className="comment-quill"
                                     />
                                 </div>
                             </div>
@@ -590,10 +590,10 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
             <div>
                 {recommendedMangas?.data.length > 0 && (
                     <SectionContainer
-                        className=" bg-[#0D0D0D] px-10 pb-20 pt-20"
+                        className="bg-white px-10 pb-20 pt-20 dark:bg-[#0D0D0D]"
                         padding={false}
                     >
-                        <h1 className="text-3xl font-extrabold text-white pb-5">
+                        <h1 className="pb-5 text-3xl font-extrabold text-zinc-900 dark:text-white">
                             Recommended For You
                         </h1>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6 mt-8">

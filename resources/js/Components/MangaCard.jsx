@@ -94,11 +94,11 @@ const MangaCard = ({ manga }) => {
 
                 {/* Content */}
                 <div className="mt-1.5 space-y-0.5 sm:mt-3 sm:space-y-1">
-                    <h3 className="line-clamp-2 text-[11px] font-bold leading-snug text-white transition-colors group-hover:text-purple-600 sm:line-clamp-1 sm:text-sm sm:leading-tight">
+                    <h3 className="line-clamp-2 text-[11px] font-bold leading-snug text-zinc-900 transition-colors group-hover:text-purple-600 dark:text-white sm:line-clamp-1 sm:text-sm sm:leading-tight">
                         {manga?.name}
                     </h3>
 
-                    <div className="flex items-center justify-between gap-1 text-[10px] text-zinc-500 sm:text-xs">
+                    <div className="flex items-center justify-between gap-1 text-[10px] text-zinc-600 sm:text-xs dark:text-zinc-500">
                         <span className="max-w-[65%] truncate sm:max-w-[70%]">
                             Manga •{" "}
                             {new Date(
@@ -111,7 +111,7 @@ const MangaCard = ({ manga }) => {
                             className={`transition-colors hover:text-purple-600 ${
                                 manga?.isSavedByCurrentUser
                                     ? "text-purple-600"
-                                    : "text-zinc-400"
+                                    : "text-zinc-500 dark:text-zinc-400"
                             }`}
                         >
                             {manga?.isSavedByCurrentUser ? (

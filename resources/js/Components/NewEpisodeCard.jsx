@@ -20,12 +20,12 @@ const NewEpisodeCard = ({ episode }) => {
         : `Episode ${episode?.chapter_number}`;
 
     const cardClassName =
-        "group block relative bg-[#1a1a1a] rounded-xl overflow-hidden hover:bg-[#222] transition-colors duration-300 border border-white/5 hover:border-primary/30";
+        "group block relative rounded-xl overflow-hidden transition-colors duration-300 border border-zinc-200 bg-white hover:bg-zinc-50 hover:border-primary/40 dark:border-white/5 dark:bg-[#1a1a1a] dark:hover:bg-[#222] dark:hover:border-primary/30";
 
     const inner = (
         <>
             <div className="flex gap-4 p-3">
-                <div className="shrink-0 w-[100px] sm:w-[120px] aspect-video relative rounded-lg overflow-hidden bg-zinc-800">
+                <div className="shrink-0 w-[100px] sm:w-[120px] aspect-video relative rounded-lg overflow-hidden bg-zinc-200 dark:bg-zinc-800">
                     <img
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                         src={episode?.chapterable?.thumbnail}
@@ -53,25 +53,25 @@ const NewEpisodeCard = ({ episode }) => {
                 </div>
 
                 <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
-                    <h3 className="text-white font-bold text-sm sm:text-base leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-sm sm:text-base leading-tight line-clamp-1 text-zinc-900 transition-colors group-hover:text-primary dark:text-white">
                         {episode?.chapterable?.name}
                     </h3>
 
-                    <p className="text-zinc-400 text-xs sm:text-sm line-clamp-1 font-medium">
+                    <p className="text-xs sm:text-sm line-clamp-1 font-medium text-zinc-600 dark:text-zinc-400">
                         {episode?.title || subtitleFallback}
                     </p>
 
-                    <div className="flex items-center gap-3 mt-1 text-[11px] sm:text-xs font-medium text-zinc-500">
+                    <div className="mt-1 flex items-center gap-3 text-[11px] font-medium text-zinc-500 sm:text-xs">
                         <span className="text-primary">
                             {formateDate(episode?.created_at)}
                         </span>
                         {episode?.chapterable?.type && (
                             <>
-                                <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
+                                <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
                                 <span>{episode?.chapterable?.type}</span>
                             </>
                         )}
-                        <span className="w-1 h-1 rounded-full bg-zinc-700"></span>
+                        <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
                         <span className="flex items-center gap-1">
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"

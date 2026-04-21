@@ -30,18 +30,18 @@ const MangaChapterReader = ({
     })();
 
     return (
-        <SectionContainer className="bg-black text-white min-h-screen pb-16">
-            <div className="sticky top-0 z-20 bg-black/90 backdrop-blur-md border-b border-white/10 py-4 mb-8">
+        <SectionContainer className="min-h-screen bg-white pb-16 text-zinc-900 dark:bg-black dark:text-white">
+            <div className="sticky top-0 z-20 mb-8 border-b border-zinc-200 bg-white/90 py-4 backdrop-blur-md dark:border-white/10 dark:bg-black/90">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <Link
                         href={window.route("group.manga.detail", {
                             manga: manga.slug,
                         })}
-                        className="text-sm font-bold text-zinc-400 hover:text-primary transition-colors"
+                        className="text-sm font-bold text-zinc-600 transition-colors hover:text-primary dark:text-zinc-400"
                     >
                         ← {manga.name}
                     </Link>
-                    <div className="flex-1 min-w-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 max-w-2xl mx-auto w-full">
+                    <div className="mx-auto flex w-full max-w-2xl min-w-0 flex-1 flex-col items-stretch justify-center gap-2 sm:flex-row sm:items-center sm:gap-3">
                         <label className="sr-only" htmlFor="reader-chapter-select">
                             Jump to chapter
                         </label>
@@ -60,9 +60,9 @@ const MangaChapterReader = ({
                                     });
                                 }
                             }}
-                            className="w-full sm:flex-1 min-w-0 rounded-xl border border-white/15 bg-[#1a1a1a] text-white text-sm font-bold py-2.5 pl-3 pr-10 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer appearance-none bg-[length:1rem] bg-[right_0.75rem_center] bg-no-repeat"
+                            className="w-full min-w-0 cursor-pointer appearance-none rounded-xl border border-zinc-300 bg-white bg-[length:1rem] bg-[right_0.75rem_center] bg-no-repeat py-2.5 pl-3 pr-10 text-sm font-bold text-zinc-900 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary sm:flex-1 dark:border-white/15 dark:bg-[#1a1a1a] dark:text-white dark:focus:border-primary"
                             style={{
-                                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23a1a1aa'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                                backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2371717a'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
                             }}
                         >
                             {chapterOptions.map((opt) => (
@@ -76,24 +76,24 @@ const MangaChapterReader = ({
                         {prevChapterId ? (
                             <Link
                                 href={chapterHref(prevChapterId)}
-                                className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-sm font-bold hover:border-primary/50 hover:text-primary transition-all"
+                                className="rounded-lg border border-zinc-300 bg-zinc-100 px-3 py-2 text-sm font-bold text-zinc-900 transition-all hover:border-primary/50 hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-white"
                             >
                                 Prev
                             </Link>
                         ) : (
-                            <span className="px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-sm font-bold text-zinc-600">
+                            <span className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-bold text-zinc-400 dark:border-white/5 dark:bg-white/5 dark:text-zinc-600">
                                 Prev
                             </span>
                         )}
                         {nextChapterId ? (
                             <Link
                                 href={chapterHref(nextChapterId)}
-                                className="px-3 py-2 rounded-lg bg-primary text-black text-sm font-bold hover:bg-primary/90 transition-all"
+                                className="rounded-lg bg-primary px-3 py-2 text-sm font-bold text-black transition-all hover:bg-primary/90"
                             >
                                 Next
                             </Link>
                         ) : (
-                            <span className="px-3 py-2 rounded-lg bg-white/5 border border-white/5 text-sm font-bold text-zinc-600">
+                            <span className="rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm font-bold text-zinc-400 dark:border-white/5 dark:bg-white/5 dark:text-zinc-600">
                                 Next
                             </span>
                         )}
@@ -102,14 +102,14 @@ const MangaChapterReader = ({
             </div>
 
             <div className="max-w-6xl mx-auto mb-5 sm:mb-6">
-                <h1 className="text-lg sm:text-2xl font-bold text-white tracking-tight break-words">
+                <h1 className="break-words text-lg font-bold tracking-tight text-zinc-900 sm:text-2xl dark:text-white">
                     {chapterHeading}
                 </h1>
             </div>
 
             {!readerMode && (
-                <div className="max-w-xl mx-auto text-center py-20 px-4 rounded-2xl bg-white/5 border border-white/10">
-                    <p className="text-zinc-300 font-medium">
+                <div className="mx-auto max-w-xl rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-20 text-center dark:border-white/10 dark:bg-white/5">
+                    <p className="font-medium text-zinc-600 dark:text-zinc-300">
                         This chapter has no uploaded pages yet. Check back after
                         the group adds images or a PDF.
                     </p>
@@ -125,11 +125,11 @@ const MangaChapterReader = ({
             )}
 
             {readerMode === "images" && (
-                <div className="max-w-4xl mx-auto space-y-2 md:space-y-4">
+                <div className="mx-auto max-w-4xl space-y-2 md:space-y-4">
                     {images.map((src, i) => (
                         <div
                             key={i}
-                            className="rounded-lg overflow-hidden border border-white/10 bg-[#0a0a0a]"
+                            className="overflow-hidden rounded-lg border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-[#0a0a0a]"
                         >
                             <img
                                 src={src}
@@ -143,11 +143,11 @@ const MangaChapterReader = ({
             )}
 
             {readerMode === "pdf" && chapter.pdf_path && (
-                <div className="max-w-6xl mx-auto rounded-xl overflow-hidden border border-white/10 bg-[#0a0a0a] min-h-[80vh]">
+                <div className="mx-auto min-h-[80vh] max-w-6xl overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100 dark:border-white/10 dark:bg-[#0a0a0a]">
                     <iframe
                         title={chapter.title}
                         src={chapter.pdf_path}
-                        className="w-full min-h-[85vh] bg-zinc-900"
+                        className="min-h-[85vh] w-full bg-zinc-100 dark:bg-zinc-900"
                     />
                 </div>
             )}

@@ -575,7 +575,7 @@ const VideoDetail = ({ anime, seasons }) => {
                                     <div className="grow">
                                         <CommentForm
                                             anime={anime}
-                                            className="dark-form"
+                                            className="comment-quill"
                                         />
                                     </div>
                                 </div>

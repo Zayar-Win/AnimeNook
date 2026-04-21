@@ -41,20 +41,20 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
         <div className={`group/comment relative ${isReply ? "mt-6" : "mt-8"}`}>
             {/* Connector Line for Replies */}
             {isReply && (
-                <div className="absolute -left-[34px] top-0 w-8 h-8 border-b-2 border-l-2 border-white/10 rounded-bl-xl -translate-y-1/2"></div>
+                <div className="absolute -left-[34px] top-0 h-8 w-8 -translate-y-1/2 rounded-bl-xl border-b-2 border-l-2 border-zinc-200 dark:border-white/10"></div>
             )}
 
             <div className="flex gap-4">
                 <div className="shrink-0 relative z-10">
                     <img
-                        className="w-10 h-10 rounded-full object-cover ring-2 ring-white/10 group-hover/comment:ring-primary/50 transition-all duration-300"
+                        className="h-10 w-10 rounded-full object-cover ring-2 ring-zinc-200 transition-all duration-300 group-hover/comment:ring-primary/50 dark:ring-white/10"
                         src={comment?.user?.profile_picture}
                         alt={comment?.user?.name}
                     />
                 </div>
                 <div className="flex flex-col grow min-w-0">
                     <div className="flex flex-wrap items-baseline gap-2 mb-1">
-                        <h3 className="text-white font-bold text-sm hover:text-primary transition-colors cursor-pointer">
+                        <h3 className="cursor-pointer text-sm font-bold text-zinc-900 transition-colors hover:text-primary dark:text-white">
                             {comment?.user?.name}
                         </h3>
                         <span className="text-zinc-500 text-xs font-medium">
@@ -76,13 +76,13 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                                 comment={comment}
                                 focus
                                 type="update"
-                                className="dark-form"
+                                className="comment-quill"
                             />
                         </div>
                     ) : (
                         <>
                             <div
-                                className="text-zinc-300 text-sm leading-relaxed break-words [&>p]:mb-2 last:[&>p]:mb-0 [&_a.comment-mention-link]:text-primary [&_a.comment-mention-link]:hover:underline"
+                                className="break-words text-sm leading-relaxed text-zinc-800 dark:text-zinc-300 [&>p]:mb-2 [&>p]:text-inherit last:[&>p]:mb-0 [&_a.comment-mention-link]:text-primary [&_a.comment-mention-link]:hover:underline [&_li]:text-inherit [&_strong]:text-inherit"
                                 dangerouslySetInnerHTML={{
                                     __html:
                                         comment.display_body ??
@@ -97,7 +97,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                                     className={`flex items-center gap-1.5 text-xs font-bold transition-colors ${
                                         comment?.isLikeByCurrentUser
                                             ? "text-pink-500"
-                                            : "text-zinc-500 hover:text-white"
+                                            : "text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
                                     }`}
                                 >
                                     <Liked
@@ -117,7 +117,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                                         onClick={() =>
                                             setIsReplyFormOpen((prev) => !prev)
                                         }
-                                        className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-white transition-colors"
+                                        className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-white"
                                     >
                                         <Reply className="w-4 h-4" />
                                         <span>Reply</span>
@@ -132,7 +132,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                                                     (prev) => !prev
                                                 )
                                             }
-                                            className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 hover:text-white transition-colors"
+                                            className="flex items-center gap-1.5 text-xs font-bold text-zinc-500 transition-colors hover:text-zinc-900 dark:hover:text-white"
                                         >
                                             <Edit className="w-4 h-4" />
                                             <span>Edit</span>
@@ -163,7 +163,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                     )}
 
                     {isReplyFormOpen && (
-                        <div className="mt-4 pl-4 border-l-2 border-white/10">
+                        <div className="mt-4 border-l-2 border-zinc-200 pl-4 dark:border-white/10">
                             <CommentForm
                                 anime={anime}
                                 manga={manga}
@@ -171,7 +171,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                                 comment={comment}
                                 focus
                                 type="reply"
-                                className="dark-form"
+                                className="comment-quill"
                             />
                         </div>
                     )}
@@ -180,7 +180,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
 
             {/* Nested Comments (Replies) */}
             {comment?.comments?.length > 0 && (
-                <div className="pl-[20px] ml-[20px] border-l-2 border-white/5 space-y-6 mt-4">
+                <div className="ml-[20px] mt-4 space-y-6 border-l-2 border-zinc-200 pl-[20px] dark:border-white/5">
                     {comment.comments.map((reply) => (
                         <Comment
                             key={reply.id}

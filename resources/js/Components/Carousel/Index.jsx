@@ -14,6 +14,8 @@ const Index = ({
     breakpoints = {},
     className = "",
     navigation = false,
+    /** Use dark nav/pagination arrows (for carousels on white/light backgrounds). */
+    navigationOnLightBg = false,
     autoPlay = {
         delay: 2000,
         disableOnInteraction: false,
@@ -40,8 +42,12 @@ const Index = ({
                 autoplay={autoPlay}
                 breakpoints={breakpoints}
                 style={{
-                    "--swiper-navigation-color": "#fff",
-                    "--swiper-pagination-color": "#fff",
+                    "--swiper-navigation-color": navigationOnLightBg
+                        ? "#18181b"
+                        : "#fff",
+                    "--swiper-pagination-color": navigationOnLightBg
+                        ? "#18181b"
+                        : "#fff",
                 }}
                 slidesPerView={slidesPerView}
                 navigation={navigation}

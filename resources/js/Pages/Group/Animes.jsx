@@ -3,85 +3,84 @@ import UserLayout from "@/Layouts/UserLayout";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Sort from "@/../assets/Sort";
 import Filter from "@/../assets/Filter";
-import Tags from "@/Components/Tags";
-import { format } from "timeago.js";
 import { Link } from "@inertiajs/react";
 import { useDebounce } from "@uidotdev/usehooks";
 import useFilter from "@/hooks/useFilter";
 import axios from "axios";
 import MangaCard from "@/Components/MangaCard";
-import MovieCard from "@/Components/MovieCard";
 
-const Animes = ({ data, filters, tags, paginateData }) => {
+const SORT_OPTIONS = [
+    { value: "newest", label: "Newest" },
+    { value: "popularity", label: "Most viewed" },
+    { value: "alphabetical", label: "A–Z" },
+    { value: "most_liked", label: "Most liked" },
+    { value: "top_rated", label: "Highest rated" },
+    { value: "most_chapters", label: "Most chapters" },
+];
+
+const Animes = ({ data, filters, tags, paginateData, statuses = [] }) => {
     const [search, setSearch] = useState(filters["search"] || "");
     const [filterTags, setFilterTags] = useState(
-        filters["tags"]?.split(",") || []
+        filters["tags"]?.split(",") || [],
     );
     const [sort, setSort] = useState(filters["sort"] || "newest");
-    const [filter, setFilter] = useState(filters["filter"] || "all");
+    const [status, setStatus] = useState(filters["status"] || "all");
     const debounceSearch = useDebounce(search, 500);
     const observer = useRef();
-    const [animesAndMangas, setAnimesAndMangas] = useState(data);
+    const [mangas, setMangas] = useState(data);
     const [isLoading, setIsLoading] = useState(false);
     const { setIsFilter, dynamicParams } = useFilter(
-        { search: debounceSearch, sort, filter, tags: filterTags },
-        window.route("group.animes")
+        { search: debounceSearch, sort, tags: filterTags, status },
+        window.route("group.animes"),
     );
-    const [mangaCurrentPage, setMangaCurrentPage] = useState(
-        paginateData?.manga?.currentPage || 1
+    const [currentPage, setCurrentPage] = useState(
+        paginateData?.manga?.currentPage || 1,
     );
-    const [animeCurrentPage, setAnimeCurrentPage] = useState(
-        paginateData?.anime?.currentPage || 1
-    );
-    const [mangaLastPage] = useState(paginateData?.manga?.lastPage);
-    const [animeLastPage] = useState(paginateData?.anime?.lastPage);
-    const getAnimesAndMangas = async () => {
+    const [lastPage, setLastPage] = useState(paginateData?.manga?.lastPage || 1);
+
+    const getMoreMangas = async () => {
         const response = await axios.get(
             window.route("group.getAnimesAndMangas", {
                 isApi: true,
-                animepage: animeCurrentPage + 1,
-                mangapage: mangaCurrentPage + 1,
+                page: currentPage + 1,
                 ...dynamicParams,
-            })
+            }),
         );
-        setAnimesAndMangas((prev) => [...prev, ...response.data.data]);
-        setAnimeCurrentPage(response.data.paginateData.anime.currentPage);
-        setMangaCurrentPage(response.data.paginateData.anime.currentPage);
+        setMangas((prev) => [...prev, ...response.data.data]);
+        setCurrentPage(response.data.paginateData.manga.currentPage);
+        setLastPage(response.data.paginateData.manga.lastPage);
     };
+
     const lastRef = useCallback(
         (node) => {
             if (observer.current) observer.current.disconnect();
             observer.current = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) {
-                    if (
-                        (animeCurrentPage < animeLastPage ||
-                            mangaCurrentPage < mangaLastPage) &&
-                        !isLoading
-                    ) {
+                    if (currentPage < lastPage && !isLoading) {
                         setIsLoading(true);
-                        getAnimesAndMangas();
-                        setIsLoading(false);
+                        getMoreMangas().finally(() => setIsLoading(false));
                     }
                 }
             });
             if (node) observer.current.observe(node);
         },
-        [animeCurrentPage, mangaCurrentPage, isLoading]
+        [currentPage, lastPage, isLoading, dynamicParams],
     );
+
     useEffect(() => {
-        setAnimeCurrentPage(1);
-        setMangaCurrentPage(1);
-        setAnimesAndMangas(data);
-    }, [data]);
+        setCurrentPage(paginateData?.manga?.currentPage || 1);
+        setLastPage(paginateData?.manga?.lastPage || 1);
+        setMangas(data);
+    }, [data, paginateData]);
+
     return (
-        <SectionContainer className={"bg-black min-h-screen py-6 sm:py-10"}>
+        <SectionContainer className="min-h-screen bg-white py-6 sm:py-10 dark:bg-black">
             <div className="mx-auto w-full max-w-[1600px] px-3 sm:w-[90%] sm:px-0">
-                {/* Search & Filter Header */}
                 <div className="mb-8 flex flex-col items-center justify-between gap-4 sm:mb-12 md:flex-row md:gap-6">
-                    <div className="flex w-full items-center gap-2.5 rounded-xl border border-white/10 bg-[#1a1a1a] px-4 py-2.5 transition-all duration-300 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(237,100,0,0.2)] sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-3 md:min-w-[380px] xl:max-w-[500px] xl:min-w-[500px]">
+                    <div className="flex w-full items-center gap-2.5 rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 transition-all duration-300 focus-within:border-primary/50 focus-within:shadow-[0_0_15px_rgba(237,100,0,0.2)] sm:gap-3 sm:rounded-2xl sm:px-5 sm:py-3 md:min-w-[380px] xl:max-w-[500px] xl:min-w-[500px] dark:border-white/10 dark:bg-[#1a1a1a]">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            className="w-5 h-5 text-zinc-500"
+                            className="h-5 w-5 text-zinc-500"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"
@@ -102,109 +101,90 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                             }}
                             autoComplete="off"
                             id="search"
-                            placeholder="Search Anime & Manga..."
-                            className="bg-transparent text-white p-0 w-full h-full border-0 focus:ring-0 outline-none placeholder:text-zinc-600 font-medium"
+                            placeholder="Search manga..."
+                            className="h-full w-full border-0 bg-transparent p-0 font-medium text-zinc-900 outline-none placeholder:text-zinc-400 focus:ring-0 dark:text-white dark:placeholder:text-zinc-600"
                         />
                     </div>
 
-                    <div className="flex w-full items-center justify-between gap-2 overflow-visible text-white sm:gap-4 md:w-auto md:justify-end">
-                        <div className="group sort relative z-40 cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2 transition-all hover:border-white/20 hover:bg-[#252525] sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5">
-                            <div className="flex items-center gap-1.5 text-zinc-400 transition-colors group-hover:text-white sm:gap-2">
+                    <div className="flex w-full flex-wrap items-center justify-end gap-2 overflow-visible text-zinc-900 sm:gap-3 md:w-auto dark:text-white">
+                        <div className="group sort relative z-40 cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 transition-all hover:border-zinc-300 hover:bg-zinc-50 sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/20 dark:hover:bg-[#252525]">
+                            <div className="flex items-center gap-1.5 text-zinc-600 transition-colors group-hover:text-zinc-900 sm:gap-2 dark:text-zinc-400 dark:group-hover:text-white">
                                 <Sort className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
                                 <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
-                                    Sort By
+                                    Sort
                                 </span>
                             </div>
-                            <ul className="absolute left-0 w-[180px] max-w-[calc(100vw-2rem)] sort-options z-30 hidden top-[calc(100%+10px)] p-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl shadow-black/50">
-                                <li
-                                    onClick={() => {
-                                        setSort("popularity");
-                                        setIsFilter(true);
-                                    }}
-                                    className={`p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm font-medium transition-colors ${
-                                        sort === "popularity"
-                                            ? "text-primary bg-primary/10"
-                                            : "text-zinc-400 hover:text-white"
-                                    }`}
-                                >
-                                    Popularity
-                                </li>
-                                <li
-                                    onClick={() => {
-                                        setSort("newest");
-                                        setIsFilter(true);
-                                    }}
-                                    className={`p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm font-medium transition-colors ${
-                                        sort === "newest"
-                                            ? "text-primary bg-primary/10"
-                                            : "text-zinc-400 hover:text-white"
-                                    }`}
-                                >
-                                    Newest
-                                </li>
+                            <ul className="sort-options absolute left-0 top-[calc(100%+10px)] z-30 hidden max-h-[min(70vh,22rem)] w-[200px] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-xl border border-zinc-200 bg-white p-2 shadow-2xl shadow-zinc-900/10 dark:border-white/10 dark:bg-[#1a1a1a] dark:shadow-black/50">
+                                {SORT_OPTIONS.map((opt) => (
+                                    <li
+                                        key={opt.value}
+                                        onClick={() => {
+                                            setSort(opt.value);
+                                            setIsFilter(true);
+                                        }}
+                                        className={`cursor-pointer rounded-lg p-3 text-sm font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-white/5 ${
+                                            sort === opt.value
+                                                ? "bg-primary/10 text-primary"
+                                                : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                                        }`}
+                                    >
+                                        {opt.label}
+                                    </li>
+                                ))}
                             </ul>
                         </div>
 
-                        <div className="group filter relative z-40 cursor-pointer items-center gap-1.5 rounded-lg border border-white/10 bg-[#1a1a1a] px-3 py-2 transition-all hover:border-white/20 hover:bg-[#252525] sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5">
-                            <div className="flex items-center gap-1.5 text-zinc-400 transition-colors group-hover:text-white sm:gap-2">
-                                <Filter className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
-                                <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
-                                    Filter
-                                </span>
+                        {statuses.length > 0 && (
+                            <div className="status-filter group relative z-40 cursor-pointer items-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-3 py-2 transition-all hover:border-zinc-300 hover:bg-zinc-50 sm:gap-2 sm:rounded-xl sm:px-4 sm:py-2.5 dark:border-white/10 dark:bg-[#1a1a1a] dark:hover:border-white/20 dark:hover:bg-[#252525]">
+                                <div className="flex items-center gap-1.5 text-zinc-600 transition-colors group-hover:text-zinc-900 sm:gap-2 dark:text-zinc-400 dark:group-hover:text-white">
+                                    <Filter className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+                                    <span className="text-[10px] font-bold uppercase tracking-wider sm:text-xs">
+                                        Status
+                                    </span>
+                                </div>
+                                <ul className="status-filter-options absolute right-0 top-[calc(100%+10px)] z-30 hidden w-[200px] max-w-[calc(100vw-2rem)] rounded-xl border border-zinc-200 bg-white p-2 shadow-2xl shadow-zinc-900/10 dark:border-white/10 dark:bg-[#1a1a1a] dark:shadow-black/50">
+                                    <li
+                                        onClick={() => {
+                                            setStatus("all");
+                                            setIsFilter(true);
+                                        }}
+                                        className={`cursor-pointer rounded-lg p-3 text-sm font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-white/5 ${
+                                            status === "all" || !status
+                                                ? "bg-primary/10 text-primary"
+                                                : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                                        }`}
+                                    >
+                                        All statuses
+                                    </li>
+                                    {statuses.map((s) => (
+                                        <li
+                                            key={s.id}
+                                            onClick={() => {
+                                                setStatus(s.keyword);
+                                                setIsFilter(true);
+                                            }}
+                                            className={`cursor-pointer rounded-lg p-3 text-sm font-medium transition-colors hover:bg-zinc-100 dark:hover:bg-white/5 ${
+                                                status === s.keyword
+                                                    ? "bg-primary/10 text-primary"
+                                                    : "text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white"
+                                            }`}
+                                        >
+                                            {s.name}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                            <ul className="absolute right-0 w-[180px] max-w-[calc(100vw-2rem)] filter-options z-30 hidden top-[calc(100%+10px)] p-2 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl shadow-black/50">
-                                <li
-                                    onClick={() => {
-                                        setFilter("all");
-                                        setIsFilter(true);
-                                    }}
-                                    className={`p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm font-medium transition-colors ${
-                                        filter === "all"
-                                            ? "text-primary bg-primary/10"
-                                            : "text-zinc-400 hover:text-white"
-                                    }`}
-                                >
-                                    All
-                                </li>
-                                <li
-                                    onClick={() => {
-                                        setFilter("animes");
-                                        setIsFilter(true);
-                                    }}
-                                    className={`p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm font-medium transition-colors ${
-                                        filter === "animes"
-                                            ? "text-primary bg-primary/10"
-                                            : "text-zinc-400 hover:text-white"
-                                    }`}
-                                >
-                                    Animes Only
-                                </li>
-                                <li
-                                    onClick={() => {
-                                        setFilter("mangas");
-                                        setIsFilter(true);
-                                    }}
-                                    className={`p-3 rounded-lg hover:bg-white/5 cursor-pointer text-sm font-medium transition-colors ${
-                                        filter === "mangas"
-                                            ? "text-primary bg-primary/10"
-                                            : "text-zinc-400 hover:text-white"
-                                    }`}
-                                >
-                                    Mangas Only
-                                </li>
-                            </ul>
-                        </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Tags Filter — single row, horizontal scroll */}
                 {tags.length > 0 && (
                     <div className="mb-8 sm:mb-12">
                         <div className="mb-2 text-[10px] font-bold uppercase tracking-wider text-zinc-500 sm:text-xs">
-                            Filter by Genres
+                            Genres
                         </div>
                         <div
-                            className="flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden py-1 -mx-1 px-1 scroll-smooth touch-pan-x [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.25)_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20"
+                            className="-mx-1 flex flex-nowrap gap-2 overflow-x-auto overflow-y-hidden px-1 py-1 scroll-smooth touch-pan-x [scrollbar-width:thin] [scrollbar-color:rgb(212_212_216)_transparent] dark:[scrollbar-color:rgba(255,255,255,0.25)_transparent] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-zinc-300 dark:[&::-webkit-scrollbar-thumb]:bg-white/20"
                             role="list"
                             aria-label="Genre filters"
                         >
@@ -217,18 +197,17 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                                             if (prev.includes(tag.name)) {
                                                 return prev.filter(
                                                     (prevTag) =>
-                                                        prevTag !== tag.name
+                                                        prevTag !== tag.name,
                                                 );
-                                            } else {
-                                                return [...prev, tag.name];
                                             }
+                                            return [...prev, tag.name];
                                         });
                                         setIsFilter(true);
                                     }}
                                     className={`shrink-0 cursor-pointer whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-bold transition-all duration-300 sm:px-4 sm:py-1.5 sm:text-xs ${
                                         filterTags.includes(tag.name)
-                                            ? "bg-primary border-primary text-white shadow-[0_0_15px_rgba(237,100,0,0.4)]"
-                                            : "bg-[#1a1a1a] border-white/10 text-zinc-400 hover:border-white/30 hover:text-white"
+                                            ? "border-primary bg-primary text-white shadow-[0_0_15px_rgba(237,100,0,0.4)]"
+                                            : "border-zinc-200 bg-zinc-100 text-zinc-600 hover:border-zinc-300 hover:text-zinc-900 dark:border-white/10 dark:bg-[#1a1a1a] dark:text-zinc-400 dark:hover:border-white/30 dark:hover:text-white"
                                     }`}
                                 >
                                     {tag.name}
@@ -238,34 +217,27 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                     </div>
                 )}
 
-                {/* Content Grid */}
                 <div>
-                    {animesAndMangas?.length > 0 ? (
+                    {mangas?.length > 0 ? (
                         <div>
-                            <h1 className="mb-5 flex items-center gap-2 text-xl font-black text-white sm:mb-8 sm:gap-3 sm:text-2xl md:text-3xl">
+                            <h1 className="mb-5 flex items-center gap-2 text-xl font-black text-zinc-900 sm:mb-8 sm:gap-3 sm:text-2xl md:text-3xl dark:text-white">
                                 <span className="h-6 w-1 rounded-full bg-primary sm:h-8 sm:w-1.5"></span>
-                                Browse Content
+                                Manga
                             </h1>
                             <div className="grid grid-cols-3 gap-2 sm:gap-3 md:grid-cols-4 md:gap-4 lg:grid-cols-5 lg:gap-5 xl:grid-cols-5 xl:gap-6">
-                                {animesAndMangas?.map((data, i) =>
-                                    data.type === "anime" ? (
-                                        <div key={i} className="h-full">
-                                            <MovieCard anime={data} />
-                                        </div>
-                                    ) : (
-                                        <div key={i} className="h-full">
-                                            <MangaCard manga={data} />
-                                        </div>
-                                    )
-                                )}
+                                {mangas.map((manga, i) => (
+                                    <div key={manga.id ?? i} className="h-full">
+                                        <MangaCard manga={manga} />
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     ) : (
-                        <div className="flex flex-col items-center justify-center py-32 rounded-3xl bg-[#1a1a1a]/30 border border-white/5 border-dashed">
-                            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6 text-zinc-600">
+                        <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-zinc-200 bg-zinc-50 py-32 dark:border-white/5 dark:bg-[#1a1a1a]/30">
+                            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-zinc-200 text-zinc-600 dark:bg-white/5">
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="w-10 h-10"
+                                    className="h-10 w-10"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
@@ -278,12 +250,11 @@ const Animes = ({ data, filters, tags, paginateData }) => {
                                     />
                                 </svg>
                             </div>
-                            <h3 className="text-2xl font-bold text-white mb-2">
-                                No Results Found
+                            <h3 className="mb-2 text-2xl font-bold text-zinc-900 dark:text-white">
+                                No manga found
                             </h3>
                             <p className="text-zinc-500">
-                                Try adjusting your search or filters to find
-                                what you're looking for.
+                                Try different search, status, genres, or sort.
                             </p>
                         </div>
                     )}

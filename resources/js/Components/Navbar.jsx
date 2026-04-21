@@ -10,6 +10,7 @@ import { useDetectClickOutside } from "react-detect-click-outside";
 import Modal from "./Modal";
 import Logo from "./Logo";
 import NotificationRow from "./Notifications/NotificationRow";
+import UserThemeToggle from "./UserThemeToggle";
 
 const Navbar = () => {
     const {
@@ -112,9 +113,7 @@ const Navbar = () => {
             await axios.post(window.route("group.notis.read-all"));
             const now = new Date().toISOString();
             setNotifications((prev) =>
-                prev.map((n) =>
-                    n.read_at ? n : { ...n, read_at: now },
-                ),
+                prev.map((n) => (n.read_at ? n : { ...n, read_at: now })),
             );
         } catch {
             /* ignore */
@@ -147,9 +146,7 @@ const Navbar = () => {
         let cancelled = false;
         (async () => {
             try {
-                const response = await axios.get(
-                    window.route("group.notis"),
-                );
+                const response = await axios.get(window.route("group.notis"));
                 if (cancelled) return;
                 setNotifications(response.data.notifications.data);
                 setNextPageUrl(response.data.notifications.next_page_url);
@@ -194,7 +191,7 @@ const Navbar = () => {
     const handleSearch = async () => {
         setSearchModalOpen(true);
         let response = await axios.get(
-            window.route("group.search", { search })
+            window.route("group.search", { search }),
         );
         setAnimes(response?.data?.animes?.data);
     };
@@ -212,15 +209,15 @@ const Navbar = () => {
             onClick={onClick}
             className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 group ${
                 active
-                    ? "bg-white/10 text-white border border-white/10"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white border border-transparent"
+                    ? "border border-primary/25 bg-primary/10 text-zinc-900 dark:border-white/10 dark:bg-white/10 dark:text-white"
+                    : "border border-transparent text-zinc-600 hover:bg-zinc-200/90 hover:text-zinc-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
             }`}
         >
             <div
                 className={`p-1.5 rounded-lg transition-colors ${
                     active
                         ? "bg-primary text-white shadow-lg shadow-primary/20"
-                        : "bg-white/5 text-gray-400 group-hover:bg-white/10 group-hover:text-white"
+                        : "bg-zinc-200/80 text-zinc-600 group-hover:bg-zinc-300/90 group-hover:text-zinc-900 dark:bg-white/5 dark:text-gray-400 dark:group-hover:bg-white/10 dark:group-hover:text-white"
                 }`}
             >
                 {React.cloneElement(icon, { width: 18, height: 18 })}
@@ -234,7 +231,7 @@ const Navbar = () => {
 
     return (
         <>
-            <SectionContainer className="sticky top-0 z-[100] w-full bg-black/80 backdrop-blur-xl border-b border-white/5 flex items-center justify-between h-20 transition-all duration-300">
+            <SectionContainer className="sticky top-0 z-[100] flex h-20 w-full items-center justify-between border-b border-zinc-200/80 bg-white/85 backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-black/80">
                 {/* Logo */}
                 <div className="w-16 h-16 shrink-0 relative z-50 hover:scale-105 transition-transform duration-300">
                     <Logo logo={LogoImg} />
@@ -245,7 +242,7 @@ const Navbar = () => {
                     <div className="relative group">
                         <label
                             htmlFor="search"
-                            className="cursor-pointer absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer text-zinc-500 transition-colors group-focus-within:text-primary dark:text-gray-400"
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -264,13 +261,13 @@ const Navbar = () => {
                             autoComplete="off"
                             id="search"
                             placeholder="Search Anime..."
-                            className="bg-zinc-900/50 text-white w-full rounded-full py-2.5 pl-12 pr-4 border border-white/10 outline-none focus:border-primary/50 focus:bg-zinc-900 focus:ring-1 focus:ring-primary/20 transition-all placeholder:text-zinc-600 font-medium text-sm"
+                            className="w-full rounded-full border border-zinc-200/90 bg-white py-2.5 pl-12 pr-4 text-sm font-medium text-zinc-900 outline-none transition-all placeholder:text-zinc-500 focus:border-primary/50 focus:bg-white focus:ring-1 focus:ring-primary/20 dark:border-white/10 dark:bg-zinc-900/50 dark:text-white dark:placeholder:text-zinc-600 dark:focus:bg-zinc-900"
                         />
                     </div>
                     {animes.length > 0 && searchModalOpen && (
                         <div
                             ref={ref}
-                            className="absolute overflow-hidden left-0 right-0 mt-4 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-50 max-h-[70vh] overflow-y-auto custom-scrollbar"
+                            className="absolute left-0 right-0 z-50 mt-4 max-h-[70vh] overflow-y-auto overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl custom-scrollbar dark:border-white/10 dark:bg-zinc-900"
                         >
                             <div className="p-2 space-y-1">
                                 {animes?.map((anime) => (
@@ -280,13 +277,13 @@ const Navbar = () => {
                                             "group.anime.detail",
                                             {
                                                 anime,
-                                            }
+                                            },
                                         )}
                                         onSuccess={() => {
                                             setSearchModalOpen(false);
                                             setSearch("");
                                         }}
-                                        className="block rounded-xl overflow-hidden hover:bg-white/5 transition-colors group/item"
+                                        className="group/item block overflow-hidden rounded-xl transition-colors hover:bg-zinc-100 dark:hover:bg-white/5"
                                     >
                                         <div className="flex gap-4 items-center p-3">
                                             <div className="w-12 h-16 shrink-0 rounded-lg overflow-hidden shadow-sm relative">
@@ -297,20 +294,20 @@ const Navbar = () => {
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h1 className="font-semibold text-sm text-gray-100 truncate group-hover/item:text-primary transition-colors">
+                                                <h1 className="truncate text-sm font-semibold text-zinc-900 transition-colors group-hover/item:text-primary dark:text-gray-100">
                                                     {anime?.name}
                                                 </h1>
-                                                <p className="text-xs text-gray-400 line-clamp-1 mt-0.5">
+                                                <p className="mt-0.5 line-clamp-1 text-xs text-zinc-600 dark:text-gray-400">
                                                     {anime?.description}
                                                 </p>
-                                                <div className="flex mt-2 items-center gap-4 text-xs font-medium text-gray-500">
+                                                <div className="mt-2 flex items-center gap-4 text-xs font-medium text-zinc-500 dark:text-gray-500">
                                                     <div className="flex items-center gap-1">
                                                         <svg
                                                             xmlns="http://www.w3.org/2000/svg"
                                                             width="14"
                                                             height="14"
                                                             viewBox="0 0 24 24"
-                                                            className="text-gray-400"
+                                                            className="text-zinc-500 dark:text-gray-400"
                                                         >
                                                             <path
                                                                 fill="currentColor"
@@ -346,7 +343,7 @@ const Navbar = () => {
                                         </div>
                                     </Link>
                                 ))}
-                                <div className="p-2 border-t border-white/5 text-center">
+                                <div className="border-t border-zinc-200 p-2 text-center dark:border-white/5">
                                     <Link
                                         onSuccess={() => {
                                             setSearchModalOpen(false);
@@ -363,8 +360,12 @@ const Navbar = () => {
                     )}
                 </div>
 
-                <nav className="md:block hidden">
-                    <ul className="flex items-center gap-8 font-medium text-gray-300 text-sm">
+                <div className="hidden shrink-0 md:block">
+                    <UserThemeToggle />
+                </div>
+
+                <nav className="hidden md:block">
+                    <ul className="flex items-center gap-8 text-sm font-medium text-zinc-600 dark:text-gray-300">
                         <li
                             className={`hover:text-primary transition-colors duration-200 ${
                                 component === "Group/Index"
@@ -382,7 +383,7 @@ const Navbar = () => {
                             }`}
                         >
                             <Link href={window.route("group.animes")}>
-                                Animes
+                                Manga List
                             </Link>
                         </li>
                         <li
@@ -399,10 +400,11 @@ const Navbar = () => {
                     </ul>
                 </nav>
 
-                <div className="md:hidden flex items-center gap-2">
+                <div className="flex items-center gap-2 md:hidden">
+                    <UserThemeToggle className="!h-9 !w-9" />
                     <button
                         onClick={() => setIsMobileSearchOpen(true)}
-                        className="w-10 h-10 flex items-center justify-center rounded-full text-white hover:bg-white/10 transition-all active:scale-95"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-800 transition-all hover:bg-zinc-200/80 active:scale-95 dark:text-white dark:hover:bg-white/10"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -421,7 +423,7 @@ const Navbar = () => {
                     </button>
                     <button
                         onClick={() => setIsOpenMobileNavbar((prev) => !prev)}
-                        className="w-10 h-10 flex items-center justify-center rounded-full text-white hover:bg-white/10 transition-all active:scale-95"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-800 transition-all hover:bg-zinc-200/80 active:scale-95 dark:text-white dark:hover:bg-white/10"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -449,11 +451,11 @@ const Navbar = () => {
                                     e.stopPropagation();
                                     setIsNotificationModalOpen((prev) => !prev);
                                 }}
-                                className="relative notification-icon cursor-pointer p-2 rounded-full hover:bg-white/10 transition-colors group"
+                                className="notification-icon group relative cursor-pointer rounded-full p-2 transition-colors hover:bg-zinc-200/80 dark:hover:bg-white/10"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="group-hover:text-primary transition-colors text-white"
+                                    className="text-zinc-800 transition-colors group-hover:text-primary dark:text-white"
                                     fill="currentColor"
                                     width="24"
                                     height="24"
@@ -464,26 +466,28 @@ const Navbar = () => {
                                 {/* Notification Badge if needed */}
                                 {notifications.length > 0 &&
                                     notifications.some((n) => !n.read_at) && (
-                                        <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-black"></div>
+                                        <div className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full border border-white bg-red-500 dark:border-zinc-900"></div>
                                     )}
                             </div>
                             <div className="relative w-0 h-[20px]">
                                 <div
                                     ref={notificationRef}
-                                    className={`absolute bg-white top-[180%] -right-20 w-[400px] h-[500px] overflow-hidden rounded-2xl shadow-2xl transition-all duration-300 origin-top-right border border-gray-100 z-[100] ${
+                                    className={`absolute -right-20 top-[180%] z-[100] h-[500px] w-[400px] origin-top-right overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-2xl transition-all duration-300 dark:border-white/10 dark:bg-zinc-900 ${
                                         isNotificationModalOpen
                                             ? "opacity-100 visible translate-y-0"
                                             : "opacity-0 invisible -translate-y-4"
                                     }`}
                                 >
                                     <div className="h-full flex flex-col">
-                                        <div className="flex py-4 px-4 items-center justify-between border-b border-gray-100 bg-gray-50/50">
-                                            <h1 className="text-lg font-bold text-gray-800">
+                                        <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-4 py-4 dark:border-white/10 dark:bg-zinc-800/50">
+                                            <h1 className="text-lg font-bold text-gray-800 dark:text-white">
                                                 Notifications
                                             </h1>
                                             <button
                                                 type="button"
-                                                onClick={markAllNotificationsRead}
+                                                onClick={
+                                                    markAllNotificationsRead
+                                                }
                                                 disabled={
                                                     !notifications.some(
                                                         (n) => !n.read_at,
@@ -500,19 +504,22 @@ const Navbar = () => {
                                             ref={notificationListRef}
                                             className="overflow-y-auto flex-1 custom-scrollbar"
                                         >
-                                            {notifications.map((notification) =>
-                                                notification.notifiable_type ===
-                                                "App\\Models\\User" ? (
-                                                    <NotificationRow
-                                                        key={notification.id}
-                                                        notification={
-                                                            notification
-                                                        }
-                                                        onMarkRead={
-                                                            markOneNotificationRead
-                                                        }
-                                                    />
-                                                ) : null
+                                            {notifications.map(
+                                                (notification) =>
+                                                    notification.notifiable_type ===
+                                                    "App\\Models\\User" ? (
+                                                        <NotificationRow
+                                                            key={
+                                                                notification.id
+                                                            }
+                                                            notification={
+                                                                notification
+                                                            }
+                                                            onMarkRead={
+                                                                markOneNotificationRead
+                                                            }
+                                                        />
+                                                    ) : null,
                                             )}
                                             {nextPageUrl ? (
                                                 <div
@@ -546,20 +553,20 @@ const Navbar = () => {
                                 {isProfileOpen && (
                                     <div
                                         ref={profileRef}
-                                        className="absolute bg-zinc-900 border border-white/10 text-white rounded-xl shadow-2xl w-60 top-[140%] right-0 overflow-hidden py-1 z-[100]"
+                                        className="absolute right-0 top-[140%] z-[100] w-60 overflow-hidden rounded-xl border border-zinc-200 bg-white py-1 text-zinc-900 shadow-2xl dark:border-white/10 dark:bg-zinc-900 dark:text-white"
                                     >
-                                        <div className="px-4 py-3 border-b border-white/10 bg-white/5">
-                                            <p className="text-sm font-semibold text-white">
+                                        <div className="border-b border-zinc-200 bg-zinc-50 px-4 py-3 dark:border-white/10 dark:bg-white/5">
+                                            <p className="text-sm font-semibold text-zinc-900 dark:text-white">
                                                 {auth.user.name}
                                             </p>
-                                            <p className="text-xs text-gray-400 truncate">
+                                            <p className="truncate text-xs text-zinc-500 dark:text-gray-400">
                                                 {auth.user.email}
                                             </p>
                                         </div>
                                         {auth?.user?.role?.name === "admin" && (
                                             <Link
                                                 href={window.route(
-                                                    "group.admin.dashboard"
+                                                    "group.admin.dashboard",
                                                 )}
                                             >
                                                 <div className="flex hover:bg-primary hover:text-white items-center px-4 py-3 gap-3 transition-colors">
@@ -582,7 +589,7 @@ const Navbar = () => {
                                         )}
                                         <Link
                                             href={window.route(
-                                                "group.user.profile"
+                                                "group.user.profile",
                                             )}
                                         >
                                             <div className="flex hover:bg-primary hover:text-white items-center px-4 py-3 gap-3 transition-colors">
@@ -605,7 +612,7 @@ const Navbar = () => {
                                         <div
                                             onClick={() =>
                                                 setLogoutModalOpen(
-                                                    (prev) => !prev
+                                                    (prev) => !prev,
                                                 )
                                             }
                                             className="flex hover:bg-red-500 hover:text-white cursor-pointer items-center px-4 py-3 gap-3 transition-colors"
@@ -663,21 +670,21 @@ const Navbar = () => {
                 {/* Backdrop */}
                 <div
                     onClick={() => setIsOpenMobileNavbar(false)}
-                    className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+                    className={`absolute inset-0 bg-zinc-900/40 backdrop-blur-sm transition-opacity duration-300 dark:bg-black/60 ${
                         isOpenMobileNavbar ? "opacity-100" : "opacity-0"
                     }`}
                 />
 
                 {/* Drawer Content */}
                 <div
-                    className={`absolute right-0 top-0 h-full w-[85%] max-w-[360px] bg-zinc-950 border-l border-white/10 shadow-2xl transform transition-transform duration-300 ease-out flex flex-col ${
+                    className={`absolute right-0 top-0 flex h-full w-[85%] max-w-[360px] transform flex-col border-l border-zinc-200 bg-white shadow-2xl transition-transform duration-300 ease-out dark:border-white/10 dark:bg-zinc-950 ${
                         isOpenMobileNavbar
                             ? "translate-x-0"
                             : "translate-x-full"
                     }`}
                 >
                     {/* Header */}
-                    <div className="p-6 flex items-center justify-between border-b border-white/5">
+                    <div className="flex items-center justify-between border-b border-zinc-200 p-6 dark:border-white/5">
                         {auth.user ? (
                             <div className="flex items-center gap-3">
                                 <img
@@ -686,10 +693,10 @@ const Navbar = () => {
                                     alt="Profile"
                                 />
                                 <div className="min-w-0">
-                                    <h3 className="font-bold text-white leading-none truncate">
+                                    <h3 className="truncate font-bold leading-none text-zinc-900 dark:text-white">
                                         {auth.user.name}
                                     </h3>
-                                    <p className="text-xs text-gray-400 mt-1.5 truncate max-w-[150px]">
+                                    <p className="mt-1.5 max-w-[150px] truncate text-xs text-zinc-500 dark:text-gray-400">
                                         {auth.user.email}
                                     </p>
                                 </div>
@@ -701,7 +708,7 @@ const Navbar = () => {
                         )}
                         <div
                             onClick={() => setIsOpenMobileNavbar(false)}
-                            className="w-10 h-10 cursor-pointer rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 hover:text-primary transition-all active:scale-95 text-gray-300"
+                            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-zinc-100 text-zinc-600 transition-all hover:bg-zinc-200 hover:text-primary active:scale-95 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
                         >
                             <Close className={"w-5 h-5"} />
                         </div>
@@ -756,7 +763,7 @@ const Navbar = () => {
                                 </svg>
                             }
                         >
-                            Anime List
+                            Manga List
                         </MobileNavLink>
 
                         <MobileNavLink
@@ -812,16 +819,16 @@ const Navbar = () => {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="p-6 border-t border-white/5 bg-zinc-900/50">
+                    <div className="border-t border-zinc-200 bg-zinc-50/90 p-6 dark:border-white/5 dark:bg-zinc-900/50">
                         {auth.user ? (
                             <div className="space-y-3">
                                 {/* Admin Dashboard */}
                                 {auth?.user?.role?.name === "admin" && (
                                     <Link
                                         href={window.route(
-                                            "group.admin.dashboard"
+                                            "group.admin.dashboard",
                                         )}
-                                        className="flex items-center gap-3 p-3 rounded-xl bg-white/5 text-gray-300 hover:bg-primary hover:text-white transition-all duration-300 font-semibold"
+                                        className="flex items-center gap-3 rounded-xl border border-transparent p-3 font-semibold text-zinc-800 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-primary dark:hover:text-white"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -912,19 +919,19 @@ const Navbar = () => {
 
             {/* Mobile Search Overlay */}
             <div
-                className={`fixed inset-0 z-[110] bg-zinc-950/95 backdrop-blur-3xl transition-all duration-300 ${
+                className={`fixed inset-0 z-[110] bg-white/95 backdrop-blur-3xl transition-all duration-300 dark:bg-zinc-950/95 ${
                     isMobileSearchOpen
                         ? "opacity-100 visible translate-y-0"
                         : "opacity-0 invisible translate-y-4"
                 } md:hidden flex flex-col`}
             >
-                <div className="flex items-center gap-3 p-4 border-b border-white/10">
+                <div className="flex items-center gap-3 border-b border-zinc-200 p-4 dark:border-white/10">
                     <div
                         onClick={() => {
                             setIsMobileSearchOpen(false);
                             setSearch("");
                         }}
-                        className="text-white p-2 -ml-2 rounded-full hover:bg-white/10"
+                        className="-ml-2 rounded-full p-2 text-zinc-800 hover:bg-zinc-200/80 dark:text-white dark:hover:bg-white/10"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -947,12 +954,12 @@ const Navbar = () => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search Anime..."
-                            className="w-full bg-zinc-900 text-white rounded-full py-2.5 pl-4 pr-10 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+                            className="w-full rounded-full border border-zinc-200 bg-white py-2.5 pl-4 pr-10 text-zinc-900 outline-none focus:border-primary focus:ring-1 focus:ring-primary dark:border-white/10 dark:bg-zinc-900 dark:text-white"
                         />
                         {search && (
                             <div
                                 onClick={() => setSearch("")}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 p-1"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-zinc-500 dark:text-gray-400"
                             >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -974,7 +981,7 @@ const Navbar = () => {
                 </div>
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     {search && animes.length === 0 && !decounceSearch ? (
-                        <div className="text-center text-gray-400 mt-10">
+                        <div className="mt-10 text-center text-zinc-500 dark:text-gray-400">
                             No results found for "{search}"
                         </div>
                     ) : (
@@ -989,7 +996,7 @@ const Navbar = () => {
                                         setIsMobileSearchOpen(false);
                                         setSearch("");
                                     }}
-                                    className="flex gap-4 p-3 rounded-xl bg-white/5 border border-white/5 active:bg-white/10"
+                                    className="flex gap-4 rounded-xl border border-zinc-200 bg-zinc-50/80 p-3 active:bg-zinc-100 dark:border-white/5 dark:bg-white/5 dark:active:bg-white/10"
                                 >
                                     <div className="w-16 h-20 shrink-0 rounded-lg overflow-hidden">
                                         <img
@@ -999,17 +1006,17 @@ const Navbar = () => {
                                         />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-white truncate text-base mb-1">
+                                        <h3 className="mb-1 truncate text-base font-semibold text-zinc-900 dark:text-white">
                                             {anime?.name}
                                         </h3>
-                                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                                        <div className="flex items-center gap-4 text-sm text-zinc-600 dark:text-gray-400">
                                             <div className="flex items-center gap-1">
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     width="16"
                                                     height="16"
                                                     viewBox="0 0 24 24"
-                                                    className="text-gray-500"
+                                                    className="text-zinc-500 dark:text-gray-500"
                                                 >
                                                     <path
                                                         fill="currentColor"
@@ -1069,7 +1076,7 @@ const Navbar = () => {
                     className={"z-[100] bg-[rgba(0,0,0,0.7)] backdrop-blur-sm"}
                 >
                     <h1 className="text-xl font-bold mb-2">Logout</h1>
-                    <p className="font-medium text-gray-600 mb-6">
+                    <p className="mb-6 font-medium text-zinc-600 dark:text-gray-600">
                         Are you sure want to logout.
                     </p>
                     <div className="w-[80%] space-y-3">
@@ -1093,7 +1100,7 @@ const Navbar = () => {
                                         onSuccess: () => {
                                             setLogoutModalOpen(false);
                                         },
-                                    }
+                                    },
                                 );
                             }}
                             className={

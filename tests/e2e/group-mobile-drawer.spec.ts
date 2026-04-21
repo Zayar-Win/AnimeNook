@@ -11,7 +11,7 @@ test.use({
 });
 
 test.describe("Group mobile drawer (guest)", () => {
-    test("open hamburger, navigate to Anime list, open Sign In", async ({
+    test("open hamburger, navigate to Manga list, open Sign In", async ({
         page,
     }) => {
         await navigateGroup(page, "/");
@@ -22,9 +22,9 @@ test.describe("Group mobile drawer (guest)", () => {
         await hamburger.click();
 
         await expect(
-            page.getByRole("link", { name: "Anime List" }),
+            page.getByRole("link", { name: "Manga List" }),
         ).toBeVisible({ timeout: 15_000 });
-        await page.getByRole("link", { name: "Anime List" }).click();
+        await page.getByRole("link", { name: "Manga List" }).click();
         await expect(page).toHaveURL(/\/animes$/);
 
         await hamburger.click();
