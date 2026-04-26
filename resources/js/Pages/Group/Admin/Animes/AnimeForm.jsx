@@ -1,7 +1,7 @@
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import DeleteModal from "@/Components/DeleteModal";
-import FilePondUploader from "@/Components/FilePondUploader";
+import ChunkUploader from "@/Components/ChunkUploader";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
@@ -249,7 +249,7 @@ const AnimeForm = ({
                                         className="!text-zinc-400 !mb-2"
                                     />
                                     <div className="bg-black/20 rounded-xl p-2 border border-white/5">
-                                        <FilePondUploader
+                                        <ChunkUploader
                                             photos={data.thumbnail}
                                             onUpload={(file) =>
                                                 setData("thumbnail", file)
@@ -265,7 +265,7 @@ const AnimeForm = ({
                                         className="!text-zinc-400 !mb-2"
                                     />
                                     <div className="bg-black/20 rounded-xl p-2 border border-white/5">
-                                        <FilePondUploader
+                                        <ChunkUploader
                                             photos={data.background_image}
                                             onUpload={(file) =>
                                                 setData(
@@ -286,7 +286,7 @@ const AnimeForm = ({
                                         className="!text-zinc-400 !mb-2"
                                     />
                                     <div className="bg-black/20 rounded-xl p-2 border border-white/5">
-                                        <FilePondUploader
+                                        <ChunkUploader
                                             photos={data.transparent_background}
                                             onUpload={(file) =>
                                                 setData(

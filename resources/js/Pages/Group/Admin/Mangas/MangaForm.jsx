@@ -1,7 +1,7 @@
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import DeleteModal from "@/Components/DeleteModal";
-import FilePondUploader from "@/Components/FilePondUploader";
+import ChunkUploader from "@/Components/ChunkUploader";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
@@ -316,7 +316,7 @@ const MangaForm = ({
                                         className="!text-zinc-400 !mb-2"
                                     />
                                     <div className="overflow-hidden rounded-xl border border-white/5 bg-black/20 p-2">
-                                        <FilePondUploader
+                                        <ChunkUploader
                                             photos={data.thumbnail}
                                             onUpload={(file) =>
                                                 setData("thumbnail", file)

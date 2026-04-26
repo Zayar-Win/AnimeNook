@@ -11,6 +11,7 @@ use App\Models\Manga;
 use App\Models\Status;
 use App\Models\Tag;
 use App\Models\Taggable;
+use App\Models\UploadSession;
 use Illuminate\Http\Request;
 use App\Notifications\NewMangaChapterUpload;
 use App\Notifications\SavedContentUpdatedNotification;
@@ -19,10 +20,66 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class GroupAdminMangaController extends Controller
 {
     public function __construct(private Uploader $uploader) {}
+
+    private function resolveChunkUploadToUrl(Group $group, Request $request, string $target, string $maybeId): ?string
+    {
+        $id = trim($maybeId);
+        if ($id === '' || ! Str::isUuid($id)) {
+            return null;
+        }
+
+        /** @var UploadSession|null $session */
+        $session = UploadSession::query()
+            ->where('id', $id)
+            ->where('group_id', $group->id)
+            ->where('user_id', $request->user()->id)
+            ->where('target', $target)
+            ->first();
+
+        if (! $session) {
+            return null;
+        }
+
+        if ($session->status !== 'complete' || ! $session->stored_url) {
+            throw ValidationException::withMessages([
+                ($target === 'chapter-pdf' ? 'pdf' : 'images') => 'Upload is not finished yet.',
+            ]);
+        }
+
+        // One-time consumption; revert endpoint can also remove it pre-submit.
+        $stored = $session->stored_url;
+        $session->delete();
+
+        return $stored;
+    }
+
+    private function mixedArrayInput(Request $request, string $key): array
+    {
+        $input = $request->input($key, []);
+        $files = $request->file($key, []);
+        $max = max(
+            is_array($input) ? count($input) : 0,
+            is_array($files) ? count($files) : 0,
+        );
+
+        $out = [];
+        for ($i = 0; $i < $max; $i++) {
+            if (is_array($files) && array_key_exists($i, $files) && $files[$i] instanceof UploadedFile) {
+                $out[] = $files[$i];
+                continue;
+            }
+            if (is_array($input) && array_key_exists($i, $input)) {
+                $out[] = $input[$i];
+            }
+        }
+
+        return $out;
+    }
 
     public function index(Group $group, Request $request)
     {
@@ -289,26 +346,31 @@ class GroupAdminMangaController extends Controller
             'season_id' => ['required'],
             'content_mode' => ['required', Rule::in(['images', 'pdf'])],
             'images' => ['nullable', 'array'],
-            'images.*' => ['file', 'image', 'max:20480'],
-            'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
+            'images.*' => ['nullable'],
+            'pdf' => ['nullable'],
         ]);
 
+        $request = request();
         $contentMode = $validatedData['content_mode'];
-        $pdfFile = request()->file('pdf');
-        $imagesFromRequest = collect($validatedData['images'] ?? [])->filter(fn ($f) => $f instanceof UploadedFile);
+
+        $pdfInput = $request->file('pdf') instanceof UploadedFile
+            ? $request->file('pdf')
+            : $request->input('pdf');
+
+        $imagesMixed = $this->mixedArrayInput($request, 'images');
 
         if ($contentMode === 'pdf') {
-            if (! $pdfFile) {
+            if (! $pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Upload a PDF file for this chapter.']);
             }
-            if ($imagesFromRequest->isNotEmpty()) {
+            if (! empty($imagesMixed)) {
                 throw ValidationException::withMessages(['images' => 'Use either image pages or one PDF, not both.']);
             }
         } else {
-            if ($pdfFile) {
+            if ($pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
             }
-            if ($imagesFromRequest->isEmpty()) {
+            if (empty($imagesMixed)) {
                 throw ValidationException::withMessages(['images' => 'Upload at least one page image.']);
             }
         }
@@ -325,7 +387,19 @@ class GroupAdminMangaController extends Controller
         $validatedData['ouo_chapter_link'] = null;
 
         if ($contentMode === 'pdf') {
-            $validatedData['pdf_path'] = $this->uploader->upload($pdfFile, 'mangas');
+            if ($pdfInput instanceof UploadedFile) {
+                Validator::make(['pdf' => $pdfInput], ['pdf' => ['required', 'file', 'mimes:pdf', 'max:51200']])->validate();
+                $validatedData['pdf_path'] = $this->uploader->upload($pdfInput, 'mangas');
+            } elseif (is_string($pdfInput)) {
+                $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-pdf', $pdfInput);
+                $pdfPath = $resolved ?: trim($pdfInput);
+                if ($pdfPath === '') {
+                    throw ValidationException::withMessages(['pdf' => 'Invalid PDF reference.']);
+                }
+                $validatedData['pdf_path'] = $pdfPath;
+            } else {
+                throw ValidationException::withMessages(['pdf' => 'Upload a PDF file for this chapter.']);
+            }
             $validatedData['type'] = 'pdf';
         } else {
             $validatedData['pdf_path'] = null;
@@ -353,8 +427,24 @@ class GroupAdminMangaController extends Controller
         }
 
         if ($contentMode === 'images') {
-            foreach ($imagesFromRequest->values() as $index => $image) {
-                $path = $this->uploader->upload($image, 'mangas');
+            foreach (array_values($imagesMixed) as $index => $image) {
+                $path = null;
+
+                if ($image instanceof UploadedFile) {
+                    Validator::make(['file' => $image], ['file' => ['required', 'image', 'max:20480']])->validate();
+                    $path = $this->uploader->upload($image, 'mangas');
+                } elseif (is_string($image)) {
+                    $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-image', $image);
+                    $path = $resolved ?: trim($image);
+                } elseif (is_array($image) && isset($image['path'])) {
+                    $path = (string) $image['path'];
+                }
+
+                $path = is_string($path) ? trim($path) : '';
+                if ($path === '') {
+                    throw ValidationException::withMessages(['images' => 'One of the uploaded images is invalid.']);
+                }
+
                 ChapterImage::create([
                     'chapter_id' => $chapter->id,
                     'path' => $path,
@@ -401,31 +491,35 @@ class GroupAdminMangaController extends Controller
             'content_mode' => ['required', Rule::in(['images', 'pdf'])],
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable'],
-            'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
+            'pdf' => ['nullable'],
         ]);
 
+        $request = request();
         $contentMode = $validatedData['content_mode'];
-        $pdfFile = request()->file('pdf');
-        $imagesFromRequest = $validatedData['images'] ?? [];
+
+        $pdfInput = $request->file('pdf') instanceof UploadedFile
+            ? $request->file('pdf')
+            : $request->input('pdf');
+
+        $imagesMixed = $this->mixedArrayInput($request, 'images');
 
         if ($contentMode === 'pdf') {
-            if (! $pdfFile && ! $chapter->pdf_path) {
+            if (! $pdfInput && ! $chapter->pdf_path) {
                 throw ValidationException::withMessages(['pdf' => 'Upload a PDF file or keep the existing chapter PDF.']);
             }
-            $newImageFiles = collect($imagesFromRequest)->filter(fn ($f) => $f instanceof UploadedFile);
-            if ($newImageFiles->isNotEmpty()) {
+            if (! empty($imagesMixed)) {
                 throw ValidationException::withMessages(['images' => 'Use either image pages or one PDF, not both.']);
             }
         } else {
-            if ($pdfFile) {
+            if ($pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
             }
-            $hasExisting = collect($imagesFromRequest)->contains(fn ($i) => is_array($i) && isset($i['id']));
-            $hasNewFiles = collect($imagesFromRequest)->filter(fn ($i) => $i instanceof UploadedFile)->isNotEmpty();
+            $hasExisting = collect($imagesMixed)->contains(fn ($i) => is_array($i) && isset($i['id']));
+            $hasNewFiles = collect($imagesMixed)->filter(fn ($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
             if (! $hasExisting && ! $hasNewFiles) {
                 throw ValidationException::withMessages(['images' => 'Add at least one page image.']);
             }
-            foreach ($imagesFromRequest as $img) {
+            foreach ($imagesMixed as $img) {
                 if ($img instanceof UploadedFile) {
                     Validator::make(
                         ['file' => $img],
@@ -451,11 +545,26 @@ class GroupAdminMangaController extends Controller
 
         if ($contentMode === 'pdf') {
             $validatedData['type'] = 'pdf';
-            if ($pdfFile) {
+            if ($pdfInput instanceof UploadedFile) {
                 if ($chapter->pdf_path) {
                     $this->uploader->remove($chapter->pdf_path);
                 }
-                $validatedData['pdf_path'] = $this->uploader->upload($pdfFile, 'mangas');
+                Validator::make(['pdf' => $pdfInput], ['pdf' => ['required', 'file', 'mimes:pdf', 'max:51200']])->validate();
+                $validatedData['pdf_path'] = $this->uploader->upload($pdfInput, 'mangas');
+                $chapter->images()->each(function ($image) {
+                    $this->uploader->remove($image->path);
+                    $image->delete();
+                });
+            } elseif (is_string($pdfInput) && trim($pdfInput) !== '') {
+                if ($chapter->pdf_path) {
+                    $this->uploader->remove($chapter->pdf_path);
+                }
+                $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-pdf', $pdfInput);
+                $pdfPath = $resolved ?: trim($pdfInput);
+                if ($pdfPath === '') {
+                    throw ValidationException::withMessages(['pdf' => 'Invalid PDF reference.']);
+                }
+                $validatedData['pdf_path'] = $pdfPath;
                 $chapter->images()->each(function ($image) {
                     $this->uploader->remove($image->path);
                     $image->delete();
@@ -473,7 +582,7 @@ class GroupAdminMangaController extends Controller
         $chapter->update($validatedData);
 
         if ($contentMode === 'images') {
-            $existingImageIdsInRequest = collect($imagesFromRequest)->filter(function ($image) {
+            $existingImageIdsInRequest = collect($imagesMixed)->filter(function ($image) {
                 return is_array($image) && isset($image['id']);
             })->map(function ($image) {
                 return $image['id'];
@@ -484,7 +593,7 @@ class GroupAdminMangaController extends Controller
                 $image->delete();
             });
 
-            foreach ($imagesFromRequest as $index => $image) {
+            foreach ($imagesMixed as $index => $image) {
                 if (is_array($image) && isset($image['id'])) {
                     ChapterImage::where('id', $image['id'])->update([
                         'order' => $index,
@@ -493,6 +602,16 @@ class GroupAdminMangaController extends Controller
 
                 if ($image instanceof UploadedFile) {
                     $path = $this->uploader->upload($image, 'mangas');
+                    ChapterImage::create([
+                        'chapter_id' => $chapter->id,
+                        'path' => $path,
+                        'order' => $index,
+                    ]);
+                }
+
+                if (is_string($image) && trim($image) !== '') {
+                    $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-image', $image);
+                    $path = $resolved ?: trim($image);
                     ChapterImage::create([
                         'chapter_id' => $chapter->id,
                         'path' => $path,

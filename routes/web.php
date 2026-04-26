@@ -14,6 +14,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminBannerController;
+use App\Http\Controllers\GroupAdminChunkUploadController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
 use App\Http\Controllers\GroupAdminSeasonController;
@@ -124,6 +125,15 @@ if ($isProduction) {
         });
         Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            // Chunk uploads (FilePond tus-style)
+            Route::post('/admin/uploads', [GroupAdminChunkUploadController::class, 'process'])->name('uploads.process');
+            Route::match(['head', 'patch'], '/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'patch'])->name('uploads.patch');
+            Route::delete('/admin/uploads', [GroupAdminChunkUploadController::class, 'revert'])->name('uploads.revert');
+            // Chunk uploads (axios-friendly)
+            Route::post('/admin/uploads/init', [GroupAdminChunkUploadController::class, 'initChunk'])->name('uploads.init');
+            Route::post('/admin/uploads/{upload}/chunk', [GroupAdminChunkUploadController::class, 'uploadChunk'])->name('uploads.chunk');
+            Route::post('/admin/uploads/{upload}/finish', [GroupAdminChunkUploadController::class, 'finishChunk'])->name('uploads.finish');
+            Route::delete('/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'abortChunk'])->name('uploads.abort');
             //User Routes
             Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
             Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('create');
@@ -271,6 +281,15 @@ if ($isProduction) {
         });
         Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            // Chunk uploads (FilePond tus-style)
+            Route::post('/admin/uploads', [GroupAdminChunkUploadController::class, 'process'])->name('uploads.process');
+            Route::match(['head', 'patch'], '/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'patch'])->name('uploads.patch');
+            Route::delete('/admin/uploads', [GroupAdminChunkUploadController::class, 'revert'])->name('uploads.revert');
+            // Chunk uploads (axios-friendly)
+            Route::post('/admin/uploads/init', [GroupAdminChunkUploadController::class, 'initChunk'])->name('uploads.init');
+            Route::post('/admin/uploads/{upload}/chunk', [GroupAdminChunkUploadController::class, 'uploadChunk'])->name('uploads.chunk');
+            Route::post('/admin/uploads/{upload}/finish', [GroupAdminChunkUploadController::class, 'finishChunk'])->name('uploads.finish');
+            Route::delete('/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'abortChunk'])->name('uploads.abort');
             //User Routes
             Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
             Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('create');

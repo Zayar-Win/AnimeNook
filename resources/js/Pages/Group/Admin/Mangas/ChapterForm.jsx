@@ -1,12 +1,13 @@
 /* eslint-disable indent */
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
-import FilePondUploader from "@/Components/FilePondUploader";
+import ChunkUploader from "@/Components/ChunkUploader";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router, useForm, usePage } from "@inertiajs/react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { uploadFileInChunks } from "@/utils/chunkUpload";
 
 function fieldError(errors, key) {
     if (!errors || key == null) {
@@ -163,7 +164,7 @@ const ChapterForm = ({
     selectedSeasonSummary = null,
 }) => {
     const { url } = usePage();
-    const { data, setData, post, errors } = useForm({
+    const form = useForm({
         thumbnail: chapter?.thumbnail ?? null,
         chapter_number: chapter?.chapter_number ?? "",
         title: chapter?.title ?? "",
@@ -173,6 +174,13 @@ const ChapterForm = ({
         pdf: null,
         images: images ?? [],
     });
+    const { data, setData, post, errors, processing } = form;
+
+    const [uploading, setUploading] = useState(false);
+    const [uploadLabel, setUploadLabel] = useState("");
+    const [uploadPercent, setUploadPercent] = useState(0);
+    const [uploadError, setUploadError] = useState(null);
+    const [activeImageUploads, setActiveImageUploads] = useState(0);
 
     const [search, setSearch] = useState(seasonListFilters?.search ?? "");
     const searchInputRef = useRef(null);
@@ -181,7 +189,7 @@ const ChapterForm = ({
     const seasonRows = seasons?.data ?? [];
     const selectionOnPage = useMemo(
         () => seasonRows.some((s) => s.id === data.season_id),
-        [seasonRows, data.season_id]
+        [seasonRows, data.season_id],
     );
 
     const navigateWithMergedQuery = (updates) => {
@@ -242,8 +250,10 @@ const ChapterForm = ({
     const imagesError = firstImagesRelatedError(errors);
     const contentFileError = imagesError ?? fieldError(errors, "pdf");
 
-    const showOffPageSelection =
-        Boolean(data.season_id) && !selectionOnPage;
+    const isChapterSubmitting =
+        uploading || processing || activeImageUploads > 0;
+
+    const showOffPageSelection = Boolean(data.season_id) && !selectionOnPage;
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] px-4 pb-8 pt-4 text-white sm:px-5 sm:py-8 lg:px-8">
@@ -287,21 +297,102 @@ const ChapterForm = ({
                 </div>
 
                 <form
-                    onSubmit={(e) => {
+                    onSubmit={async (e) => {
                         e.preventDefault();
-                        type === "edit"
-                            ? post(
-                                  window.route(
+                        if (isChapterSubmitting) return;
+
+                        setUploadError(null);
+
+                        if (
+                            data.content_mode === "images" &&
+                            (activeImageUploads > 0 ||
+                                (Array.isArray(data.images) &&
+                                    data.images.some(
+                                        (item) => item instanceof File,
+                                    )))
+                        ) {
+                            setUploadError(
+                                "Images are still uploading. Please wait until all uploads finish.",
+                            );
+                            return;
+                        }
+
+                        const submitUrl =
+                            type === "edit"
+                                ? window.route(
                                       "group.admin.mangas.chapters.update",
-                                      { manga, chapter }
+                                      { manga, chapter },
                                   )
-                              )
-                            : post(
-                                  window.route(
+                                : window.route(
                                       "group.admin.mangas.chapters.store",
-                                      { manga }
-                                  )
-                              );
+                                      { manga },
+                                  );
+
+                        try {
+                            setUploading(true);
+                            setUploadLabel("Preparing chapter save…");
+                            setUploadPercent(0);
+
+                            let nextImages = data.images;
+                            let nextPdf = data.pdf;
+
+                            if (data.content_mode === "images") {
+                                nextImages = Array.isArray(data.images)
+                                    ? data.images
+                                    : [];
+                                nextPdf = null;
+                            } else {
+                                if (data.pdf instanceof File) {
+                                    setUploadLabel("Uploading PDF…");
+                                    setUploadPercent(0);
+                                    const url = await uploadFileInChunks({
+                                        file: data.pdf,
+                                        target: "chapter-pdf",
+                                        chunkSize: 1024 * 1024,
+                                        onProgress: ({ percent }) =>
+                                            setUploadPercent(percent),
+                                    });
+                                    nextPdf = url;
+                                }
+                                nextImages = [];
+                            }
+
+                            setUploadLabel("Saving chapter…");
+                            setUploadPercent(100);
+
+                            // Persist uploaded file URLs in form state so validation
+                            // retries don't re-upload files that already finished.
+                            setData((prev) => ({
+                                ...prev,
+                                images: nextImages,
+                                pdf: nextPdf,
+                            }));
+
+                            form.transform(() => ({
+                                ...data,
+                                images: nextImages,
+                                pdf: nextPdf,
+                            }));
+
+                            post(submitUrl, {
+                                forceFormData: true,
+                                onFinish: () => {
+                                    form.transform((d) => d);
+                                    setUploading(false);
+                                    setUploadLabel("");
+                                    setUploadPercent(0);
+                                },
+                            });
+                        } catch (err) {
+                            setUploading(false);
+                            setUploadLabel("");
+                            setUploadPercent(0);
+                            setUploadError(
+                                err?.response?.data?.message ??
+                                    err?.message ??
+                                    "Upload failed",
+                            );
+                        }
                     }}
                     className="rounded-2xl border border-white/5 bg-[#1a1a1a] p-4 shadow-xl shadow-black/50 sm:p-6 lg:p-8"
                 >
@@ -315,7 +406,7 @@ const ChapterForm = ({
                                 className="!text-zinc-400 !mb-2"
                             />
                             <div className="relative overflow-hidden rounded-xl border border-white/5 bg-black/20 p-2 pb-6">
-                                <FilePondUploader
+                                <ChunkUploader
                                     photos={data.thumbnail}
                                     onUpload={(file) =>
                                         setData("thumbnail", file)
@@ -338,7 +429,7 @@ const ChapterForm = ({
                             <Input
                                 errorMessage={fieldError(
                                     errors,
-                                    "chapter_number"
+                                    "chapter_number",
                                 )}
                                 label="Chapter Number"
                                 value={data.chapter_number}
@@ -447,9 +538,9 @@ const ChapterForm = ({
                                         </>
                                     ) : (
                                         <>
-                                            A season is selected but it does
-                                            not appear in the list below —
-                                            adjust search or pagination.
+                                            A season is selected but it does not
+                                            appear in the list below — adjust
+                                            search or pagination.
                                         </>
                                     )}
                                 </div>
@@ -486,7 +577,7 @@ const ChapterForm = ({
                                                     onClick={() =>
                                                         setData(
                                                             "season_id",
-                                                            season.id
+                                                            season.id,
                                                         )
                                                     }
                                                     className={`w-full rounded-xl border px-4 py-3 text-left transition ${
@@ -531,7 +622,7 @@ const ChapterForm = ({
                                                             onClick={() =>
                                                                 setData(
                                                                     "season_id",
-                                                                    season.id
+                                                                    season.id,
                                                                 )
                                                             }
                                                             onKeyDown={(e) => {
@@ -544,7 +635,7 @@ const ChapterForm = ({
                                                                     e.preventDefault();
                                                                     setData(
                                                                         "season_id",
-                                                                        season.id
+                                                                        season.id,
                                                                     );
                                                                 }
                                                             }}
@@ -574,10 +665,7 @@ const ChapterForm = ({
                             )}
                             <div className="mt-2">
                                 <InputError
-                                    message={fieldError(
-                                        errors,
-                                        "season_id"
-                                    )}
+                                    message={fieldError(errors, "season_id")}
                                     inline
                                 />
                             </div>
@@ -604,12 +692,19 @@ const ChapterForm = ({
                                         inline
                                         className="mb-2"
                                     />
-                                    <FilePondUploader
+                                    <ChunkUploader
                                         allowMultiple
+                                        acceptedFileTypes={["image/*"]}
                                         photos={data.images}
-                                        onUpload={(files) =>
-                                            setData("images", files)
+                                        uploadMode="auto"
+                                        chunkTarget="chapter-image"
+                                        onUploadingChange={
+                                            setActiveImageUploads
                                         }
+                                        onUpload={(files) => {
+                                            setData("images", files);
+                                            setUploadError(null);
+                                        }}
                                     />
                                 </div>
                             </div>
@@ -635,21 +730,19 @@ const ChapterForm = ({
                                         . Upload a new file below to replace it.
                                     </p>
                                 )}
-                                <input
-                                    type="file"
-                                    accept="application/pdf"
-                                    className="block w-full min-w-0 text-xs text-zinc-400 file:mr-3 file:rounded-lg file:border-0 file:bg-primary file:px-3 file:py-2.5 file:text-xs file:font-bold file:text-black sm:text-sm sm:file:mr-4 sm:file:px-4 sm:file:text-sm"
-                                    onChange={(e) =>
-                                        setData(
-                                            "pdf",
-                                            e.target.files?.[0] ?? null
-                                        )
-                                    }
-                                />
-                                <InputError
-                                    message={contentFileError}
-                                    inline
-                                />
+                                <div className="rounded-xl border border-white/5 bg-black/20 p-2 pb-6">
+                                    <ChunkUploader
+                                        photos={data.pdf}
+                                        onUpload={(file) =>
+                                            setData("pdf", file)
+                                        }
+                                        allowMultiple={false}
+                                        allowImagePreview={false}
+                                        acceptedFileTypes={["application/pdf"]}
+                                        maxFiles={1}
+                                    />
+                                </div>
+                                <InputError message={contentFileError} inline />
                             </div>
                         )}
 
@@ -657,10 +750,7 @@ const ChapterForm = ({
                             <Input
                                 textarea
                                 value={data.description}
-                                errorMessage={fieldError(
-                                    errors,
-                                    "description"
-                                )}
+                                errorMessage={fieldError(errors, "description")}
                                 label="Description"
                                 onChange={(e) =>
                                     setData("description", e.target.value)
@@ -674,10 +764,13 @@ const ChapterForm = ({
                     <div className="mt-8 flex flex-col-reverse gap-3 border-t border-white/5 pt-6 sm:mt-10 sm:flex-row sm:justify-end">
                         <Button
                             type={"submit"}
+                            disabled={isChapterSubmitting}
                             text={
-                                type === "edit"
-                                    ? "Update Chapter"
-                                    : "Create Chapter"
+                                isChapterSubmitting
+                                    ? uploadLabel || "Creating chapter..."
+                                    : type === "edit"
+                                      ? "Update Chapter"
+                                      : "Create Chapter"
                             }
                             className="!w-full !rounded-xl !bg-primary !px-6 !py-3 !text-sm !font-bold !text-white shadow-lg shadow-primary/20 transition-all hover:!bg-primary/90 hover:-translate-y-0.5 sm:!w-auto sm:!px-10"
                         />

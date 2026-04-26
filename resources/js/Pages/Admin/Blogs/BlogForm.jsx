@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
-import FilePondUploader from "@/Components/FilePondUploader";
+import ChunkUploader from "@/Components/ChunkUploader";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
@@ -51,7 +51,7 @@ const UserForm = ({ type, blog, tags }) => {
                 >
                     <div className="grid grid-cols-2 gap-x-10 gap-y-8 ">
                         <div className="col-span-2">
-                            <FilePondUploader
+                            <ChunkUploader
                                 photos={data.image}
                                 onUpload={(file) => setData("image", file)}
                             />

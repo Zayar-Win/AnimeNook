@@ -1,7 +1,7 @@
 /* eslint-disable indent */
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
-import FilePondUploader from "@/Components/FilePondUploader";
+import ChunkUploader from "@/Components/ChunkUploader";
 import InputLabel from "@/Components/InputLabel";
 import Select from "@/Components/Select";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
@@ -95,7 +95,7 @@ const EpisodeForm = ({ anime, episode, type, seasons }) => {
                                 className="!text-zinc-400 !mb-2"
                             />
                             <div className="bg-black/20 rounded-xl p-2 border border-white/5">
-                                <FilePondUploader
+                                <ChunkUploader
                                     photos={data.thumbnail}
                                     onUpload={(file) =>
                                         setData("thumbnail", file)
