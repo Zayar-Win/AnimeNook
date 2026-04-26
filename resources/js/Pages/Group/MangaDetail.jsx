@@ -41,7 +41,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
             { rating },
             {
                 preserveScroll: true,
-            }
+            },
         );
     };
     const saveToCollection = () => {
@@ -52,7 +52,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
             {
                 id: manga.id,
                 type: "manga",
-            }
+            },
         );
     };
 
@@ -258,9 +258,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                 </div>
                 <div
                     className={`my-6 grid gap-3 sm:my-8 sm:flex sm:flex-wrap sm:items-stretch sm:gap-4 ${
-                        continueChapterId
-                            ? "grid-cols-2"
-                            : "grid-cols-3"
+                        continueChapterId ? "grid-cols-2" : "grid-cols-3"
                     }`}
                 >
                     {continueChapterId && (
@@ -411,7 +409,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                                             {
                                                                 manga: manga,
                                                                 season: season.season_number,
-                                                            }
+                                                            },
                                                         )}
                                                         preserveScroll={true}
                                                         className="group/item flex items-center justify-between px-5 py-3 transition-colors hover:bg-zinc-100 dark:hover:bg-white/5"
@@ -472,7 +470,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                             <div className="flex items-center gap-3 text-xs text-zinc-500">
                                                 <span>
                                                     {formateDate(
-                                                        chapter?.created_at
+                                                        chapter?.created_at,
                                                     )}
                                                 </span>
                                                 <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700"></span>
@@ -544,7 +542,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
             </SectionContainer>
             <SectionContainer className="bg-white dark:bg-[#0D0D0D]">
                 <div className="pt-16" id="comments">
-                    <div className="rounded-3xl border border-zinc-200 bg-zinc-50/80 p-6 shadow-xl shadow-zinc-900/5 backdrop-blur-md md:p-10 dark:border-white/5 dark:bg-[#1a1a1a]/50 dark:shadow-black/50">
+                    <div className="rounded-3xl border border-zinc-200 bg-zinc-50/80 py-5 px-2 shadow-xl shadow-zinc-900/5 backdrop-blur-md md:p-5 dark:border-white/5 dark:bg-[#1a1a1a]/50 dark:shadow-black/50">
                         {/* Header */}
                         <div className="mb-10 flex items-center gap-4 border-b border-zinc-200 pb-6 dark:border-white/5">
                             <h2 className="text-2xl font-black tracking-wide text-zinc-900 dark:text-white">
@@ -590,7 +588,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
             <div>
                 {recommendedMangas?.data.length > 0 && (
                     <SectionContainer
-                        className="bg-white px-10 pb-20 pt-20 dark:bg-[#0D0D0D]"
+                        className="bg-white px-4 pb-12 pt-12 sm:px-6 sm:pb-16 sm:pt-16 lg:px-10 lg:pb-20 lg:pt-20 dark:bg-[#0D0D0D]"
                         padding={false}
                     >
                         <h1 className="pb-5 text-3xl font-extrabold text-zinc-900 dark:text-white">

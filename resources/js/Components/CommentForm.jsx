@@ -475,7 +475,7 @@ const CommentForm = ({
                         </div>
                     )}
 
-                <div className="flex justify-end border-t border-zinc-200 bg-zinc-50 px-4 py-4 sm:px-5 sm:py-4 dark:border-white/10 dark:bg-zinc-900/40">
+                <div className="flex justify-end border-t border-zinc-200 bg-zinc-50 px-2 py-2 sm:px-3 sm:py-2 dark:border-white/10 dark:bg-zinc-900/40">
                     <Button
                         type={"button"}
                         className={

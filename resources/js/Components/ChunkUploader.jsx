@@ -180,7 +180,11 @@ function UploadCard({
                 )}
             </div>
 
-            <div className={`space-y-1 ${allowMultiple ? "p-1.5" : "p-2"}`}>
+            <div
+                className={`space-y-0.5 ${
+                    allowMultiple ? "px-1 py-1" : "px-1.5 py-1.5"
+                }`}
+            >
                 <p className="truncate text-xs font-semibold text-zinc-200">
                     {item.name}
                 </p>
