@@ -69,7 +69,7 @@ Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 
 if ($isProduction) {
-    Route::domain('{group:subdomain}'.'.'.config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::domain('{group:subdomain}' . '.' . config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
@@ -454,7 +454,7 @@ Route::get('/', function () {
 
 Route::get('/blogs/{blog:slug}', function (Blog $blog) {
     $blog = Blog::with('tags', 'author')->find($blog->id);
-    $blogKey = 'viewed_blog_'.$blog->id;
+    $blogKey = 'viewed_blog_' . $blog->id;
 
     if (! session()->has($blogKey)) {
         $blog->update(['views' => $blog->views + 1]);
@@ -482,4 +482,6 @@ Route::get('/blogs/{blog:slug}', function (Blog $blog) {
     ]);
 })->name('blogs.show');
 
-require __DIR__.'/auth.php';
+
+Route::get('/_test-500', fn() => throw new \Exception('test'));
+require __DIR__ . '/auth.php';
