@@ -376,6 +376,61 @@ html.dark .comment-quill .ql-editor.ql-blank::before {
     width: calc(50% - 0.5em) !important;
 }
 
+/* Dark theme for dashboard date range picker */
+.dashboard-date-picker-popper {
+    z-index: 120;
+}
+
+.dashboard-date-picker {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    background: #101010 !important;
+    color: #e4e4e7 !important;
+    border-radius: 0.75rem !important;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dashboard-date-picker .react-datepicker__header {
+    background: #151515 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dashboard-date-picker .react-datepicker__current-month,
+.dashboard-date-picker .react-datepicker__day-name,
+.dashboard-date-picker .react-datepicker-time__header,
+.dashboard-date-picker .react-datepicker-year-header {
+    color: #e4e4e7 !important;
+}
+
+.dashboard-date-picker .react-datepicker__day,
+.dashboard-date-picker .react-datepicker__time-name {
+    color: #d4d4d8 !important;
+}
+
+.dashboard-date-picker .react-datepicker__day:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-radius: 0.35rem !important;
+}
+
+.dashboard-date-picker .react-datepicker__day--in-range,
+.dashboard-date-picker .react-datepicker__day--in-selecting-range {
+    background: rgba(237, 100, 0, 0.2) !important;
+    color: #fff !important;
+}
+
+.dashboard-date-picker .react-datepicker__day--selected,
+.dashboard-date-picker .react-datepicker__day--range-start,
+.dashboard-date-picker .react-datepicker__day--range-end {
+    background: #ed6400 !important;
+    color: #000 !important;
+    font-weight: 700;
+    border-radius: 0.35rem !important;
+}
+
+.dashboard-date-picker .react-datepicker__triangle {
+    display: none !important;
+}
+
 @media (min-width: 768px) {
     .filepond-grid .filepond--item {
         width: calc(33.33% - 0.5em) !important;
