@@ -62,6 +62,22 @@ document.addEventListener("inertia:success", (event) => {
     syncPrimaryColorFromInertiaPage(event.detail.page);
 });
 
+document.addEventListener("inertia:error", (event) => {
+    if (typeof window.__reportFrontendError !== "function") {
+        return;
+    }
+
+    const detail = event?.detail || {};
+    const response = detail?.response || {};
+
+    window.__reportFrontendError({
+        kind: "inertia_error",
+        message: `Inertia request failed with status ${response.status || "unknown"}`,
+        status: response.status || null,
+        url: typeof response.url === "string" ? response.url : window.location.href,
+    });
+});
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {

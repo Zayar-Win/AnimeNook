@@ -2,8 +2,14 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
@@ -26,8 +32,53 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->reportable(function (Throwable $e) {
-            //
+            if (! $this->shouldReportToSlack($e)) {
+                return;
+            }
+
+            Log::channel('slack')->critical('Backend exception occurred', [
+                'type' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'url' => request()?->fullUrl(),
+                'method' => request()?->method(),
+                'ip' => request()?->ip(),
+            ]);
         });
+    }
+
+    protected function shouldReportToSlack(Throwable $e): bool
+    {
+        if (! app()->environment('production')) {
+            return false;
+        }
+
+        if (! filled(config('logging.channels.slack.url'))) {
+            return false;
+        }
+
+        if ($e instanceof ValidationException
+            || $e instanceof AuthenticationException
+            || $e instanceof AuthorizationException
+            || $e instanceof NotFoundHttpException
+            || $e instanceof TokenMismatchException) {
+            return false;
+        }
+
+        if ($e instanceof HttpExceptionInterface) {
+            $status = $e->getStatusCode();
+            if ($status < 500) {
+                return false;
+            }
+
+            // Planned maintenance mode should not trigger incident alerts.
+            if ($status === 503 && app()->isDownForMaintenance()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function render($request, Throwable $e)

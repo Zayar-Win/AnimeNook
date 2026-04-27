@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\FrontendErrorReportController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\MentionUserController;
 use App\Http\Controllers\NotificationController;
@@ -47,3 +48,6 @@ if ($isProduction) {
 }
 
 Route::post('/images/store', [ImageController::class, 'store'])->name('images.store');
+Route::post('/frontend-errors', [FrontendErrorReportController::class, 'store'])
+    ->middleware('throttle:30,1')
+    ->name('frontend-errors.store');
