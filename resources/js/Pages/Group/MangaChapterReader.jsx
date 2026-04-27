@@ -105,6 +105,14 @@ const MangaChapterReader = ({
                 <h1 className="break-words text-lg font-bold tracking-tight text-zinc-900 sm:text-2xl dark:text-white">
                     {chapterHeading}
                 </h1>
+                {chapter?.description ? (
+                    <div
+                        className="mt-2 break-words text-sm leading-relaxed text-zinc-600 dark:text-zinc-300 [&_a]:text-primary [&_a]:underline [&_h1]:mb-2 [&_h1]:text-xl [&_h1]:font-bold [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:mb-1 [&_h3]:text-base [&_h3]:font-semibold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_mark]:rounded [&_mark]:bg-yellow-300/60 [&_mark]:px-0.5"
+                        dangerouslySetInnerHTML={{
+                            __html: chapter.description,
+                        }}
+                    />
+                ) : null}
             </div>
 
             {!readerMode && (

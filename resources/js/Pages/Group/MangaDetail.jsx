@@ -88,8 +88,13 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
     const continueChapterId =
         manga?.latestWatchedChapter?.id ?? manga?.chapters?.[0]?.id;
 
-    const synopsisText = (manga?.description ?? "").trim();
-    const synopsisNeedsToggle = synopsisText.length > 200;
+    const synopsisHtml = (manga?.description ?? "").trim();
+    const synopsisPlain = synopsisHtml
+        .replace(/<[^>]+>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    const synopsisNeedsToggle = synopsisPlain.length > 220;
 
     const continueEp = manga?.latestWatchedChapter?.chapter_number;
     const continueReadingLabel =
@@ -231,15 +236,16 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 <span className="h-5 w-1 shrink-0 rounded-full bg-primary sm:h-6"></span>
                                 Synopsis
                             </h3>
-                            <p
-                                className={`text-sm font-light leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300 ${
+                            <div
+                                className={`text-sm font-light leading-relaxed text-zinc-600 sm:text-base dark:text-zinc-300 [&_a]:text-primary [&_a]:underline [&_h1]:mb-2 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_mark]:rounded [&_mark]:bg-yellow-300/60 [&_mark]:px-0.5 ${
                                     synopsisNeedsToggle && !synopsisExpanded
-                                        ? "line-clamp-4 sm:line-clamp-5"
+                                        ? "max-h-28 overflow-hidden sm:max-h-36"
                                         : ""
                                 }`}
-                            >
-                                {synopsisText || "—"}
-                            </p>
+                                dangerouslySetInnerHTML={{
+                                    __html: synopsisHtml || "—",
+                                }}
+                            />
                             {synopsisNeedsToggle && (
                                 <button
                                     type="button"

@@ -16,6 +16,76 @@ body {
 .comment-mention-link:hover {
     text-decoration: underline;
 }
+
+/* Tiptap editor styles (reset-safe) */
+.tiptap-editor .ProseMirror {
+    min-height: 7.5rem;
+    outline: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.tiptap-editor .ProseMirror p {
+    margin: 0;
+}
+
+.tiptap-editor .ProseMirror p + p {
+    margin-top: 0.5rem;
+}
+
+.tiptap-editor .ProseMirror h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    font-weight: 700;
+}
+
+.tiptap-editor .ProseMirror h2 {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 700;
+}
+
+.tiptap-editor .ProseMirror h3 {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    font-weight: 700;
+}
+
+.tiptap-editor .ProseMirror ul {
+    list-style: disc;
+    margin-left: 1.25rem;
+    padding-left: 0.25rem;
+}
+
+.tiptap-editor .ProseMirror ol {
+    list-style: decimal;
+    margin-left: 1.25rem;
+    padding-left: 0.25rem;
+}
+
+.tiptap-editor .ProseMirror li + li {
+    margin-top: 0.25rem;
+}
+
+.tiptap-editor .ProseMirror strong {
+    font-weight: 700;
+}
+
+.tiptap-editor .ProseMirror em {
+    font-style: italic;
+}
+
+.tiptap-editor .ProseMirror mark {
+    background-color: rgba(250, 204, 21, 0.45);
+    color: inherit;
+    border-radius: 0.2rem;
+    padding: 0 0.1rem;
+}
+
+.tiptap-editor .ProseMirror a {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
 * {
     box-sizing: border-box !important;
 }

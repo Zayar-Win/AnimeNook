@@ -82,7 +82,7 @@ const Comment = ({ comment, auth, anime, manga, isReply = false }) => {
                     ) : (
                         <>
                             <div
-                                className="break-words text-sm leading-relaxed text-zinc-800 dark:text-zinc-300 [&>p]:mb-2 [&>p]:text-inherit last:[&>p]:mb-0 [&_a.comment-mention-link]:text-primary [&_a.comment-mention-link]:hover:underline [&_li]:text-inherit [&_strong]:text-inherit"
+                                className="break-words text-sm leading-relaxed text-zinc-800 dark:text-zinc-300 [&>p]:mb-2 [&>p]:text-inherit last:[&>p]:mb-0 [&_a.comment-mention-link]:text-primary [&_a.comment-mention-link]:hover:underline [&_li]:text-inherit [&_strong]:text-inherit [&_em]:text-inherit [&_h1]:mb-2 [&_h1]:text-2xl [&_h1]:font-bold [&_h1]:leading-tight [&_h2]:mb-2 [&_h2]:text-xl [&_h2]:font-bold [&_h2]:leading-tight [&_h3]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:leading-tight [&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_mark]:rounded [&_mark]:bg-yellow-300/60 [&_mark]:px-0.5"
                                 dangerouslySetInnerHTML={{
                                     __html:
                                         comment.display_body ??

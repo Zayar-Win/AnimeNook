@@ -2,6 +2,7 @@
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
 import ChunkUploader from "@/Components/ChunkUploader";
+import RichTextEditor from "@/Components/Editor/RichTextEditor";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
@@ -747,16 +748,14 @@ const ChapterForm = ({
                         )}
 
                         <div className="col-span-1 md:col-span-2">
-                            <Input
-                                textarea
-                                value={data.description}
-                                errorMessage={fieldError(errors, "description")}
+                            <RichTextEditor
                                 label="Description"
-                                onChange={(e) =>
-                                    setData("description", e.target.value)
+                                value={data.description}
+                                onChange={(html) =>
+                                    setData("description", html)
                                 }
+                                error={fieldError(errors, "description")}
                                 placeholder="Chapter summary..."
-                                className="!h-28 sm:!h-32"
                             />
                         </div>
                     </div>
