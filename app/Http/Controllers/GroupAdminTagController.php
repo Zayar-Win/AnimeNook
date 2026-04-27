@@ -96,4 +96,19 @@ class GroupAdminTagController extends Controller
         $tag->delete();
         return back()->with('success', 'Tag deleted successful.');
     }
+
+    public function bulkDelete(Group $group, Request $request)
+    {
+        $validated = $request->validate([
+            'tag_ids' => ['required', 'array', 'min:1'],
+            'tag_ids.*' => ['integer'],
+        ]);
+
+        Tag::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $validated['tag_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected tags deleted successfully.');
+    }
 }

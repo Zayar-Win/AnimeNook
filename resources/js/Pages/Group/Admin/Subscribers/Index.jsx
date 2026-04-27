@@ -201,6 +201,8 @@ function formatSubscribedAt(iso) {
 const Index = ({ subscribers, filters = {} }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedSubscriber, setSelectedSubscriber] = useState(null);
+    const [selectedSubscriberIds, setSelectedSubscriberIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const [search, setSearch] = useState(filters?.search ?? "");
     const [period, setPeriod] = useState(filters?.period ?? "");
     const searchInputRef = useRef(null);
@@ -267,11 +269,20 @@ const Index = ({ subscribers, filters = {} }) => {
     };
 
     const openDelete = (subscriber) => {
+        setSelectedSubscriberIds([]);
         setSelectedSubscriber(subscriber);
         setIsDeleteModalOpen(true);
     };
 
+    const openBulkDelete = () => {
+        if (!selectedSubscriberIds.length) return;
+        setSelectedSubscriber(null);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteHandler = () => {
+        if (!selectedSubscriber) return;
+
         router.post(
             window.route("group.admin.subscribers.delete", {
                 subscriber: selectedSubscriber,
@@ -281,6 +292,27 @@ const Index = ({ subscribers, filters = {} }) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedSubscriber(null);
+                },
+            }
+        );
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedSubscriberIds.length) return;
+
+        setIsBulkDeletePending(true);
+        router.post(
+            window.route("group.admin.subscribers.bulk-delete"),
+            { subscriber_ids: selectedSubscriberIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedSubscriberIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
                 },
             }
         );
@@ -386,8 +418,27 @@ const Index = ({ subscribers, filters = {} }) => {
             </div>
 
             <div className="hidden md:block">
+                {selectedSubscriberIds.length > 0 && (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-white">
+                            {selectedSubscriberIds.length} subscribers selected
+                        </p>
+                        <button
+                            type="button"
+                            onClick={openBulkDelete}
+                            disabled={isBulkDeletePending}
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isBulkDeletePending ? "Deleting..." : "Delete Selected"}
+                        </button>
+                    </div>
+                )}
                 <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#1a1a1a] shadow-xl shadow-black/50">
-                    <Table datas={subscribers} columns={columns}>
+                    <Table
+                        datas={subscribers}
+                        columns={columns}
+                        onSelectionChange={setSelectedSubscriberIds}
+                    >
                         <TableData>
                             {(subscriber) => (
                                 <p className="font-medium text-zinc-300">
@@ -412,9 +463,13 @@ const Index = ({ subscribers, filters = {} }) => {
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
-                    deleteHandler={deleteHandler}
+                    deleteHandler={
+                        selectedSubscriber ? deleteHandler : bulkDeleteHandler
+                    }
                     title={
-                        "Are you sure you want to delete this subscriber?"
+                        selectedSubscriber
+                            ? "Are you sure you want to delete this subscriber?"
+                            : `Are you sure you want to delete ${selectedSubscriberIds.length} subscribers?`
                     }
                 />
             )}

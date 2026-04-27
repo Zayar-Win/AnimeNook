@@ -69,6 +69,7 @@ Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 
 if ($isProduction) {
+    dd('hit');
     Route::domain('{group:subdomain}' . '.' . config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
@@ -141,11 +142,13 @@ if ($isProduction) {
             Route::get('/admin/users/{user}/edit', [GroupAdminUserController::class, 'edit'])->name('users.edit');
             Route::post('/admin/users/{user}/update', [GroupAdminUserController::class, 'update'])->name('users.update');
             Route::post('/admin/users/{user}/delete', [GroupAdminUserController::class, 'delete'])->name('users.delete');
+            Route::post('/admin/users/bulk-delete', [GroupAdminUserController::class, 'bulkDelete'])->name('users.bulk-delete');
             // Subscriber Routes
             Route::get('/admin/subscribers', [GroupAdminSubscriberController::class, 'index'])->name('subscribers');
             Route::get('/admin/subscribers/{subscriber}/edit', [GroupAdminSubscriberController::class, 'edit'])->name('subscribers.edit');
             Route::post('/admin/subscribers/{subscriber}/update', [GroupAdminSubscriberController::class, 'update'])->name('subscribers.update');
             Route::post('/admin/subscribers/{subscriber}/delete', [GroupAdminSubscriberController::class, 'delete'])->name('subscribers.delete');
+            Route::post('/admin/subscribers/bulk-delete', [GroupAdminSubscriberController::class, 'bulkDelete'])->name('subscribers.bulk-delete');
             // Anime Routes
             Route::get('/admin/animes', [GroupAdminAnimeController::class, 'index'])->name('animes');
             Route::get('/admin/animes/create', [GroupAdminAnimeController::class, 'create'])->name('animes.create');
@@ -165,6 +168,7 @@ if ($isProduction) {
             Route::get('/admin/mangas/{manga}/edit', [GroupAdminMangaController::class, 'edit'])->name('mangas.edit');
             Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name('mangas.update');
             Route::post('/admin/mangas/delete', [GroupAdminMangaController::class, 'delete'])->name('mangas.delete');
+            Route::post('/admin/mangas/bulk-delete', [GroupAdminMangaController::class, 'bulkDelete'])->name('mangas.bulk-delete');
             Route::get('/admin/mangas/{manga}/chapters/create', [GroupAdminMangaController::class, 'chapterCreate'])->name('mangas.chapters.create');
             Route::post('/admin/mangas/{manga}/chapters/store', [GroupAdminMangaController::class, 'chapterStore'])->name('mangas.chapters.store');
             Route::get('/admin/mangas/{manga}/chapters/{chapter}/edit', [GroupAdminMangaController::class, 'editChapter'])->name('mangas.chapters.edit');
@@ -173,6 +177,7 @@ if ($isProduction) {
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
+            Route::post('/admin/comments/bulk-delete', [GroupAdminCommentController::class, 'bulkDelete'])->name('comments.bulk-delete');
             //Tag Routes
             Route::get('/admin/tags', [GroupAdminTagController::class, 'index'])->name('tags');
             Route::get('/admin/tags/create', [GroupAdminTagController::class, 'create'])->name('tags.create');
@@ -180,6 +185,7 @@ if ($isProduction) {
             Route::get('/admin/tags/{tag}/edit', [GroupAdminTagController::class, 'edit'])->name('tags.edit');
             Route::post('/admin/tags/{tag}/update', [GroupAdminTagController::class, 'update'])->name('tags.update');
             Route::post('/admin/tags/{tag}/delete', [GroupAdminTagController::class, 'delete'])->name('tags.delete');
+            Route::post('/admin/tags/bulk-delete', [GroupAdminTagController::class, 'bulkDelete'])->name('tags.bulk-delete');
             //Setting Routes
             Route::get('/admin/setting', [GroupAdminSettingController::class, 'index'])->name('setting');
             //Group Data Routes
@@ -297,11 +303,13 @@ if ($isProduction) {
             Route::get('/admin/users/{user}/edit', [GroupAdminUserController::class, 'edit'])->name('users.edit');
             Route::post('/admin/users/{user}/update', [GroupAdminUserController::class, 'update'])->name('users.update');
             Route::post('/admin/users/{user}/delete', [GroupAdminUserController::class, 'delete'])->name('users.delete');
+            Route::post('/admin/users/bulk-delete', [GroupAdminUserController::class, 'bulkDelete'])->name('users.bulk-delete');
             // Subscriber Routes
             Route::get('/admin/subscribers', [GroupAdminSubscriberController::class, 'index'])->name('subscribers');
             Route::get('/admin/subscribers/{subscriber}/edit', [GroupAdminSubscriberController::class, 'edit'])->name('subscribers.edit');
             Route::post('/admin/subscribers/{subscriber}/update', [GroupAdminSubscriberController::class, 'update'])->name('subscribers.update');
             Route::post('/admin/subscribers/{subscriber}/delete', [GroupAdminSubscriberController::class, 'delete'])->name('subscribers.delete');
+            Route::post('/admin/subscribers/bulk-delete', [GroupAdminSubscriberController::class, 'bulkDelete'])->name('subscribers.bulk-delete');
             // Anime Routes
             Route::get('/admin/animes', [GroupAdminAnimeController::class, 'index'])->name('animes');
             Route::get('/admin/animes/create', [GroupAdminAnimeController::class, 'create'])->name('animes.create');
@@ -321,6 +329,7 @@ if ($isProduction) {
             Route::get('/admin/mangas/{manga}/edit', [GroupAdminMangaController::class, 'edit'])->name('mangas.edit');
             Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name('mangas.update');
             Route::post('/admin/mangas/delete', [GroupAdminMangaController::class, 'delete'])->name('mangas.delete');
+            Route::post('/admin/mangas/bulk-delete', [GroupAdminMangaController::class, 'bulkDelete'])->name('mangas.bulk-delete');
             Route::get('/admin/mangas/{manga}/chapters/create', [GroupAdminMangaController::class, 'chapterCreate'])->name('mangas.chapters.create');
             Route::post('/admin/mangas/{manga}/chapters/store', [GroupAdminMangaController::class, 'chapterStore'])->name('mangas.chapters.store');
             Route::get('/admin/mangas/{manga}/chapters/{chapter}/edit', [GroupAdminMangaController::class, 'editChapter'])->name('mangas.chapters.edit');
@@ -329,6 +338,7 @@ if ($isProduction) {
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
+            Route::post('/admin/comments/bulk-delete', [GroupAdminCommentController::class, 'bulkDelete'])->name('comments.bulk-delete');
             //Tag Routes
             Route::get('/admin/tags', [GroupAdminTagController::class, 'index'])->name('tags');
             Route::get('/admin/tags/create', [GroupAdminTagController::class, 'create'])->name('tags.create');
@@ -336,6 +346,7 @@ if ($isProduction) {
             Route::get('/admin/tags/{tag}/edit', [GroupAdminTagController::class, 'edit'])->name('tags.edit');
             Route::post('/admin/tags/{tag}/update', [GroupAdminTagController::class, 'update'])->name('tags.update');
             Route::post('/admin/tags/{tag}/delete', [GroupAdminTagController::class, 'delete'])->name('tags.delete');
+            Route::post('/admin/tags/bulk-delete', [GroupAdminTagController::class, 'bulkDelete'])->name('tags.bulk-delete');
             //Setting Routes
             Route::get('/admin/setting', [GroupAdminSettingController::class, 'index'])->name('setting');
             //Group Data Routes

@@ -198,6 +198,8 @@ const SORT_DEFAULT = "name_asc";
 const Index = ({ tags, filters = {} }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedTag, setSelectedTag] = useState(null);
+    const [selectedTagIds, setSelectedTagIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const [search, setSearch] = useState(filters?.search ?? "");
     const [sort, setSort] = useState(
         ["name_asc", "name_desc", "slug_asc", "slug_desc"].includes(
@@ -276,11 +278,20 @@ const Index = ({ tags, filters = {} }) => {
     };
 
     const openDelete = (tag) => {
+        setSelectedTagIds([]);
         setSelectedTag(tag);
         setIsDeleteModalOpen(true);
     };
 
+    const openBulkDelete = () => {
+        if (!selectedTagIds.length) return;
+        setSelectedTag(null);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteHandler = () => {
+        if (!selectedTag) return;
+
         router.post(
             window.route("group.admin.tags.delete", { tag: selectedTag }),
             {},
@@ -288,6 +299,27 @@ const Index = ({ tags, filters = {} }) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedTag(null);
+                },
+            }
+        );
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedTagIds.length) return;
+
+        setIsBulkDeletePending(true);
+        router.post(
+            window.route("group.admin.tags.bulk-delete"),
+            { tag_ids: selectedTagIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedTagIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
                 },
             }
         );
@@ -393,8 +425,27 @@ const Index = ({ tags, filters = {} }) => {
             </div>
 
             <div className="hidden md:block">
+                {selectedTagIds.length > 0 && (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-white">
+                            {selectedTagIds.length} tags selected
+                        </p>
+                        <button
+                            type="button"
+                            onClick={openBulkDelete}
+                            disabled={isBulkDeletePending}
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isBulkDeletePending ? "Deleting..." : "Delete Selected"}
+                        </button>
+                    </div>
+                )}
                 <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#1a1a1a] shadow-xl shadow-black/50">
-                    <Table datas={tags} columns={columns}>
+                    <Table
+                        datas={tags}
+                        columns={columns}
+                        onSelectionChange={setSelectedTagIds}
+                    >
                         <TableData>
                             {(tag) => (
                                 <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm font-bold text-white">
@@ -423,8 +474,12 @@ const Index = ({ tags, filters = {} }) => {
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
-                    deleteHandler={deleteHandler}
-                    title={"Are you sure you want to delete this tag?"}
+                    deleteHandler={selectedTag ? deleteHandler : bulkDeleteHandler}
+                    title={
+                        selectedTag
+                            ? "Are you sure you want to delete this tag?"
+                            : `Are you sure you want to delete ${selectedTagIds.length} tags?`
+                    }
                 />
             )}
         </div>

@@ -1,33 +1,32 @@
 import React from "react";
 import TableRow from "./TableRow";
 
-const Thead = ({ theadClasses, columns }) => {
+const Thead = ({
+    theadClasses,
+    columns,
+    allSelected = false,
+    onToggleAll,
+    hasRows = false,
+}) => {
     return (
         <thead
             className={`${theadClasses} text-xs font-bold text-zinc-400 uppercase bg-white/5 border-b border-white/10`}
         >
             <TableRow className="!bg-transparent hover:!bg-transparent border-none">
-                <th>
-                    <th scope="col" className="p-4">
-                        <div className="flex items-center">
-                            <input
-                                id="checkbox-all-search"
-                                type="checkbox"
-                                // checked={
-                                //     selectedRows.length ===
-                                //     (datas.data.length || datas.length)
-                                // }
-                                // onChange={selectAllOrCancel}
-                                className="w-4 h-4 text-primary bg-[#1a1a1a] border-white/10 rounded focus:ring-primary focus:ring-2"
-                            />
-                            <label
-                                htmlFor="checkbox-all-search"
-                                className="sr-only"
-                            >
-                                checkbox
-                            </label>
-                        </div>
-                    </th>
+                <th scope="col" className="p-4">
+                    <div className="flex items-center">
+                        <input
+                            id="checkbox-all-search"
+                            type="checkbox"
+                            checked={allSelected}
+                            onChange={onToggleAll}
+                            disabled={!hasRows}
+                            className="w-4 h-4 text-primary bg-[#1a1a1a] border-white/10 rounded focus:ring-primary focus:ring-2 disabled:opacity-50"
+                        />
+                        <label htmlFor="checkbox-all-search" className="sr-only">
+                            Select all rows
+                        </label>
+                    </div>
                 </th>
                 {columns.map((column) => (
                     <th

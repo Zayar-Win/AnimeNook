@@ -65,8 +65,24 @@ class GroupAdminCommentController extends Controller
             ],
         ]);
     }
-    public function delete(Group $group, Comment $comment){
+    public function delete(Group $group, Comment $comment)
+    {
         $comment->delete();
-        return back()->with('success','Comment deleted successful.');
+        return back()->with('success', 'Comment deleted successful.');
+    }
+
+    public function bulkDelete(Group $group, Request $request)
+    {
+        $validated = $request->validate([
+            'comment_ids' => ['required', 'array', 'min:1'],
+            'comment_ids.*' => ['integer'],
+        ]);
+
+        Comment::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $validated['comment_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected comments deleted successfully.');
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Group;
 use App\Models\Subscriber;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class GroupAdminSubscriberController extends Controller
@@ -64,8 +65,24 @@ class GroupAdminSubscriberController extends Controller
         return redirect(route('group.admin.subscribers'))->with('success','Subscriber updated Successful.');
     }
 
-    public function delete(Group $group,Subscriber $subscriber){
+    public function delete(Group $group, Subscriber $subscriber)
+    {
         $subscriber->delete();
-        return back()->with('success','Subscriber Deleted Successful.');
+        return back()->with('success', 'Subscriber Deleted Successful.');
+    }
+
+    public function bulkDelete(Group $group, Request $request)
+    {
+        $validated = $request->validate([
+            'subscriber_ids' => ['required', 'array', 'min:1'],
+            'subscriber_ids.*' => ['integer'],
+        ]);
+
+        Subscriber::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $validated['subscriber_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected subscribers deleted successfully.');
     }
 }

@@ -237,6 +237,8 @@ function UserFiltersToolbar({
 const Index = ({ users, filters = {}, roles = [] }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [selectedUserIds, setSelectedUserIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const [search, setSearch] = useState(filters?.search ?? "");
     const [roleId, setRoleId] = useState(
         filters?.role_id != null ? String(filters.role_id) : ""
@@ -310,11 +312,20 @@ const Index = ({ users, filters = {}, roles = [] }) => {
     };
 
     const openDelete = (user) => {
+        setSelectedUserIds([]);
         setSelectedUser(user);
         setIsDeleteModalOpen(true);
     };
 
+    const openBulkDelete = () => {
+        if (!selectedUserIds.length) return;
+        setSelectedUser(null);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteHandler = () => {
+        if (!selectedUser) return;
+
         router.post(
             window.route("group.admin.users.delete", { user: selectedUser }),
             {},
@@ -322,6 +333,27 @@ const Index = ({ users, filters = {}, roles = [] }) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedUser(null);
+                },
+            }
+        );
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedUserIds.length) return;
+
+        setIsBulkDeletePending(true);
+        router.post(
+            window.route("group.admin.users.bulk-delete"),
+            { user_ids: selectedUserIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedUserIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
                 },
             }
         );
@@ -430,7 +462,26 @@ const Index = ({ users, filters = {}, roles = [] }) => {
             </div>
 
             <div className="hidden md:block">
-                <Table datas={users} columns={columns}>
+                {selectedUserIds.length > 0 && (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-white">
+                            {selectedUserIds.length} users selected
+                        </p>
+                        <button
+                            type="button"
+                            onClick={openBulkDelete}
+                            disabled={isBulkDeletePending}
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isBulkDeletePending ? "Deleting..." : "Delete Selected"}
+                        </button>
+                    </div>
+                )}
+                <Table
+                    datas={users}
+                    columns={columns}
+                    onSelectionChange={setSelectedUserIds}
+                >
                     <TableData>{(user) => <p>{user.name}</p>}</TableData>
                     <TableData>
                         {(user) => <UserAvatar user={user} />}
@@ -459,8 +510,12 @@ const Index = ({ users, filters = {}, roles = [] }) => {
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
-                    deleteHandler={deleteHandler}
-                    title={"Are you sure want to delete this user."}
+                    deleteHandler={selectedUser ? deleteHandler : bulkDeleteHandler}
+                    title={
+                        selectedUser
+                            ? "Are you sure want to delete this user."
+                            : `Are you sure you want to delete ${selectedUserIds.length} users?`
+                    }
                 />
             )}
         </div>

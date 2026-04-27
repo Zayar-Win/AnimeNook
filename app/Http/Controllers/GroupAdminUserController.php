@@ -104,6 +104,21 @@ class GroupAdminUserController extends Controller
         return back()->with('success', 'User Delete Successful');
     }
 
+    public function bulkDelete(Group $group, Request $request)
+    {
+        $validated = $request->validate([
+            'user_ids' => ['required', 'array', 'min:1'],
+            'user_ids.*' => ['integer'],
+        ]);
+
+        User::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $validated['user_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected users deleted successfully.');
+    }
+
     public function store(Group $group, Request $request)
     {
         $validatedData = $request->validate([

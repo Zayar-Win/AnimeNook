@@ -206,6 +206,8 @@ function StatusPill({ name }) {
 const Index = ({ mangas, filters = {}, statuses = [] }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedManga, setSelectedManga] = useState(null);
+    const [selectedMangaIds, setSelectedMangaIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const [search, setSearch] = useState(filters?.search ?? "");
     const [statusId, setStatusId] = useState(
         filters?.status_id != null && filters.status_id !== ""
@@ -276,11 +278,24 @@ const Index = ({ mangas, filters = {}, statuses = [] }) => {
     };
 
     const openDelete = (manga) => {
+        setSelectedMangaIds([]);
         setSelectedManga(manga);
         setIsDeleteModalOpen(true);
     };
 
+    const openBulkDelete = () => {
+        if (!selectedMangaIds.length) {
+            return;
+        }
+        setSelectedManga(null);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteHandler = () => {
+        if (!selectedManga) {
+            return;
+        }
+
         router.post(
             window.route("group.admin.mangas.delete", {
                 manga: selectedManga,
@@ -290,6 +305,32 @@ const Index = ({ mangas, filters = {}, statuses = [] }) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedManga(null);
+                },
+            }
+        );
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedMangaIds.length) {
+            return;
+        }
+
+        setIsBulkDeletePending(true);
+
+        router.post(
+            window.route("group.admin.mangas.bulk-delete"),
+            {
+                manga_ids: selectedMangaIds,
+            },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedMangaIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
                 },
             }
         );
@@ -428,8 +469,27 @@ const Index = ({ mangas, filters = {}, statuses = [] }) => {
             </div>
 
             <div className="hidden md:block">
+                {selectedMangaIds.length > 0 && (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-white">
+                            {selectedMangaIds.length} manga selected
+                        </p>
+                        <button
+                            type="button"
+                            onClick={openBulkDelete}
+                            disabled={isBulkDeletePending}
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isBulkDeletePending ? "Deleting..." : "Delete Selected"}
+                        </button>
+                    </div>
+                )}
                 <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#1a1a1a] shadow-xl shadow-black/50">
-                    <Table datas={mangas} columns={columns}>
+                    <Table
+                        datas={mangas}
+                        columns={columns}
+                        onSelectionChange={setSelectedMangaIds}
+                    >
                         <TableData>
                             {(manga) => (
                                 <p className="font-bold text-white">
@@ -493,8 +553,14 @@ const Index = ({ mangas, filters = {}, statuses = [] }) => {
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
-                    deleteHandler={deleteHandler}
-                    title={"Are you sure you want to delete this manga?"}
+                    deleteHandler={
+                        selectedManga ? deleteHandler : bulkDeleteHandler
+                    }
+                    title={
+                        selectedManga
+                            ? "Are you sure you want to delete this manga?"
+                            : `Are you sure you want to delete ${selectedMangaIds.length} manga?`
+                    }
                 />
             )}
         </div>

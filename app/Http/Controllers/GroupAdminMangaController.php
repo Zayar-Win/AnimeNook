@@ -283,6 +283,21 @@ class GroupAdminMangaController extends Controller
         return back()->with('success', 'Manga deleted successful.');
     }
 
+    public function bulkDelete(Group $group, Request $request)
+    {
+        $validated = $request->validate([
+            'manga_ids' => ['required', 'array', 'min:1'],
+            'manga_ids.*' => ['integer'],
+        ]);
+
+        Manga::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $validated['manga_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected manga deleted successfully.');
+    }
+
     private function paginatedSeasonsForChapterForm(Manga $manga, Request $request): array
     {
         $input = [

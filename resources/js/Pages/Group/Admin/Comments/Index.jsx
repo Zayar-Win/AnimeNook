@@ -249,6 +249,8 @@ function formatPostedAt(iso) {
 const Index = ({ comments, filters = {} }) => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedComment, setSelectedComment] = useState(null);
+    const [selectedCommentIds, setSelectedCommentIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const [search, setSearch] = useState(filters?.search ?? "");
     const [type, setType] = useState(filters?.type ?? "");
     const [period, setPeriod] = useState(filters?.period ?? "");
@@ -319,11 +321,20 @@ const Index = ({ comments, filters = {} }) => {
     };
 
     const openDelete = (comment) => {
+        setSelectedCommentIds([]);
         setSelectedComment(comment);
         setIsDeleteModalOpen(true);
     };
 
+    const openBulkDelete = () => {
+        if (!selectedCommentIds.length) return;
+        setSelectedComment(null);
+        setIsDeleteModalOpen(true);
+    };
+
     const deleteHandler = () => {
+        if (!selectedComment) return;
+
         router.post(
             window.route("group.admin.comments.delete", {
                 comment: selectedComment,
@@ -333,6 +344,27 @@ const Index = ({ comments, filters = {} }) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedComment(null);
+                },
+            }
+        );
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedCommentIds.length) return;
+
+        setIsBulkDeletePending(true);
+        router.post(
+            window.route("group.admin.comments.bulk-delete"),
+            { comment_ids: selectedCommentIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedCommentIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
                 },
             }
         );
@@ -446,8 +478,27 @@ const Index = ({ comments, filters = {} }) => {
             </div>
 
             <div className="hidden md:block">
+                {selectedCommentIds.length > 0 && (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-white">
+                            {selectedCommentIds.length} comments selected
+                        </p>
+                        <button
+                            type="button"
+                            onClick={openBulkDelete}
+                            disabled={isBulkDeletePending}
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isBulkDeletePending ? "Deleting..." : "Delete Selected"}
+                        </button>
+                    </div>
+                )}
                 <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#1a1a1a] shadow-xl shadow-black/50">
-                    <Table datas={comments} columns={columns}>
+                    <Table
+                        datas={comments}
+                        columns={columns}
+                        onSelectionChange={setSelectedCommentIds}
+                    >
                         <TableData>
                             {(comment) => <TypeBadge comment={comment} />}
                         </TableData>
@@ -492,8 +543,14 @@ const Index = ({ comments, filters = {} }) => {
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
-                    deleteHandler={deleteHandler}
-                    title={"Are you sure you want to delete this comment?"}
+                    deleteHandler={
+                        selectedComment ? deleteHandler : bulkDeleteHandler
+                    }
+                    title={
+                        selectedComment
+                            ? "Are you sure you want to delete this comment?"
+                            : `Are you sure you want to delete ${selectedCommentIds.length} comments?`
+                    }
                 />
             )}
         </div>
