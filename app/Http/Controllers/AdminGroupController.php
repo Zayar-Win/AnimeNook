@@ -83,6 +83,20 @@ class AdminGroupController extends Controller
         return back()->with('success', 'Group deleted successful.');
     }
 
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'group_ids' => ['required', 'array', 'min:1'],
+            'group_ids.*' => ['integer'],
+        ]);
+
+        Group::query()
+            ->whereIn('id', $validated['group_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected groups deleted successfully.');
+    }
+
     public function updateSubscription(Group $group)
     {
 

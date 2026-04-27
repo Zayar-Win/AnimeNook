@@ -63,8 +63,11 @@ class AdminUserController extends Controller
             'profile_picture' => ['required'],
             'role_id' => ['required'],
             'type' => ['required', 'in:free,paid'],
-            'password' => ['required', 'min:6', 'max:20']
+            'password' => ['nullable', 'min:6', 'max:20']
         ]);
+        if (empty($validatedData['password'])) {
+            unset($validatedData['password']);
+        }
         if (gettype($validatedData['profile_picture']) !== 'string') {
             $validatedData['profile_picture'] = $this->uploader->upload($validatedData['profile_picture'], 'amineProfile');
         }
@@ -76,5 +79,19 @@ class AdminUserController extends Controller
     {
         $user->delete();
         return back()->with('success', 'User Deleted successful.');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'user_ids' => ['required', 'array', 'min:1'],
+            'user_ids.*' => ['integer'],
+        ]);
+
+        User::query()
+            ->whereIn('id', $validated['user_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected users deleted successfully.');
     }
 }

@@ -56,4 +56,18 @@ class AdminOuoFailLinkController extends Controller
         $failLink->delete();
         return back()->with('success', 'Fail Link deleted successful');
     }
+
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'fail_link_ids' => ['required', 'array', 'min:1'],
+            'fail_link_ids.*' => ['integer'],
+        ]);
+
+        OuoFailLink::query()
+            ->whereIn('id', $validated['fail_link_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected fail links deleted successfully.');
+    }
 }

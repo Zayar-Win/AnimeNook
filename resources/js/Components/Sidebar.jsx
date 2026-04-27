@@ -10,6 +10,27 @@ const Sidebar = ({
     setIsOpenMobileSidebar,
 }) => {
     const { group } = usePage().props;
+    const isGroupAdmin = window.route().current("group.admin.*");
+    const headerHref = isGroupAdmin
+        ? window.route("group.home")
+        : window.route("admin.dashboard");
+    const accountLinks = isGroupAdmin
+        ? [
+              {
+                  label: "Settings",
+                  routeName: "group.admin.setting",
+              },
+              {
+                  label: "Dashboard",
+                  routeName: "group.admin.dashboard",
+              },
+          ]
+        : [
+              {
+                  label: "Dashboard",
+                  routeName: "admin.dashboard",
+              },
+          ];
     const [openMenus, setOpenMenus] = useState(() => {
         const initialState = {};
         sidebarLinks.forEach((link) => {
@@ -54,23 +75,31 @@ const Sidebar = ({
                 {/* Header */}
                 <div className="p-6">
                     <Link
-                        href={window.route("group.home")}
+                        href={headerHref}
                         onClick={closeMobileSidebar}
                     >
                         <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
                             <div className="w-10 h-10 shrink-0 rounded-lg overflow-hidden ring-2 ring-white/10">
-                                <img
-                                    src={group?.logo}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                />
+                                {group?.logo ? (
+                                    <img
+                                        src={group.logo}
+                                        className="w-full h-full object-cover"
+                                        alt=""
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-white/10 text-sm font-black text-zinc-300">
+                                        SA
+                                    </div>
+                                )}
                             </div>
                             <div className="overflow-hidden">
                                 <h2 className="text-white font-bold truncate">
-                                    {group?.name}
+                                    {group?.name ?? "Super Admin"}
                                 </h2>
                                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-wider">
-                                    Admin Panel
+                                    {isGroupAdmin
+                                        ? "Group Admin Panel"
+                                        : "Admin Panel"}
                                 </p>
                             </div>
                         </div>
@@ -173,39 +202,23 @@ const Sidebar = ({
                             Account
                         </p>
                         <div className="space-y-1">
-                            <Link
-                                href={window.route("group.admin.setting")}
-                                onClick={closeMobileSidebar}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                                    window
-                                        .route()
-                                        .current("group.admin.setting")
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "text-zinc-400 hover:text-white hover:bg-white/5"
-                                }`}
-                            >
-                                <Dashboard className="w-5 h-5" />
-                                <span className="font-semibold text-sm">
-                                    Settings
-                                </span>
-                            </Link>
-
-                            <Link
-                                href={window.route("group.admin.dashboard")}
-                                onClick={closeMobileSidebar}
-                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
-                                    window
-                                        .route()
-                                        .current("group.admin.dashboard")
-                                        ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                        : "text-zinc-400 hover:text-white hover:bg-white/5"
-                                }`}
-                            >
-                                <Dashboard className="w-5 h-5" />
-                                <span className="font-semibold text-sm">
-                                    Dashboard
-                                </span>
-                            </Link>
+                            {accountLinks.map((link) => (
+                                <Link
+                                    key={link.routeName}
+                                    href={window.route(link.routeName)}
+                                    onClick={closeMobileSidebar}
+                                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
+                                        window.route().current(link.routeName)
+                                            ? "bg-primary text-white shadow-lg shadow-primary/20"
+                                            : "text-zinc-400 hover:text-white hover:bg-white/5"
+                                    }`}
+                                >
+                                    <Dashboard className="w-5 h-5" />
+                                    <span className="font-semibold text-sm">
+                                        {link.label}
+                                    </span>
+                                </Link>
+                            ))}
                         </div>
                     </div>
                 </div>

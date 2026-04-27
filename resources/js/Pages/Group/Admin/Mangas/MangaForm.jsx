@@ -4,6 +4,7 @@ import DeleteModal from "@/Components/DeleteModal";
 import ChunkUploader from "@/Components/ChunkUploader";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
+import RichTextEditor from "@/Components/Editor/RichTextEditor";
 import Select from "@/Components/Select";
 import Table from "@/Components/Table";
 import TableData from "@/Components/TableData";
@@ -394,19 +395,14 @@ const MangaForm = ({
                                     />
                                 </div>
                                 <div>
-                                    <Input
-                                        textarea
+                                    <RichTextEditor
                                         label="Description"
                                         value={data.description}
-                                        onChange={(e) =>
-                                            setData(
-                                                "description",
-                                                e.target.value
-                                            )
+                                        onChange={(html) =>
+                                            setData("description", html)
                                         }
-                                        errorMessage={errors.description}
+                                        error={errors.description}
                                         placeholder="Write a brief synopsis..."
-                                        className="!h-32"
                                     />
                                 </div>
 

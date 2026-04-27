@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\helpers\Uploader;
 use App\Models\Blog;
 use App\Models\Tag;
+use Illuminate\Http\Request;
 
 use function Pest\Laravel\delete;
 
@@ -88,5 +89,20 @@ class AdminBlogController extends Controller
     {
         $blog->delete();
         return redirect()->back()->with('success', 'Blog deleted successfully');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        $validated = $request->validate([
+            'blog_ids' => ['required', 'array', 'min:1'],
+            'blog_ids.*' => ['integer'],
+        ]);
+
+        Blog::query()
+            ->whereNull('group_id')
+            ->whereIn('id', $validated['blog_ids'])
+            ->delete();
+
+        return redirect()->back()->with('success', 'Selected blogs deleted successfully');
     }
 }

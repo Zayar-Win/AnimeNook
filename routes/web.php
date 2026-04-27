@@ -404,6 +404,7 @@ Route::name('admin.')->middleware('auth')->group(function () {
     Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
     Route::post('/admin/users/{user}/update', [AdminUserController::class, 'update'])->name('users.update');
     Route::post('/admin/users/{user}/delete', [AdminUserController::class, 'delete'])->name('users.delete');
+    Route::post('/admin/users/bulk-delete', [AdminUserController::class, 'bulkDelete'])->name('users.bulk-delete');
     //Group Routes
     Route::get('/admin/groups', [AdminGroupController::class, 'index'])->name('groups');
     Route::get('/admin/groups/create', [AdminGroupController::class, 'create'])->name('groups.create');
@@ -411,10 +412,12 @@ Route::name('admin.')->middleware('auth')->group(function () {
     Route::get('/admin/groups/{group}/edit', [AdminGroupController::class, 'edit'])->name('groups.edit');
     Route::post('/admin/groups/{group}/update', [AdminGroupController::class, 'update'])->name('groups.update');
     Route::post('/admin/groups/{group}/delete', [AdminGroupController::class, 'delete'])->name('groups.delete');
+    Route::post('/admin/groups/bulk-delete', [AdminGroupController::class, 'bulkDelete'])->name('groups.bulk-delete');
     Route::post('/admin/groups/{group}/updateSubscription', [AdminGroupController::class, 'updateSubscription'])->name('groups.updateSubscription');
     //Ouo fail Links
     Route::get('/admin/ouofaillinks', [AdminOuoFailLinkController::class, 'index'])->name('ouo.fail.links');
     Route::post('/admin/ouofaillinks/{failLink}/delete', [AdminOuoFailLinkController::class, 'delete'])->name('ouo.fail.links.delete');
+    Route::post('/admin/ouofaillinks/bulk-delete', [AdminOuoFailLinkController::class, 'bulkDelete'])->name('ouo.fail.links.bulk-delete');
     Route::post('/admin/ouofaillinks/{failLink}/rerun', [AdminOuoFailLinkController::class, 'rerunFailLink'])->name('ouo.fail.links.rerun');
     Route::post('/admin/ouofaillinks/rerun', [AdminOuoFailLinkController::class, 'rerunAllFailLink'])->name('ouo.fail.links.rerunAll');
 
@@ -425,6 +428,7 @@ Route::name('admin.')->middleware('auth')->group(function () {
     Route::get('/admin/blogs/{blog}/edit', [AdminBlogController::class, 'edit'])->name('blogs.edit');
     Route::post('/admin/blogs/{blog}/update', [AdminBlogController::class, 'update'])->name('blogs.update');
     Route::post('/admin/blogs/{blog}', [AdminBlogController::class, 'delete'])->name('blogs.delete');
+    Route::post('/admin/blogs/bulk-delete', [AdminBlogController::class, 'bulkDelete'])->name('blogs.bulk-delete');
 });
 
 Route::get('/', function () {
