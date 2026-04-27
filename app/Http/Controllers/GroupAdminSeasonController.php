@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anime;
+use App\Models\Chapter;
 use App\Models\Group;
 use App\Models\Manga;
 use App\Models\Season;
@@ -113,5 +114,33 @@ class GroupAdminSeasonController extends Controller
         }
         $season->delete();
         return back()->with('success', 'Season deleted successful.');
+    }
+
+    public function bulkDelete(Group $group, Request $request)
+    {
+        $validated = $request->validate([
+            'season_ids' => ['required', 'array', 'min:1'],
+            'season_ids.*' => ['integer'],
+        ]);
+
+        $seasonIds = Season::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $validated['season_ids'])
+            ->pluck('id');
+
+        if ($seasonIds->isEmpty()) {
+            return back()->with('success', 'No seasons selected for deletion.');
+        }
+
+        Chapter::query()
+            ->whereIn('season_id', $seasonIds)
+            ->update(['season_id' => null]);
+
+        Season::query()
+            ->where('group_id', $group->id)
+            ->whereIn('id', $seasonIds)
+            ->delete();
+
+        return back()->with('success', 'Selected seasons deleted successfully.');
     }
 }

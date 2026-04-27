@@ -174,6 +174,7 @@ if ($isProduction) {
             Route::get('/admin/mangas/{manga}/chapters/{chapter}/edit', [GroupAdminMangaController::class, 'editChapter'])->name('mangas.chapters.edit');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/update', [GroupAdminMangaController::class, 'updateChapter'])->name('mangas.chapters.update');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/delete', [GroupAdminMangaController::class, 'deleteChapter'])->name('mangas.chapters.delete');
+            Route::post('/admin/mangas/{manga}/chapters/bulk-delete', [GroupAdminMangaController::class, 'bulkDeleteChapters'])->name('mangas.chapters.bulk-delete');
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
@@ -198,6 +199,7 @@ if ($isProduction) {
             Route::get('/admin/animes/{anime:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'animeSeasonEdit'])->name('anime.seasons.edit');
             Route::post('/admin/seasons/{season}/update', [GroupAdminSeasonController::class, 'seasonUpdate'])->name('seasons.update');
             Route::post('/admin/seasons/{season}/delete', [GroupAdminSeasonController::class, 'delete'])->name('seasons.delete');
+            Route::post('/admin/seasons/bulk-delete', [GroupAdminSeasonController::class, 'bulkDelete'])->name('seasons.bulk-delete');
 
             Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
             Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
@@ -335,6 +337,7 @@ if ($isProduction) {
             Route::get('/admin/mangas/{manga}/chapters/{chapter}/edit', [GroupAdminMangaController::class, 'editChapter'])->name('mangas.chapters.edit');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/update', [GroupAdminMangaController::class, 'updateChapter'])->name('mangas.chapters.update');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/delete', [GroupAdminMangaController::class, 'deleteChapter'])->name('mangas.chapters.delete');
+            Route::post('/admin/mangas/{manga}/chapters/bulk-delete', [GroupAdminMangaController::class, 'bulkDeleteChapters'])->name('mangas.chapters.bulk-delete');
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
@@ -359,6 +362,7 @@ if ($isProduction) {
             Route::get('/admin/animes/{anime:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'animeSeasonEdit'])->name('anime.seasons.edit');
             Route::post('/admin/seasons/{season}/update', [GroupAdminSeasonController::class, 'seasonUpdate'])->name('seasons.update');
             Route::post('/admin/seasons/{season}/delete', [GroupAdminSeasonController::class, 'delete'])->name('seasons.delete');
+            Route::post('/admin/seasons/bulk-delete', [GroupAdminSeasonController::class, 'bulkDelete'])->name('seasons.bulk-delete');
 
             Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
             Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');

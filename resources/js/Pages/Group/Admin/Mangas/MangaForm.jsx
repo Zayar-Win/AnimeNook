@@ -109,6 +109,8 @@ const MangaForm = ({
     const [statusOptions, setStatusOptions] = useState([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedChapter, setSelectedChapter] = useState(null);
+    const [selectedChapterIds, setSelectedChapterIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const { data, setData, post, errors } = useForm({
         thumbnail: manga?.thumbnail ?? null,
         background_image: manga?.background_image ?? null,
@@ -128,6 +130,8 @@ const MangaForm = ({
     const [activeTab, setActiveTab] = useState("details");
 
     const deleteHandler = () => {
+        if (!selectedChapter) return;
+
         router.post(
             window.route("group.admin.mangas.chapters.delete", {
                 chapter: selectedChapter,
@@ -138,6 +142,7 @@ const MangaForm = ({
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedChapter(null);
                 },
             }
         );
@@ -191,8 +196,35 @@ const MangaForm = ({
     const chapterRows = chapters?.data ?? [];
 
     const openChapterDelete = (chapter) => {
+        setSelectedChapterIds([]);
         setSelectedChapter(chapter);
         setIsDeleteModalOpen(true);
+    };
+
+    const openBulkDelete = () => {
+        if (!selectedChapterIds.length) return;
+        setSelectedChapter(null);
+        setIsDeleteModalOpen(true);
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedChapterIds.length) return;
+
+        setIsBulkDeletePending(true);
+        router.post(
+            window.route("group.admin.mangas.chapters.bulk-delete", { manga }),
+            { chapter_ids: selectedChapterIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedChapterIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
+                },
+            }
+        );
     };
 
     return (
@@ -545,7 +577,28 @@ const MangaForm = ({
                                     )}
                                 </div>
                                 <div className="hidden md:block">
-                                    <Table datas={chapters} columns={columns}>
+                                    {selectedChapterIds.length > 0 && (
+                                        <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                                            <p className="text-sm font-semibold text-white">
+                                                {selectedChapterIds.length} chapters selected
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={openBulkDelete}
+                                                disabled={isBulkDeletePending}
+                                                className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                                            >
+                                                {isBulkDeletePending
+                                                    ? "Deleting..."
+                                                    : "Delete Selected"}
+                                            </button>
+                                        </div>
+                                    )}
+                                    <Table
+                                        datas={chapters}
+                                        columns={columns}
+                                        onSelectionChange={setSelectedChapterIds}
+                                    >
                                         <TableData>
                                             {(chapter) => (
                                                 <span className="rounded-lg bg-white/5 px-3 py-1 font-bold text-white">
@@ -636,9 +689,15 @@ const MangaForm = ({
                                         setIsDeleteModalOpen={
                                             setIsDeleteModalOpen
                                         }
-                                        deleteHandler={deleteHandler}
+                                        deleteHandler={
+                                            selectedChapter
+                                                ? deleteHandler
+                                                : bulkDeleteHandler
+                                        }
                                         title={
-                                            "Are you sure you want to delete this chapter?"
+                                            selectedChapter
+                                                ? "Are you sure you want to delete this chapter?"
+                                                : `Are you sure you want to delete ${selectedChapterIds.length} chapters?`
                                         }
                                     />
                                 )}

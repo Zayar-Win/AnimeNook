@@ -645,4 +645,20 @@ class GroupAdminMangaController extends Controller
 
         return back()->with('success', 'Delete chapter Successful.');
     }
+
+    public function bulkDeleteChapters(Group $group, Manga $manga, Request $request)
+    {
+        $validated = $request->validate([
+            'chapter_ids' => ['required', 'array', 'min:1'],
+            'chapter_ids.*' => ['integer'],
+        ]);
+
+        Chapter::query()
+            ->where('chapterable_type', Manga::class)
+            ->where('chapterable_id', $manga->id)
+            ->whereIn('id', $validated['chapter_ids'])
+            ->delete();
+
+        return back()->with('success', 'Selected chapters deleted successfully.');
+    }
 }

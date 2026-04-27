@@ -164,6 +164,8 @@ const Index = ({ seasons, serie, type, seasonFilters = {} }) => {
     const { url } = usePage();
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedSeason, setSelectedSeason] = useState(null);
+    const [selectedSeasonIds, setSelectedSeasonIds] = useState([]);
+    const [isBulkDeletePending, setIsBulkDeletePending] = useState(false);
     const [search, setSearch] = useState(seasonFilters?.search ?? "");
     const [chaptersFilter, setChaptersFilter] = useState(
         normalizeChaptersMode(seasonFilters?.chapters)
@@ -245,6 +247,8 @@ const Index = ({ seasons, serie, type, seasonFilters = {} }) => {
     };
 
     const deleteHandler = () => {
+        if (!selectedSeason) return;
+
         router.post(
             window.route("group.admin.seasons.delete", {
                 season: selectedSeason,
@@ -254,14 +258,42 @@ const Index = ({ seasons, serie, type, seasonFilters = {} }) => {
                 preserveScroll: true,
                 onSuccess: () => {
                     setIsDeleteModalOpen(false);
+                    setSelectedSeason(null);
                 },
             }
         );
     };
 
     const openDelete = (season) => {
+        setSelectedSeasonIds([]);
         setSelectedSeason(season);
         setIsDeleteModalOpen(true);
+    };
+
+    const openBulkDelete = () => {
+        if (!selectedSeasonIds.length) return;
+        setSelectedSeason(null);
+        setIsDeleteModalOpen(true);
+    };
+
+    const bulkDeleteHandler = () => {
+        if (!selectedSeasonIds.length) return;
+
+        setIsBulkDeletePending(true);
+        router.post(
+            window.route("group.admin.seasons.bulk-delete"),
+            { season_ids: selectedSeasonIds },
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false);
+                    setSelectedSeasonIds([]);
+                },
+                onFinish: () => {
+                    setIsBulkDeletePending(false);
+                },
+            }
+        );
     };
 
     const emptyMessage = hasActiveFilters
@@ -346,8 +378,27 @@ const Index = ({ seasons, serie, type, seasonFilters = {} }) => {
             </div>
 
             <div className="hidden min-w-0 md:block">
+                {selectedSeasonIds.length > 0 && (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3">
+                        <p className="text-sm font-semibold text-white">
+                            {selectedSeasonIds.length} seasons selected
+                        </p>
+                        <button
+                            type="button"
+                            onClick={openBulkDelete}
+                            disabled={isBulkDeletePending}
+                            className="rounded-lg bg-red-500 px-4 py-2 text-sm font-bold text-white transition hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {isBulkDeletePending ? "Deleting..." : "Delete Selected"}
+                        </button>
+                    </div>
+                )}
                 <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#1a1a1a] shadow-lg shadow-black/40">
-                    <Table datas={seasons} columns={columns}>
+                    <Table
+                        datas={seasons}
+                        columns={columns}
+                        onSelectionChange={setSelectedSeasonIds}
+                    >
                         <TableData>
                             {(season) => (
                                 <p className="max-w-[180px] truncate font-medium text-zinc-200">
@@ -395,10 +446,18 @@ const Index = ({ seasons, serie, type, seasonFilters = {} }) => {
             {isDeleteModalOpen && (
                 <DeleteModal
                     setIsDeleteModalOpen={setIsDeleteModalOpen}
-                    deleteHandler={deleteHandler}
-                    title={"Are you sure want to delete this season."}
+                    deleteHandler={
+                        selectedSeason ? deleteHandler : bulkDeleteHandler
+                    }
+                    title={
+                        selectedSeason
+                            ? "Are you sure want to delete this season."
+                            : `Are you sure you want to delete ${selectedSeasonIds.length} seasons?`
+                    }
                     body={
-                        "The episodes in this season will not have season."
+                        selectedSeason
+                            ? "The episodes in this season will not have season."
+                            : "The episodes in these seasons will not have season."
                     }
                 />
             )}
