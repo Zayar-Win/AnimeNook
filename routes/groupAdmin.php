@@ -11,12 +11,14 @@ use App\Http\Controllers\GroupAdminTagController;
 use App\Http\Controllers\GroupAdminSettingController;
 use App\Http\Controllers\GroupAdminSeasonController;
 use App\Http\Controllers\GroupAdminBannerController;
+use App\Http\Controllers\GroupAdminAdsenseController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Middleware\SubscriptionMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/admin/adsense', [GroupAdminAdsenseController::class, 'index'])->name('adsense.dashboard');
     //User Routes
     Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
     Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('create');

@@ -13,6 +13,7 @@ use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupAdminAnimeController;
+use App\Http\Controllers\GroupAdminAdsenseController;
 use App\Http\Controllers\GroupAdminBannerController;
 use App\Http\Controllers\GroupAdminChunkUploadController;
 use App\Http\Controllers\GroupAdminCommentController;
@@ -126,6 +127,7 @@ if ($isProduction) {
         });
         Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::get('/admin/adsense', [GroupAdminAdsenseController::class, 'index'])->name('adsense.dashboard');
             // Chunk uploads (FilePond tus-style)
             Route::post('/admin/uploads', [GroupAdminChunkUploadController::class, 'process'])->name('uploads.process');
             Route::match(['head', 'patch'], '/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'patch'])->name('uploads.patch');
@@ -289,6 +291,7 @@ if ($isProduction) {
         });
         Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::class])->group(function () {
             Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+            Route::get('/admin/adsense', [GroupAdminAdsenseController::class, 'index'])->name('adsense.dashboard');
             // Chunk uploads (FilePond tus-style)
             Route::post('/admin/uploads', [GroupAdminChunkUploadController::class, 'process'])->name('uploads.process');
             Route::match(['head', 'patch'], '/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'patch'])->name('uploads.patch');

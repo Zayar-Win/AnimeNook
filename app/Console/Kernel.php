@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('app:regenrate-ouo-fail-link')->daily()->at('9:00');
+        $schedule->command('adsense:sync')->dailyAt('00:00')->timezone(config('app.timezone'));
     }
 
     /**

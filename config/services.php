@@ -34,7 +34,15 @@ return [
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect' => env('GOOGLE_CLIENT_REDIRECT','http://localhost:8000/auth-google-callback')
-    ]
+        'redirect' => env('GOOGLE_CLIENT_REDIRECT', 'http://localhost:8000/auth-google-callback')
+    ],
+
+    'adsense' => [
+        'client_id' => env('ADSENSE_CLIENT_ID', env('GOOGLE_CLIENT_ID')),
+        'client_secret' => env('ADSENSE_CLIENT_SECRET', env('GOOGLE_CLIENT_SECRET')),
+        'refresh_token' => env('ADSENSE_REFRESH_TOKEN'),
+        'account_id' => env('ADSENSE_ACCOUNT_ID', 'pub-6217477979568177'),
+        'channel_base_domain' => env('ADSENSE_CHANNEL_BASE_DOMAIN', 'animenook.net'),
+    ],
 
 ];
