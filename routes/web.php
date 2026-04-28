@@ -70,7 +70,6 @@ Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 
 if ($isProduction) {
-    dd('hit');
     Route::domain('{group:subdomain}' . '.' . config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
