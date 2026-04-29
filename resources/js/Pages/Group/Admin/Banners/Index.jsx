@@ -85,9 +85,11 @@ const DraggableBanner = ({ item, index, moveItem, removeItem }) => {
     );
 };
 
-const Index = ({ banners, allBanners }) => {
+const Index = ({ banners = [], allBanners = [] }) => {
     const [items, setItems] = useState(
-        banners.map((banner, index) => ({ id: index + 1, ...banner }))
+        (banners ?? [])
+            .filter(Boolean)
+            .map((banner, index) => ({ id: index + 1, ...banner }))
     );
     const [bannerOptions, setBannerOptions] = useState([]);
     const [open, setOpen] = useState(false);
@@ -95,12 +97,13 @@ const Index = ({ banners, allBanners }) => {
 
     useEffect(() => {
         setBannerOptions(
-            allBanners
+            (allBanners ?? [])
+                .filter(Boolean)
                 .filter((banner) => {
                     return !items.find(
                         (item) =>
-                            item.bannerable.type === banner.type &&
-                            item.bannerable.id === banner.id
+                            item?.bannerable?.type === banner?.type &&
+                            item?.bannerable?.id === banner?.id
                     );
                 })
                 .map((banner) => ({
@@ -282,10 +285,7 @@ const Index = ({ banners, allBanners }) => {
                     {items.length > 0 ? (
                         items.map((item, index) => (
                             <DraggableBanner
-                                key={
-                                    item.banner_id ??
-                                    `${item.bannerable?.slug}-${item.id}`
-                                }
+                                key={item?.banner_id ?? `${item?.bannerable?.slug ?? "banner"}-${item?.id ?? index}`}
                                 item={item}
                                 index={index}
                                 moveItem={moveItem}
