@@ -86,12 +86,12 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
 
-        if (! $this->shouldReportToSlack($e)) {
-            return;
-        }
 
         $response = parent::render($request, $e);
 
+        if (! $this->shouldReportToSlack($e)) {
+            return $response;
+        }
         if (app()->environment(['local', 'testing']) || $request->expectsJson()) {
             return $response;
         }
