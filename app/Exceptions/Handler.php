@@ -58,11 +58,13 @@ class Handler extends ExceptionHandler
             return false;
         }
 
-        if ($e instanceof ValidationException
+        if (
+            $e instanceof ValidationException
             || $e instanceof AuthenticationException
             || $e instanceof AuthorizationException
             || $e instanceof NotFoundHttpException
-            || $e instanceof TokenMismatchException) {
+            || $e instanceof TokenMismatchException
+        ) {
             return false;
         }
 
@@ -111,6 +113,14 @@ class Handler extends ExceptionHandler
                 'status' => $status,
             ], $status);
         }
+
+        Log::info('Error', [
+            'status' => $status,
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => $e->getTraceAsString(),
+        ]);
 
         return Inertia::render('Error', [
             'status' => $status,
