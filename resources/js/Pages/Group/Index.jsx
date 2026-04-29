@@ -126,11 +126,21 @@ function Index({
     newEpisodes,
     trendMangas,
 }) {
-    const {
-        auth: { user },
-    } = usePage().props;
+    const pageProps = usePage().props ?? {};
+    const user = pageProps?.auth?.user ?? null;
+    const safeBanners = banners ?? [];
+    const safeNewMangas = newMangas ?? [];
+    const safeContinueReadingMangas = continueReadingMangas ?? [];
+    const safeLatestMangas = latestMangas ?? [];
+    const safeHotMangas = hotMangas ?? [];
+    const safePopularMangas = popularMangas ?? [];
+    const safeTodayEpisodes = newEpisodes?.today ?? [];
+    const safeYesterdayEpisodes = newEpisodes?.yesterday ?? [];
+    const featuredNewManga = safeNewMangas[0] ?? null;
+    const featuredTrendManga = (trendMangas ?? [])[0] ?? null;
+
     const saveToCollection = (manga) => {
-        if (!user) {
+        if (!user || !manga?.id || !user?.collections?.[0]) {
             return router.get(window.route("group.login"));
         }
         router.post(
@@ -187,7 +197,7 @@ function Index({
                             <div className="relative rounded-none shadow-[0_18px_45px_-20px_rgba(15,23,42,0.35),0_8px_22px_-14px_rgba(15,23,42,0.25)] xl:rounded-2xl dark:shadow-[0_22px_52px_-22px_rgba(0,0,0,0.1),0_10px_26px_-16px_rgba(244,63,94,0.28)]">
                                 <div className="h-[min(42vh,320px)] xs:h-[min(44vh,340px)] sm:h-[380px] md:h-[460px] lg:h-[560px] xl:h-[640px] relative group overflow-hidden rounded-none xl:rounded-2xl">
                                     <Carousel id={"banner-swiper"}>
-                                        {banners?.map((banner, i) => (
+                                        {safeBanners.map((banner, i) => (
                                             <SwiperSlide
                                                 key={i}
                                                 className="w-full h-full"
@@ -297,7 +307,7 @@ function Index({
                                                                 {
                                                                     banner
                                                                         ?.bannerable
-                                                                        .description
+                                                                        ?.description
                                                                 }
                                                             </p>
 
@@ -388,7 +398,7 @@ function Index({
                             </div>
                         </div>
                         <div className="flex h-[min(42vh,320px)] flex-1 flex-col gap-1 overflow-y-auto rounded-xl border border-zinc-200/90 bg-zinc-50 p-1.5 text-zinc-900 shadow-sm custom-scrollbar xs:h-[min(44vh,340px)] sm:h-[380px] sm:gap-2 sm:p-3 md:h-[460px] lg:h-[560px] xl:h-auto dark:border-transparent dark:bg-[#0D0D0D] dark:text-white">
-                            {newMangas?.map((manga, i) => (
+                            {safeNewMangas.map((manga, i) => (
                                 <TopMangaSidebarItem
                                     key={manga?.id ?? i}
                                     manga={manga}
@@ -423,7 +433,7 @@ function Index({
                                 </h1>
 
                                 <div className="flex flex-wrap justify-center gap-2 md:justify-start sm:gap-3">
-                                    {recommendedManga?.tags.map((tag, i) => (
+                                    {(recommendedManga?.tags ?? []).map((tag, i) => (
                                         <Link
                                             key={i}
                                             href={window.route("group.animes", {
@@ -541,7 +551,7 @@ function Index({
                             pagination={false}
                             navigation={true}
                         >
-                            {continueReadingMangas?.map((manga) => (
+                            {safeContinueReadingMangas.map((manga) => (
                                 <SwiperSlide key={manga.id}>
                                     <MangaCard key={manga.id} manga={manga} />
                                 </SwiperSlide>
@@ -582,7 +592,7 @@ function Index({
                         </div>
                     </div>
                     <div className="mt-4">
-                        {latestMangas?.length > 0 ? (
+                        {safeLatestMangas.length > 0 ? (
                             <Carousel
                                 id="latest-manga"
                                 navigationOnLightBg
@@ -608,7 +618,7 @@ function Index({
                                 navigation={true}
                                 loop={false}
                             >
-                                {latestMangas.map((manga) => (
+                                {safeLatestMangas.map((manga) => (
                                     <SwiperSlide key={manga.id}>
                                         <MangaCard manga={manga} />
                                     </SwiperSlide>
@@ -655,7 +665,7 @@ function Index({
                         </div>
                     </div>
                     <div className="mt-4">
-                        {hotMangas?.length > 0 ? (
+                        {safeHotMangas.length > 0 ? (
                             <Carousel
                                 id="hot-manga"
                                 navigationOnLightBg
@@ -681,7 +691,7 @@ function Index({
                                 navigation={true}
                                 loop={false}
                             >
-                                {hotMangas.map((manga) => (
+                                {safeHotMangas.map((manga) => (
                                     <SwiperSlide key={manga.id}>
                                         <MangaCard manga={manga} />
                                     </SwiperSlide>
@@ -766,7 +776,7 @@ function Index({
                                     </span>
                                     <span className="w-1 h-1 rounded-full bg-zinc-600"></span>
                                     <div className="flex gap-2">
-                                        {recommendedManga?.tags
+                                        {(recommendedManga?.tags ?? [])
                                             .slice(0, 4)
                                             .map((tag, i) => (
                                                 <Link
@@ -815,7 +825,7 @@ function Index({
                                     <Button
                                         outline
                                         text={
-                                            recommendedManga.isSavedByCurrentUser
+                                            recommendedManga?.isSavedByCurrentUser
                                                 ? "Saved"
                                                 : "Watchlist"
                                         }
@@ -830,7 +840,7 @@ function Index({
                                                 className="h-4 w-4 shrink-0"
                                                 viewBox="0 0 24 24"
                                                 fill={
-                                                    recommendedManga.isSavedByCurrentUser
+                                                    recommendedManga?.isSavedByCurrentUser
                                                         ? "currentColor"
                                                         : "none"
                                                 }
@@ -888,9 +898,9 @@ function Index({
                                 <div className="h-px flex-1 bg-gradient-to-r from-zinc-300 to-transparent dark:from-zinc-800"></div>
                             </div>
 
-                            {newEpisodes?.today.length > 0 ? (
+                            {safeTodayEpisodes.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                                    {newEpisodes?.today?.map((episode) => (
+                                    {safeTodayEpisodes.map((episode) => (
                                         <NewEpisodeCard
                                             key={episode?.id}
                                             episode={episode}
@@ -916,9 +926,9 @@ function Index({
                                 <div className="h-px flex-1 bg-gradient-to-r from-zinc-300 to-transparent dark:from-zinc-800"></div>
                             </div>
 
-                            {newEpisodes?.yesterday.length > 0 ? (
+                            {safeYesterdayEpisodes.length > 0 ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                                    {newEpisodes?.yesterday?.map((episode) => (
+                                    {safeYesterdayEpisodes.map((episode) => (
                                         <NewEpisodeCard
                                             episode={episode}
                                             key={episode?.id}
@@ -981,7 +991,7 @@ function Index({
                         pagination={false}
                         navigation={true}
                     >
-                        {popularMangas?.map((manga) => (
+                        {safePopularMangas.map((manga) => (
                             <SwiperSlide key={manga.id}>
                                 <MangaCard key={manga?.id} manga={manga} />
                             </SwiperSlide>
@@ -1022,12 +1032,12 @@ function Index({
 
                     <div className="space-y-12">
                         {/* New manga (top trending hero) */}
-                        {newMangas?.length > 0 && (
+                        {featuredNewManga && (
                             <div className="relative group overflow-hidden rounded-3xl bg-[#0D0D0D] border border-white/10 shadow-2xl">
                                 {/* Background Image with Overlay */}
                                 <div className="absolute inset-0 z-0">
                                     <img
-                                        src={newMangas[0]?.thumbnail}
+                                        src={featuredNewManga?.thumbnail}
                                         className="w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700"
                                         alt=""
                                     />
@@ -1052,24 +1062,24 @@ function Index({
                                                 >
                                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
                                                 </svg>
-                                                {newMangas[0]?.rating || "N/A"}
+                                                {featuredNewManga?.rating || "N/A"}
                                             </span>
                                         </div>
 
                                         <Link
                                             href={window.route(
                                                 "group.manga.detail",
-                                                { manga: newMangas[0] },
+                                                { manga: featuredNewManga },
                                             )}
                                             className="block group-hover:text-primary transition-colors"
                                         >
                                             <h1 className="text-2xl md:text-5xl font-black text-white leading-tight">
-                                                {newMangas[0]?.name}
+                                                {featuredNewManga?.name}
                                             </h1>
                                         </Link>
 
                                         <div className="flex flex-wrap gap-2">
-                                            {newMangas[0]?.tags.map(
+                                            {(featuredNewManga?.tags ?? []).map(
                                                 (tag, i) => (
                                                     <Tag
                                                         key={tag.id}
@@ -1081,7 +1091,7 @@ function Index({
                                         </div>
 
                                         <p className="text-zinc-400 text-sm md:text-base leading-relaxed line-clamp-3 max-w-2xl">
-                                            {newMangas[0]?.description}
+                                            {featuredNewManga?.description}
                                         </p>
 
                                         <div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 pt-1 md:mx-0 md:max-w-none lg:flex-row lg:flex-wrap lg:gap-3 lg:pt-2">
@@ -1089,7 +1099,7 @@ function Index({
                                                 href={window.route(
                                                     "group.manga.detail",
                                                     {
-                                                        manga: newMangas[0],
+                                                        manga: featuredNewManga,
                                                         scrollTo: "chapters",
                                                     },
                                                 )}
@@ -1110,7 +1120,7 @@ function Index({
                                                 type="button"
                                                 onClick={() =>
                                                     saveToCollection(
-                                                        newMangas[0],
+                                                        featuredNewManga,
                                                     )
                                                 }
                                                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-600 bg-transparent px-4 py-2 text-sm font-bold text-white transition-all hover:border-white hover:bg-white hover:text-black lg:w-auto lg:px-5 lg:py-2.5"
@@ -1120,8 +1130,7 @@ function Index({
                                                     className="h-4 w-4 shrink-0"
                                                     viewBox="0 0 24 24"
                                                     fill={
-                                                        newMangas[0]
-                                                            .isSavedByCurrentUser
+                                                        featuredNewManga?.isSavedByCurrentUser
                                                             ? "currentColor"
                                                             : "none"
                                                     }
@@ -1133,8 +1142,7 @@ function Index({
                                                 >
                                                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                                                 </svg>
-                                                {newMangas[0]
-                                                    .isSavedByCurrentUser
+                                                {featuredNewManga?.isSavedByCurrentUser
                                                     ? "Saved"
                                                     : "Watchlist"}
                                             </button>
@@ -1145,17 +1153,17 @@ function Index({
                                     <div className="lg:w-5/12 w-full flex justify-center lg:justify-end relative mt-6 lg:mt-0">
                                         <div className="relative w-48 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-[4px] border-white/10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
                                             <img
-                                                src={newMangas[0]?.thumbnail}
+                                                src={featuredNewManga?.thumbnail}
                                                 className="w-full h-full object-cover"
                                                 alt=""
                                             />
                                         </div>
-                                        {newMangas[0]
+                                        {featuredNewManga
                                             ?.transparent_background && (
                                             <div className="absolute -bottom-6 -right-6 w-56 md:w-96 z-20 pointer-events-none">
                                                 <img
                                                     src={
-                                                        newMangas[0]
+                                                        featuredNewManga
                                                             ?.transparent_background
                                                     }
                                                     className="w-full h-full object-contain drop-shadow-2xl"
@@ -1169,14 +1177,14 @@ function Index({
                         )}
 
                         {/* Trending manga (secondary hero) */}
-                        {trendMangas?.length > 0 && (
+                        {featuredTrendManga && (
                             <div className="relative group overflow-hidden rounded-3xl bg-[#0D0D0D] border border-white/10 shadow-2xl">
                                 {/* Background Image with Overlay */}
                                 <div className="absolute inset-0 z-0">
                                     <img
                                         src={
-                                            trendMangas[0]?.background_image ||
-                                            trendMangas[0]?.thumbnail
+                                            featuredTrendManga?.background_image ||
+                                            featuredTrendManga?.thumbnail
                                         }
                                         className="w-full h-full object-cover opacity-30 group-hover:scale-105 transition-transform duration-700"
                                         alt=""
@@ -1189,7 +1197,7 @@ function Index({
                                     <div className="w-full space-y-3 sm:space-y-4 md:space-y-6 lg:w-7/12">
                                         <div className="flex items-center justify-center gap-3 lg:justify-end">
                                             <span className="text-zinc-400 font-medium text-sm flex items-center gap-1">
-                                                {trendMangas[0]?.rating ||
+                                                {featuredTrendManga?.rating ||
                                                     "N/A"}
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
@@ -1211,18 +1219,18 @@ function Index({
                                             href={window.route(
                                                 "group.manga.detail",
                                                 {
-                                                    manga: trendMangas[0],
+                                                    manga: featuredTrendManga,
                                                 },
                                             )}
                                             className="block group-hover:text-purple-500 transition-colors"
                                         >
                                             <h1 className="text-2xl md:text-5xl font-black text-white leading-tight">
-                                                {trendMangas[0].name}
+                                                {featuredTrendManga?.name}
                                             </h1>
                                         </Link>
 
                                         <div className="flex flex-wrap justify-center gap-2 lg:justify-end">
-                                            {trendMangas[0]?.tags.map(
+                                            {(featuredTrendManga?.tags ?? []).map(
                                                 (tag, i) => (
                                                     <Tag
                                                         key={tag.id}
@@ -1234,7 +1242,7 @@ function Index({
                                         </div>
 
                                         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-400 line-clamp-3 md:text-base lg:ml-auto lg:mr-0">
-                                            {trendMangas[0].description}
+                                            {featuredTrendManga?.description}
                                         </p>
 
                                         <div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 pt-1 md:max-w-none lg:flex-row lg:flex-wrap lg:justify-end lg:gap-3 lg:pt-2">
@@ -1242,7 +1250,7 @@ function Index({
                                                 href={window.route(
                                                     "group.manga.detail",
                                                     {
-                                                        manga: trendMangas[0],
+                                                        manga: featuredTrendManga,
                                                         scrollTo: "chapters",
                                                     },
                                                 )}
@@ -1263,7 +1271,7 @@ function Index({
                                                 type="button"
                                                 onClick={() =>
                                                     saveToCollection(
-                                                        trendMangas[0],
+                                                        featuredTrendManga,
                                                     )
                                                 }
                                                 className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-600 bg-transparent px-4 py-2 text-sm font-bold text-white transition-all hover:border-white hover:bg-white hover:text-black lg:w-auto lg:px-5 lg:py-2.5"
@@ -1273,8 +1281,7 @@ function Index({
                                                     className="h-4 w-4 shrink-0"
                                                     viewBox="0 0 24 24"
                                                     fill={
-                                                        trendMangas[0]
-                                                            .isSavedByCurrentUser
+                                                        featuredTrendManga?.isSavedByCurrentUser
                                                             ? "currentColor"
                                                             : "none"
                                                     }
@@ -1286,8 +1293,7 @@ function Index({
                                                 >
                                                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
                                                 </svg>
-                                                {trendMangas[0]
-                                                    .isSavedByCurrentUser
+                                                {featuredTrendManga?.isSavedByCurrentUser
                                                     ? "Saved"
                                                     : "Watchlist"}
                                             </button>
@@ -1298,18 +1304,18 @@ function Index({
                                     <div className="lg:w-5/12 w-full flex justify-center lg:justify-start relative mt-6 lg:mt-0">
                                         <div className="relative w-48 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-[4px] border-white/10 -rotate-3 group-hover:rotate-0 transition-transform duration-500">
                                             <img
-                                                src={trendMangas[0].thumbnail}
+                                                src={featuredTrendManga?.thumbnail}
                                                 className="w-full h-full object-cover"
                                                 alt=""
                                             />
                                         </div>
-                                        {trendMangas[0]
-                                            .transparent_background && (
+                                        {featuredTrendManga
+                                            ?.transparent_background && (
                                             <div className="absolute -bottom-6 -left-6 w-56 md:w-96 z-20 pointer-events-none">
                                                 <img
                                                     src={
-                                                        trendMangas[0]
-                                                            .transparent_background
+                                                        featuredTrendManga
+                                                            ?.transparent_background
                                                     }
                                                     className="w-full h-full object-contain drop-shadow-2xl"
                                                     alt=""
