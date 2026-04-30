@@ -96,7 +96,7 @@ class GroupAdminMangaController extends Controller
         $query = $group->mangas();
 
         if (($filters['search'] ?? '') !== '') {
-            $like = '%'.$filters['search'].'%';
+            $like = '%' . $filters['search'] . '%';
             $query->where(function ($q) use ($like) {
                 $q->where('name', 'like', $like)
                     ->orWhere('description', 'like', $like);
@@ -190,7 +190,7 @@ class GroupAdminMangaController extends Controller
 
         if (($seasonValidated['season_search'] ?? '') !== '') {
             $term = $seasonValidated['season_search'];
-            $like = '%'.$term.'%';
+            $like = '%' . $term . '%';
             $seasonQuery->where(function ($q) use ($like, $term) {
                 $q->where('title', 'like', $like);
                 if (ctype_digit($term)) {
@@ -314,7 +314,7 @@ class GroupAdminMangaController extends Controller
 
         if (($filters['season_search'] ?? '') !== '') {
             $term = $filters['season_search'];
-            $like = '%'.$term.'%';
+            $like = '%' . $term . '%';
             $query->where(function ($q) use ($like, $term) {
                 $q->where('title', 'like', $like);
                 if (ctype_digit($term)) {
@@ -355,14 +355,14 @@ class GroupAdminMangaController extends Controller
     {
         $validatedData = request()->validate([
             'thumbnail' => ['nullable', 'image'],
-            'chapter_number' => ['required'],
-            'title' => ['required'],
-            'description' => ['nullable'],
-            'season_id' => ['required'],
+            'chapter_number' => ['required', 'integer'],
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string', 'max:255'],
+            'season_id' => ['required', 'integer'],
             'content_mode' => ['required', Rule::in(['images', 'pdf'])],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable'],
-            'pdf' => ['nullable'],
+            'images.*' => ['nullable', 'image'],
+            'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
         ]);
 
         $request = request();
@@ -486,7 +486,7 @@ class GroupAdminMangaController extends Controller
 
         return inertia('Group/Admin/Mangas/ChapterForm', [
             'chapter' => $chapter,
-            'images' => $chapter->images()->orderBy('order', 'desc')->get(),
+            'images' => $chapter->images()->orderBy('order', 'asc')->get(),
             'type' => 'edit',
             'manga' => $manga,
             'seasons' => $seasons,
@@ -529,8 +529,8 @@ class GroupAdminMangaController extends Controller
             if ($pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
             }
-            $hasExisting = collect($imagesMixed)->contains(fn ($i) => is_array($i) && isset($i['id']));
-            $hasNewFiles = collect($imagesMixed)->filter(fn ($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
+            $hasExisting = collect($imagesMixed)->contains(fn($i) => is_array($i) && isset($i['id']));
+            $hasNewFiles = collect($imagesMixed)->filter(fn($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
             if (! $hasExisting && ! $hasNewFiles) {
                 throw ValidationException::withMessages(['images' => 'Add at least one page image.']);
             }
