@@ -74,7 +74,6 @@ if ($isProduction) {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
-            $group = Group::where('subdomain', 'delta')->first();
             $trendMangas = Manga::with('tags')->where('group_id', $group->id)->where('is_trending', 1)->latest()->take(3)->get();
             $banners = Banner::with('bannerable')
                 ->where('group_id', $group->id)
