@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { uploadFileInChunks } from "@/utils/chunkUpload";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
 
 function toArray(value, allowMultiple) {
     if (allowMultiple) {
@@ -95,11 +96,13 @@ const DND_TYPE = "chunk-uploader-card";
 function UploadCard({
     item,
     index,
+    totalItems,
     allowMultiple,
     disabled,
     previewUrl,
     onRemove,
     onReorder,
+    onMoveStep,
 }) {
     const ref = useRef(null);
 
@@ -161,6 +164,35 @@ function UploadCard({
             >
                 x
             </button>
+
+            {allowMultiple && (
+                <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 sm:hidden">
+                    <button
+                        type="button"
+                        disabled={disabled || index <= 0}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onMoveStep(index, -1);
+                        }}
+                        className="rounded bg-black/70 px-2 py-1 text-[11px] font-bold text-white disabled:opacity-40"
+                        aria-label="Move image up"
+                    >
+                        ↑
+                    </button>
+                    <button
+                        type="button"
+                        disabled={disabled || index >= totalItems - 1}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onMoveStep(index, 1);
+                        }}
+                        className="rounded bg-black/70 px-2 py-1 text-[11px] font-bold text-white disabled:opacity-40"
+                        aria-label="Move image down"
+                    >
+                        ↓
+                    </button>
+                </div>
+            )}
 
             <div
                 className={`w-full overflow-hidden bg-black/30 ${
@@ -234,6 +266,17 @@ const ChunkUploader = ({
     const [items, setItems] = useState([]);
     const [dragOver, setDragOver] = useState(false);
     const [error, setError] = useState("");
+    const isTouchDevice = useMemo(() => {
+        if (typeof window === "undefined") return false;
+        const hasTouchPoints =
+            typeof navigator !== "undefined" && navigator.maxTouchPoints > 0;
+        const coarsePointer = window.matchMedia?.("(pointer: coarse)")?.matches;
+        return "ontouchstart" in window || hasTouchPoints || coarsePointer;
+    }, []);
+    const dndBackend = isTouchDevice ? TouchBackend : HTML5Backend;
+    const dndBackendOptions = isTouchDevice
+        ? { enableMouseEvents: true, delayTouchStart: 120 }
+        : undefined;
 
     useEffect(() => {
         const base = toArray(photos, allowMultiple);
@@ -311,6 +354,12 @@ const ChunkUploader = ({
             next.splice(toIndex, 0, moved);
             return next;
         });
+    };
+
+    const moveItemByStep = (index, step) => {
+        if (!allowMultiple) return;
+        const toIndex = index + step;
+        reorderItemsByIndex(index, toIndex);
     };
 
     const startAutoUpload = async (itemId, file) => {
@@ -478,7 +527,7 @@ const ChunkUploader = ({
             {error && <p className="text-xs text-red-400">{error}</p>}
 
             {items.length > 0 && (
-                <DndProvider backend={HTML5Backend}>
+                <DndProvider backend={dndBackend} options={dndBackendOptions}>
                     <div
                         className={`grid gap-3 ${
                             allowMultiple
@@ -518,6 +567,7 @@ const ChunkUploader = ({
                                     previewUrl={previewUrl}
                                     onRemove={removeItem}
                                     onReorder={reorderItemsByIndex}
+                                    onMoveStep={moveItemByStep}
                                 />
                             );
                         })}
