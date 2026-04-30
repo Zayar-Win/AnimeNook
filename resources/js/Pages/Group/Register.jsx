@@ -1,5 +1,5 @@
 import React from "react";
-import Logo from "../../../assets/logo.png";
+import LogoImg from "../../../assets/logo.png";
 import Button from "@/Components/Button";
 import { Link, useForm, usePage } from "@inertiajs/react";
 import Google from "@/../assets/Google";
@@ -12,6 +12,8 @@ const Register = () => {
         password: "",
     });
     const { group, APP_URL } = usePage().props;
+    const groupLogo =
+        group?.group_setting?.logo || group?.groupSetting?.logo || group?.logo || LogoImg;
     const handleSubmit = (e) => {
         e.preventDefault();
         post(window.route("group.register"));
@@ -34,7 +36,7 @@ const Register = () => {
                             <div className="mb-6 flex items-center gap-3 sm:mb-8">
                                 <div className="h-14 w-14 shrink-0 overflow-hidden rounded-lg sm:h-16 sm:w-16">
                                     <img
-                                        src={Logo}
+                                        src={groupLogo}
                                         alt=""
                                         className="h-full w-full object-cover"
                                     />

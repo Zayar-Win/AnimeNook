@@ -26,6 +26,8 @@ const SocialLink = ({ href, icon, colorClass }) => (
 
 const Footer = () => {
     const { group } = usePage().props;
+    const footerLogo =
+        group?.group_setting?.logo || group?.groupSetting?.logo || group?.logo || LogoImg;
 
     return (
         <SectionContainer
@@ -40,7 +42,7 @@ const Footer = () => {
                     {/* Brand Column - Spans 5 columns */}
                     <div className="lg:col-span-5 space-y-6">
                         <div className="flex items-center gap-3">
-                            <Logo logo={LogoImg} className="!w-12 h-auto" />
+                            <Logo logo={footerLogo} className="!w-12 h-auto" />
                             <span className="text-2xl font-black tracking-tight text-zinc-900 dark:text-white">
                                 AnimeNook
                             </span>

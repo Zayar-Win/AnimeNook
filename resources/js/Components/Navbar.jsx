@@ -15,8 +15,10 @@ import UserThemeToggle from "./UserThemeToggle";
 const Navbar = () => {
     const {
         component,
-        props: { auth, filters },
+        props: { auth, filters, group },
     } = usePage();
+    const navbarLogo =
+        group?.group_setting?.logo || group?.groupSetting?.logo || group?.logo || LogoImg;
     const [search, setSearch] = useState("");
     const [animes, setAnimes] = useState([]);
     const decounceSearch = useDebounce(search, 300);
@@ -234,7 +236,7 @@ const Navbar = () => {
             <SectionContainer className="sticky top-0 z-[100] flex h-20 w-full items-center justify-between border-b border-zinc-200/80 bg-white/85 backdrop-blur-xl transition-all duration-300 dark:border-white/5 dark:bg-black/80">
                 {/* Logo */}
                 <div className="w-16 h-16 shrink-0 relative z-50 hover:scale-105 transition-transform duration-300">
-                    <Logo logo={LogoImg} />
+                    <Logo logo={navbarLogo} />
                 </div>
 
                 {/* Desktop Search */}
@@ -703,7 +705,7 @@ const Navbar = () => {
                             </div>
                         ) : (
                             <div className="w-12 h-12">
-                                <Logo logo={LogoImg} />
+                                <Logo logo={navbarLogo} />
                             </div>
                         )}
                         <div

@@ -2,10 +2,12 @@ import Button from "@/Components/Button";
 import GroupAuthLayout from "@/Layouts/GroupAuthLayout";
 import { Link, useForm, usePage } from "@inertiajs/react";
 import React from "react";
-import Logo from "../../../assets/logo.png";
+import LogoImg from "../../../assets/logo.png";
 
 const ForgotPassword = () => {
     const { group } = usePage().props;
+    const groupLogo =
+        group?.group_setting?.logo || group?.groupSetting?.logo || group?.logo || LogoImg;
     const { data, setData, errors, clearErrors, post, processing } = useForm({
         email: "",
     });
@@ -23,7 +25,7 @@ const ForgotPassword = () => {
                         <div className="mx-auto w-full max-w-md">
                             <div className="mb-6 h-16 w-16 shrink-0 overflow-hidden rounded-lg sm:mb-8 sm:h-20 sm:w-20">
                                 <img
-                                    src={Logo}
+                                    src={groupLogo}
                                     alt=""
                                     className="h-full w-full object-cover"
                                 />
