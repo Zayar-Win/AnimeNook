@@ -164,8 +164,8 @@ function UploadCard({
     return (
         <div
             ref={ref}
-            className={`relative overflow-hidden rounded-xl border border-white/10 bg-[#121212] ${
-                allowMultiple ? "max-w-[220px]" : ""
+            className={`relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#121212] ${
+                allowMultiple ? "sm:max-w-[220px]" : ""
             } ${
                 isDragging
                     ? "opacity-75 scale-[0.98] ring-1 ring-primary/40 shadow-lg shadow-black/40"
@@ -232,7 +232,9 @@ function UploadCard({
 
             <div
                 className={`w-full overflow-hidden bg-black/30 ${
-                    allowMultiple ? "h-24" : "h-36"
+                    allowMultiple
+                        ? "h-48 sm:h-24"
+                        : "h-36"
                 }`}
             >
                 {previewUrl ? (
@@ -588,7 +590,7 @@ const ChunkUploader = ({
                     <div
                         className={`grid gap-3 ${
                             allowMultiple
-                                ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+                                ? "grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
                                 : "grid-cols-1"
                         }`}
                     >
