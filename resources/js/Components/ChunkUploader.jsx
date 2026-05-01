@@ -130,10 +130,9 @@ function UploadCard({
             if (!clientOffset) return;
             const hoverClientY = clientOffset.y - rect.top;
 
-            // Touch: require crossing slightly past center so a shaky finger does not oscillate swaps.
-            const band = dragFromHandleOnly ? h * 0.12 : 0;
-            if (dragged.index < index && hoverClientY < middleY + band) return;
-            if (dragged.index > index && hoverClientY > middleY - band) return;
+            // Reorder at ~50% overlap (crossing the target midpoint).
+            if (dragged.index < index && hoverClientY < middleY) return;
+            if (dragged.index > index && hoverClientY > middleY) return;
 
             onReorder(dragged.index, index, true);
             dragged.index = index;
@@ -318,8 +317,8 @@ const ChunkUploader = ({
     const dndBackendOptions = isTouchDevice
         ? {
               enableMouseEvents: true,
-              // Short delay: long presses feel broken; handle uses touch-action: none.
-              delayTouchStart: 50,
+              // Start drag immediately on touch (no long-press wait).
+              delayTouchStart: 0,
           }
         : undefined;
 
