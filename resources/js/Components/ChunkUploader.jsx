@@ -3,6 +3,7 @@ import { uploadFileInChunks } from "@/utils/chunkUpload";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TouchBackend } from "react-dnd-touch-backend";
+import { GripVertical } from "lucide-react";
 
 function toArray(value, allowMultiple) {
     if (allowMultiple) {
@@ -103,8 +104,10 @@ function UploadCard({
     onRemove,
     onReorder,
     onMoveStep,
+    dragFromHandleOnly,
 }) {
     const ref = useRef(null);
+    const dragHandleRef = useRef(null);
 
     const [, drop] = useDrop({
         accept: DND_TYPE,
@@ -137,7 +140,14 @@ function UploadCard({
         }),
     });
 
-    drag(drop(ref));
+    // Touch: drag only from the grip (avoids image long-press / scroll stealing the gesture).
+    // Desktop: whole card is draggable (HTML5 backend).
+    if (dragFromHandleOnly) {
+        drag(dragHandleRef);
+        drop(ref);
+    } else {
+        drag(drop(ref));
+    }
 
     return (
         <div
@@ -164,6 +174,20 @@ function UploadCard({
             >
                 x
             </button>
+
+            {allowMultiple && !disabled && dragFromHandleOnly && (
+                <div
+                    ref={dragHandleRef}
+                    aria-label="Drag to reorder"
+                    className="absolute right-2 top-2 z-10 flex h-10 w-10 cursor-grab items-center justify-center rounded-lg bg-black/70 text-white touch-none active:cursor-grabbing"
+                    style={{
+                        touchAction: "none",
+                        WebkitTouchCallout: "none",
+                    }}
+                >
+                    <GripVertical className="h-5 w-5" aria-hidden />
+                </div>
+            )}
 
             {allowMultiple && (
                 <div className="absolute bottom-2 right-2 z-10 flex items-center gap-1 sm:hidden">
@@ -203,7 +227,9 @@ function UploadCard({
                     <img
                         src={previewUrl}
                         alt={item.name}
-                        className="h-full w-full object-cover"
+                        draggable={false}
+                        className="h-full w-full select-none object-cover"
+                        style={{ WebkitTouchCallout: "none" }}
                     />
                 ) : (
                     <div className="flex h-full w-full items-center justify-center px-3 text-center text-xs text-zinc-400">
@@ -275,7 +301,11 @@ const ChunkUploader = ({
     }, []);
     const dndBackend = isTouchDevice ? TouchBackend : HTML5Backend;
     const dndBackendOptions = isTouchDevice
-        ? { enableMouseEvents: true, delayTouchStart: 120 }
+        ? {
+              enableMouseEvents: true,
+              // Short delay: long presses feel broken; handle uses touch-action: none.
+              delayTouchStart: 50,
+          }
         : undefined;
 
     useEffect(() => {
@@ -562,8 +592,10 @@ const ChunkUploader = ({
                                     key={item.id}
                                     item={item}
                                     index={index}
+                                    totalItems={items.length}
                                     allowMultiple={allowMultiple}
                                     disabled={disabled}
+                                    dragFromHandleOnly={isTouchDevice}
                                     previewUrl={previewUrl}
                                     onRemove={removeItem}
                                     onReorder={reorderItemsByIndex}
