@@ -115,7 +115,6 @@ function UploadCard({
     onCardNode,
 }) {
     const ref = useRef(null);
-    const dragHandleRef = useRef(null);
 
     const [, drop] = useDrop({
         accept: DND_TYPE,
@@ -153,14 +152,8 @@ function UploadCard({
         }),
     });
 
-    // Touch: drag only from the grip (avoids image long-press / scroll stealing the gesture).
-    // Desktop: whole card is draggable (HTML5 backend).
-    if (dragFromHandleOnly) {
-        drag(dragHandleRef);
-        drop(ref);
-    } else {
-        drag(drop(ref));
-    }
+    // Allow dragging from the whole card on all devices.
+    drag(drop(ref));
 
     const setCardRef = (node) => {
         ref.current = node;
@@ -197,7 +190,6 @@ function UploadCard({
 
             {allowMultiple && !disabled && dragFromHandleOnly && (
                 <div
-                    ref={dragHandleRef}
                     aria-label="Drag to reorder"
                     className="absolute right-2 top-2 z-10 flex h-10 w-10 cursor-grab items-center justify-center rounded-lg bg-black/70 text-white touch-none active:cursor-grabbing"
                     style={{
