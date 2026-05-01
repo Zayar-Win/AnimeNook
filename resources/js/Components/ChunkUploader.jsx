@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import { uploadFileInChunks } from "@/utils/chunkUpload";
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -105,6 +111,7 @@ function UploadCard({
     onReorder,
     onMoveStep,
     dragFromHandleOnly,
+    onDragReorderEnd,
 }) {
     const ref = useRef(null);
     const dragHandleRef = useRef(null);
@@ -117,16 +124,18 @@ function UploadCard({
             if (dragged.index === index) return;
 
             const rect = ref.current.getBoundingClientRect();
-            const middleY = (rect.bottom - rect.top) / 2;
+            const h = rect.bottom - rect.top;
+            const middleY = h / 2;
             const clientOffset = monitor.getClientOffset();
             if (!clientOffset) return;
             const hoverClientY = clientOffset.y - rect.top;
 
-            // Only reorder after crossing midpoint to reduce jitter.
-            if (dragged.index < index && hoverClientY < middleY) return;
-            if (dragged.index > index && hoverClientY > middleY) return;
+            // Touch: require crossing slightly past center so a shaky finger does not oscillate swaps.
+            const band = dragFromHandleOnly ? h * 0.12 : 0;
+            if (dragged.index < index && hoverClientY < middleY + band) return;
+            if (dragged.index > index && hoverClientY > middleY - band) return;
 
-            onReorder(dragged.index, index);
+            onReorder(dragged.index, index, true);
             dragged.index = index;
         },
     });
@@ -135,6 +144,9 @@ function UploadCard({
         type: DND_TYPE,
         canDrag: allowMultiple && !disabled,
         item: () => ({ index }),
+        end: () => {
+            onDragReorderEnd?.();
+        },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
@@ -368,9 +380,9 @@ const ChunkUploader = ({
         updateItems((prev) => prev.filter((item) => item.id !== id));
     };
 
-    const reorderItemsByIndex = (fromIndex, toIndex) => {
+    const reorderItemsByIndex = (fromIndex, toIndex, skipEmit = false) => {
         if (fromIndex === toIndex) return;
-        updateItems((prev) => {
+        setItems((prev) => {
             if (
                 fromIndex < 0 ||
                 toIndex < 0 ||
@@ -382,9 +394,24 @@ const ChunkUploader = ({
             const next = [...prev];
             const [moved] = next.splice(fromIndex, 1);
             next.splice(toIndex, 0, moved);
+            if (!skipEmit) {
+                emitValues(next);
+            }
             return next;
         });
     };
+
+    const commitReorderToParent = useCallback(() => {
+        setItems((prev) => {
+            const out = prev.map((item) => item.outputValue).filter(Boolean);
+            if (allowMultiple) {
+                onUpload(out);
+            } else {
+                onUpload(out[0] ?? null);
+            }
+            return prev;
+        });
+    }, [allowMultiple, onUpload]);
 
     const moveItemByStep = (index, step) => {
         if (!allowMultiple) return;
@@ -599,6 +626,7 @@ const ChunkUploader = ({
                                     previewUrl={previewUrl}
                                     onRemove={removeItem}
                                     onReorder={reorderItemsByIndex}
+                                    onDragReorderEnd={commitReorderToParent}
                                     onMoveStep={moveItemByStep}
                                 />
                             );
