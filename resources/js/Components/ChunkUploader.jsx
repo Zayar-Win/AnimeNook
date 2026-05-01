@@ -233,7 +233,7 @@ function UploadCard({
             <div
                 className={`w-full overflow-hidden bg-black/30 ${
                     allowMultiple
-                        ? "h-48 sm:h-24"
+                        ? "h-32 sm:h-20"
                         : "h-36"
                 }`}
             >
@@ -590,7 +590,7 @@ const ChunkUploader = ({
                     <div
                         className={`grid gap-3 ${
                             allowMultiple
-                                ? "grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                                ? "grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4"
                                 : "grid-cols-1"
                         }`}
                     >
