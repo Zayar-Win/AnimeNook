@@ -112,6 +112,7 @@ function UploadCard({
     onMoveStep,
     dragFromHandleOnly,
     onDragReorderEnd,
+    onCardNode,
 }) {
     const ref = useRef(null);
     const dragHandleRef = useRef(null);
@@ -161,9 +162,16 @@ function UploadCard({
         drag(drop(ref));
     }
 
+    const setCardRef = (node) => {
+        ref.current = node;
+        if (typeof onCardNode === "function") {
+            onCardNode(item.id, node);
+        }
+    };
+
     return (
         <div
-            ref={ref}
+            ref={setCardRef}
             className={`relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#121212] ${
                 allowMultiple ? "sm:max-w-[220px]" : ""
             } ${
@@ -306,6 +314,7 @@ const ChunkUploader = ({
     const [items, setItems] = useState([]);
     const [dragOver, setDragOver] = useState(false);
     const [error, setError] = useState("");
+    const cardNodesRef = useRef(new Map());
     const isTouchDevice = useMemo(() => {
         if (typeof window === "undefined") return false;
         const hasTouchPoints =
@@ -382,6 +391,40 @@ const ChunkUploader = ({
         updateItems((prev) => prev.filter((item) => item.id !== id));
     };
 
+    const registerCardNode = useCallback((id, node) => {
+        if (!id) return;
+        if (node) {
+            cardNodesRef.current.set(id, node);
+        } else {
+            cardNodesRef.current.delete(id);
+        }
+    }, []);
+
+    const animateLayoutShift = useCallback((beforeRects, nextItems) => {
+        requestAnimationFrame(() => {
+            nextItems.forEach((item) => {
+                const node = cardNodesRef.current.get(item.id);
+                const first = beforeRects.get(item.id);
+                if (!node || !first) return;
+                const last = node.getBoundingClientRect();
+                const dx = first.left - last.left;
+                const dy = first.top - last.top;
+                if (dx === 0 && dy === 0) return;
+
+                node.animate(
+                    [
+                        { transform: `translate(${dx}px, ${dy}px)` },
+                        { transform: "translate(0, 0)" },
+                    ],
+                    {
+                        duration: 170,
+                        easing: "ease-out",
+                    },
+                );
+            });
+        });
+    }, []);
+
     const reorderItemsByIndex = (fromIndex, toIndex, skipEmit = false) => {
         if (fromIndex === toIndex) return;
         setItems((prev) => {
@@ -393,9 +436,17 @@ const ChunkUploader = ({
             ) {
                 return prev;
             }
+            const beforeRects = new Map();
+            prev.forEach((item) => {
+                const node = cardNodesRef.current.get(item.id);
+                if (node) {
+                    beforeRects.set(item.id, node.getBoundingClientRect());
+                }
+            });
             const next = [...prev];
             const [moved] = next.splice(fromIndex, 1);
             next.splice(toIndex, 0, moved);
+            animateLayoutShift(beforeRects, next);
             if (!skipEmit) {
                 emitValues(next);
             }
@@ -630,6 +681,7 @@ const ChunkUploader = ({
                                     onReorder={reorderItemsByIndex}
                                     onDragReorderEnd={commitReorderToParent}
                                     onMoveStep={moveItemByStep}
+                                    onCardNode={registerCardNode}
                                 />
                             );
                         })}
