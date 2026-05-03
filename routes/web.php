@@ -138,7 +138,7 @@ if ($isProduction) {
             Route::delete('/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'abortChunk'])->name('uploads.abort');
             //User Routes
             Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
-            Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('create');
+            Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('users.create');
             Route::post('/admin/users/store', [GroupAdminUserController::class, 'store'])->name('users.store');
             Route::get('/admin/users/{user}/edit', [GroupAdminUserController::class, 'edit'])->name('users.edit');
             Route::post('/admin/users/{user}/update', [GroupAdminUserController::class, 'update'])->name('users.update');
@@ -304,7 +304,7 @@ if ($isProduction) {
             Route::delete('/admin/uploads/{upload}', [GroupAdminChunkUploadController::class, 'abortChunk'])->name('uploads.abort');
             //User Routes
             Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
-            Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('create');
+            Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('users.create');
             Route::post('/admin/users/store', [GroupAdminUserController::class, 'store'])->name('users.store');
             Route::get('/admin/users/{user}/edit', [GroupAdminUserController::class, 'edit'])->name('users.edit');
             Route::post('/admin/users/{user}/update', [GroupAdminUserController::class, 'update'])->name('users.update');

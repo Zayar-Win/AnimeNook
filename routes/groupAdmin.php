@@ -2,17 +2,16 @@
 
 <?php
 
-use App\Http\Controllers\GroupAdminUserController;
-use App\Http\Controllers\GroupAdminSubscriberController;
-use App\Http\Controllers\GroupAdminAnimeController;
-use App\Http\Controllers\GroupAdminMangaController;
-use App\Http\Controllers\GroupAdminCommentController;
-use App\Http\Controllers\GroupAdminTagController;
-use App\Http\Controllers\GroupAdminSettingController;
-use App\Http\Controllers\GroupAdminSeasonController;
-use App\Http\Controllers\GroupAdminBannerController;
-use App\Http\Controllers\GroupAdminAdsenseController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupAdminAdsenseController;
+use App\Http\Controllers\GroupAdminAnimeController;
+use App\Http\Controllers\GroupAdminCommentController;
+use App\Http\Controllers\GroupAdminMangaController;
+use App\Http\Controllers\GroupAdminSeasonController;
+use App\Http\Controllers\GroupAdminSettingController;
+use App\Http\Controllers\GroupAdminSubscriberController;
+use App\Http\Controllers\GroupAdminTagController;
+use App\Http\Controllers\GroupAdminUserController;
 use App\Http\Middleware\SubscriptionMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -21,7 +20,7 @@ Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::clas
     Route::get('/admin/adsense', [GroupAdminAdsenseController::class, 'index'])->name('adsense.dashboard');
     //User Routes
     Route::get('/admin/users', [GroupAdminUserController::class, 'index'])->name('users');
-    Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('create');
+    Route::get('/admin/users/create', [GroupAdminUserController::class, 'create'])->name('users.create');
     Route::post('/admin/users/store', [GroupAdminUserController::class, 'store'])->name('users.store');
     Route::get('/admin/users/{user}/edit', [GroupAdminUserController::class, 'edit'])->name('users.edit');
     Route::post('/admin/users/{user}/update', [GroupAdminUserController::class, 'update'])->name('users.update');
@@ -44,11 +43,11 @@ Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::clas
     Route::post('/admin/animes/{anime}/episodes/{episode}/update', [GroupAdminAnimeController::class, 'updateEpisode'])->name('animes.episodes.update');
     Route::post('/admin/animes/{anime}/episodes/{episode}/delete', [GroupAdminAnimeController::class, 'deleteEpisode'])->name('animes.episodes.delete');
     // Manga Route
-    Route::get('/admin/mangas', [GroupAdminMangaController::class, 'index'])->name("mangas");
+    Route::get('/admin/mangas', [GroupAdminMangaController::class, 'index'])->name('mangas');
     Route::get('/admin/mangas/create', [GroupAdminMangaController::class, 'create'])->name('mangas.create');
     Route::post('/admin/mangas/store', [GroupAdminMangaController::class, 'store'])->name('mangas.store');
     Route::get('/admin/mangas/{manga}/edit', [GroupAdminMangaController::class, 'edit'])->name('mangas.edit');
-    Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name("mangas.update");
+    Route::post('/admin/mangas/{manga}/update', [GroupAdminMangaController::class, 'update'])->name('mangas.update');
     Route::post('/admin/mangas/delete', [GroupAdminMangaController::class, 'delete'])->name('mangas.delete');
     Route::get('/admin/mangas/{manga}/chapters/create', [GroupAdminMangaController::class, 'chapterCreate'])->name('mangas.chapters.create');
     Route::post('/admin/mangas/{manga}/chapters/store', [GroupAdminMangaController::class, 'chapterStore'])->name('mangas.chapters.store');
@@ -80,7 +79,6 @@ Route::name('admin.')->middleware(['auth', 'admin', SubscriptionMiddleware::clas
 
     Route::get('/admin/mangas/{manga:slug}/seasons/create', [GroupAdminSeasonController::class, 'mangaSeasonCreate'])->name('manga.seasons.create');
     Route::get('/admin/mangas/{manga:slug}/seasons/{season}/edit', [GroupAdminSeasonController::class, 'mangaSeasonEdit'])->name('manga.seasons.edit');
-
 
     //Banners
 

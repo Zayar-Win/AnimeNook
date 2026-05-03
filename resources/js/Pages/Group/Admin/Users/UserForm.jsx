@@ -1,41 +1,77 @@
 /* eslint-disable indent */
 import Input from "@/Components/Admin/Input";
 import Button from "@/Components/Button";
+import InputError from "@/Components/InputError";
 import Select from "@/Components/Select";
+import { DEFAULT_USER_PROFILE_PRESETS } from "@/constants/defaultUserProfilePresets";
 import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, useForm } from "@inertiajs/react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-const UserForm = ({ type, user }) => {
-    const roleOptions = [
-        { label: "User", value: 1 },
-        { label: "Editor", value: 2 },
-        { label: "Admin", value: 3 },
-    ];
+function formatRoleLabel(name) {
+    if (!name) return "";
+    return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+const UserForm = ({ type, user, roles = [] }) => {
+    const firstPreset = DEFAULT_USER_PROFILE_PRESETS[0];
+
+    const roleOptions = useMemo(() => {
+        if (Array.isArray(roles) && roles.length > 0) {
+            return roles.map((r) => ({
+                label: formatRoleLabel(r.name),
+                value: r.id,
+            }));
+        }
+        return [
+            { label: "User", value: 1 },
+            { label: "Editor", value: 2 },
+            { label: "Admin", value: 3 },
+        ];
+    }, [roles]);
+
+    const defaultRoleId = roleOptions[0]?.value ?? 1;
+
     const typeOptions = [
         { label: "Free", value: "free" },
         { label: "Paid", value: "paid" },
     ];
+
     const [profileImageUrl, setProfileImageUrl] = useState(
-        user?.profile_picture
+        type === "create" ? firstPreset?.src : user?.profile_picture,
     );
-    const { data, setData, post, errors } = useForm({
+    const [selectedPresetId, setSelectedPresetId] = useState(() =>
+        type === "create" ? firstPreset?.id ?? null : null,
+    );
+
+    const { data, setData, post, errors, processing } = useForm({
         name: "",
         email: "",
-        profile_picture: null,
-        role_id: 1,
+        profile_picture: type === "create" ? firstPreset?.src ?? null : null,
+        role_id: defaultRoleId,
         type: "free",
         password: "",
     });
 
     useEffect(() => {
-        if (data.profile_picture && typeof data.profile_picture !== "string") {
-            setProfileImageUrl(URL.createObjectURL(data.profile_picture));
+        if (data.profile_picture instanceof File) {
+            const objectUrl = URL.createObjectURL(data.profile_picture);
+            setProfileImageUrl(objectUrl);
+            setSelectedPresetId(null);
+            return () => URL.revokeObjectURL(objectUrl);
+        }
+        if (typeof data.profile_picture === "string" && data.profile_picture) {
+            setProfileImageUrl(data.profile_picture);
         }
     }, [data.profile_picture]);
 
     useEffect(() => {
         if (type === "edit" && user) {
+            const presetMatch = DEFAULT_USER_PROFILE_PRESETS.find(
+                (p) => p.src === user.profile_picture,
+            );
+            setSelectedPresetId(presetMatch?.id ?? null);
+            setProfileImageUrl(user.profile_picture);
             setData((prev) => ({
                 ...prev,
                 name: user.name,
@@ -47,6 +83,15 @@ const UserForm = ({ type, user }) => {
             }));
         }
     }, [type, user?.id, setData]);
+
+    const selectPreset = (preset) => {
+        setSelectedPresetId(preset.id);
+        setData("profile_picture", preset.src);
+        setProfileImageUrl(preset.src);
+    };
+
+    const fallbackAvatar =
+        "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=256&h=256&q=80";
 
     return (
         <div className="min-h-screen bg-[#0a0a0a] px-4 py-6 text-white sm:px-6 sm:py-8 lg:px-8 lg:py-10">
@@ -81,21 +126,20 @@ const UserForm = ({ type, user }) => {
                                 : window.route("group.admin.users.store"),
                             {
                                 preserveScroll: true,
-                            }
+                            },
                         );
                     }}
                     className="rounded-xl border border-white/5 bg-[#1a1a1a] p-4 shadow-xl shadow-black/50 sm:rounded-2xl sm:p-6 lg:p-8"
                 >
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-x-8 md:gap-y-8 lg:gap-x-10">
                         <div className="col-span-1 flex flex-col items-center md:col-span-2">
-                            <div className="group relative cursor-pointer touch-manipulation">
+                            <div className="group relative touch-manipulation">
                                 <div className="h-28 w-28 overflow-hidden rounded-full shadow-2xl ring-4 ring-white/10 transition-all duration-300 group-hover:ring-primary group-active:ring-primary/80 sm:h-32 sm:w-32">
                                     <img
                                         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                                         src={
-                                            profileImageUrl
-                                                ? profileImageUrl
-                                                : "https://buffer.com/library/content/images/size/w1200/2023/10/free-images.jpg"
+                                            profileImageUrl ||
+                                            fallbackAvatar
                                         }
                                         alt=""
                                     />
@@ -126,19 +170,63 @@ const UserForm = ({ type, user }) => {
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) =>
-                                        setData(
-                                            "profile_picture",
-                                            e.target.files?.[0] ?? null
-                                        )
-                                    }
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0] ?? null;
+                                        setData("profile_picture", file);
+                                        if (file) {
+                                            setSelectedPresetId(null);
+                                        }
+                                        e.target.value = "";
+                                    }}
                                     className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
-                                    aria-label="Upload profile picture"
+                                    aria-label="Upload custom profile picture"
                                 />
                             </div>
                             <p className="mt-2 text-center text-[11px] text-zinc-500 sm:hidden">
-                                Tap image to change photo
+                                Tap image to upload your own photo
                             </p>
+
+                            <div className="mt-6 w-full max-w-lg">
+                                <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-wider text-zinc-500 sm:text-left">
+                                    Preset avatars
+                                </p>
+                                <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
+                                    {DEFAULT_USER_PROFILE_PRESETS.map((p) => {
+                                        const active =
+                                            selectedPresetId === p.id &&
+                                            typeof data.profile_picture ===
+                                                "string" &&
+                                            data.profile_picture === p.src;
+                                        return (
+                                            <button
+                                                key={p.id}
+                                                type="button"
+                                                title={p.label}
+                                                onClick={() =>
+                                                    selectPreset(p)
+                                                }
+                                                className={`relative h-11 w-11 overflow-hidden rounded-full ring-2 transition sm:h-12 sm:w-12 ${
+                                                    active
+                                                        ? "ring-primary ring-offset-2 ring-offset-[#1a1a1a]"
+                                                        : "ring-transparent hover:ring-white/30"
+                                                }`}
+                                            >
+                                                <img
+                                                    src={p.src}
+                                                    alt=""
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                            <div className="mt-3 w-full">
+                                <InputError
+                                    message={errors?.profile_picture}
+                                    inline
+                                />
+                            </div>
                         </div>
 
                         <div className="col-span-1 md:col-span-2">
@@ -212,6 +300,7 @@ const UserForm = ({ type, user }) => {
                         </Link>
                         <Button
                             type="submit"
+                            loading={processing}
                             text={
                                 type === "edit" ? "Update user" : "Create user"
                             }

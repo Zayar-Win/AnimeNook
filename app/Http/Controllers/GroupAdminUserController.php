@@ -62,10 +62,11 @@ class GroupAdminUserController extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Group $group)
     {
         return inertia('Group/Admin/Users/UserForm', [
             'type' => 'create',
+            'roles' => Role::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -76,6 +77,7 @@ class GroupAdminUserController extends Controller
         return inertia('Group/Admin/Users/UserForm', [
             'type' => 'edit',
             'user' => $user,
+            'roles' => Role::query()->orderBy('name')->get(['id', 'name']),
         ]);
     }
 
@@ -124,7 +126,7 @@ class GroupAdminUserController extends Controller
         $validatedData = $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
-            'profile_picture' => 'nullable',
+            'profile_picture' => ['required'],
             'role_id' => 'required',
             'type' => 'required|in:free,paid',
             'password' => 'required|min:6|max:20',

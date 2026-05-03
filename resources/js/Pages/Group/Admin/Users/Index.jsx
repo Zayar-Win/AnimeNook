@@ -365,7 +365,7 @@ const Index = ({ users, filters = {}, roles = [] }) => {
 
     return (
         <div className="px-4 pb-8 pt-4 sm:px-5 sm:pt-6 lg:px-8">
-            <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:gap-4 sm:py-2">
+            <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:py-2">
                 <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
                     <div className="shrink-0 rounded-xl border border-primary/20 bg-primary/10 p-2.5 text-white shadow-[0_0_15px_rgba(237,100,0,0.15)] sm:p-3">
                         <svg
@@ -387,6 +387,25 @@ const Index = ({ users, filters = {}, roles = [] }) => {
                         </p>
                     </div>
                 </div>
+                <Link
+                    href={window.route("group.admin.users.create")}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-black shadow-lg shadow-primary/25 transition hover:bg-primary/90 sm:py-3 sm:pl-5 sm:pr-6"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        aria-hidden
+                    >
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add user
+                </Link>
             </div>
 
             <UserFiltersToolbar
