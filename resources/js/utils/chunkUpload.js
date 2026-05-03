@@ -110,12 +110,16 @@ export async function uploadFileInChunks({
             },
         );
 
-        const url = finishRes?.data?.url;
+        const finishData = finishRes?.data ?? {};
+        const url = finishData.url;
         if (!url) {
             throw new Error("Upload finished but no url returned");
         }
 
-        return url;
+        return {
+            url,
+            upload_id: finishData.upload_id ?? null,
+        };
     } catch (err) {
         try {
             await axios.delete(

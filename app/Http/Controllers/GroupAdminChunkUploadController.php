@@ -21,7 +21,7 @@ class GroupAdminChunkUploadController extends Controller
     public function signSpacesUpload(Group $group, Request $request)
     {
         $validated = $request->validate([
-            'target' => ['required', 'in:chapter-image,chapter-pdf'],
+            'target' => ['required', 'in:chapter-image,chapter-pdf,chapter-zip'],
             'file_name' => ['required', 'string', 'max:255'],
             'content_type' => ['nullable', 'string', 'max:255'],
         ]);
@@ -34,9 +34,12 @@ class GroupAdminChunkUploadController extends Controller
         if ($target === 'chapter-image' && $contentType && ! Str::startsWith($contentType, 'image/')) {
             return response()->json(['message' => 'Only image files are allowed'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+        if ($target === 'chapter-zip' && $contentType && ! self::isZipContentType($contentType)) {
+            return response()->json(['message' => 'Only ZIP archives are allowed'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
         $safeName = preg_replace('/[^A-Za-z0-9._-]+/', '_', $validated['file_name']) ?: 'upload.bin';
-        $key = 'mangas/' . now()->timestamp . '_' . Str::uuid() . '_' . $safeName;
+        $key = 'mangas/'.now()->timestamp.'_'.Str::uuid().'_'.$safeName;
 
         $disk = config('filesystems.disks.do_spaces');
         $bucket = $disk['bucket'] ?? null;
@@ -64,7 +67,7 @@ class GroupAdminChunkUploadController extends Controller
         $uploadUrl = (string) $presigned->getUri();
 
         $baseUrl = rtrim((string) ($disk['url'] ?? ''), '/');
-        $publicUrl = $baseUrl . '/' . $key;
+        $publicUrl = $baseUrl.'/'.$key;
 
         return response()->json([
             'upload_url' => $uploadUrl,
@@ -84,7 +87,7 @@ class GroupAdminChunkUploadController extends Controller
         $userId = (int) $request->user()->id;
 
         $target = (string) $request->header('X-Upload-Target', '');
-        if (! in_array($target, ['chapter-image', 'chapter-pdf'], true)) {
+        if (! in_array($target, ['chapter-image', 'chapter-pdf', 'chapter-zip'], true)) {
             return response('Invalid upload target', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -104,6 +107,12 @@ class GroupAdminChunkUploadController extends Controller
         if ($target === 'chapter-image') {
             if ($mime !== null && ! Str::startsWith((string) $mime, 'image/')) {
                 return response('Only image files allowed', Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+
+        if ($target === 'chapter-zip') {
+            if ($mime !== null && ! self::isZipContentType((string) $mime)) {
+                return response('Only ZIP archives allowed', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         }
 
@@ -203,8 +212,9 @@ class GroupAdminChunkUploadController extends Controller
         $newOffset = $currentOffset + strlen($bytes);
 
         if ($totalLength !== null && $newOffset >= $totalLength) {
-            $storedUrl = $this->finalizeUpload($session, $partPath);
-            $session->stored_url = $storedUrl;
+            $result = $this->finalizeUpload($session, $partPath);
+            $session->stored_url = $result['url'];
+            $session->stored_path = $result['path'];
             $session->status = 'complete';
             $session->save();
 
@@ -254,7 +264,7 @@ class GroupAdminChunkUploadController extends Controller
     public function initChunk(Group $group, Request $request)
     {
         $validated = $request->validate([
-            'target' => ['required', 'in:chapter-image,chapter-pdf'],
+            'target' => ['required', 'in:chapter-image,chapter-pdf,chapter-zip'],
             'file_name' => ['required', 'string', 'max:255'],
             'content_type' => ['nullable', 'string', 'max:255'],
             'size_bytes' => ['required', 'integer', 'min:1'],
@@ -268,6 +278,23 @@ class GroupAdminChunkUploadController extends Controller
         }
         if ($target === 'chapter-image' && $contentType && ! Str::startsWith($contentType, 'image/')) {
             return response()->json(['message' => 'Only image files are allowed'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+        if ($target === 'chapter-zip' && $contentType && ! self::isZipContentType($contentType)) {
+            return response()->json(['message' => 'Only ZIP archives are allowed'], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        $maxZip = (int) config('chapter_zip.max_upload_bytes', 200 * 1024 * 1024);
+        if ($target === 'chapter-zip' && (int) $validated['size_bytes'] > $maxZip) {
+            return response()->json([
+                'message' => 'ZIP exceeds maximum allowed size ('.$maxZip.' bytes).',
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        if ($target === 'chapter-zip') {
+            $lower = strtolower((string) $validated['file_name']);
+            if (! str_ends_with($lower, '.zip')) {
+                return response()->json(['message' => 'File must have a .zip extension.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
         }
 
         $userId = (int) $request->user()->id;
@@ -407,6 +434,16 @@ class GroupAdminChunkUploadController extends Controller
             return response()->json(['message' => 'No data uploaded'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
+        if ($session->target === 'chapter-zip') {
+            $lower = strtolower((string) $session->original_name);
+            if (! str_ends_with($lower, '.zip')) {
+                return response()->json(['message' => 'File must have a .zip extension.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+            if (! self::fileStartsWithZipMagic($partPath)) {
+                return response()->json(['message' => 'Invalid ZIP file.'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+        }
+
         $currentSize = (int) filesize($partPath);
         $expectedSize = $session->size_bytes ? (int) $session->size_bytes : null;
         if ($expectedSize !== null && $currentSize < $expectedSize) {
@@ -416,17 +453,26 @@ class GroupAdminChunkUploadController extends Controller
             ], Response::HTTP_CONFLICT);
         }
 
-        $url = $this->finalizeUpload($session, $partPath);
-        $session->stored_url = $url;
+        $result = $this->finalizeUpload($session, $partPath);
+        $session->stored_url = $result['url'];
+        $session->stored_path = $result['path'];
         $session->status = 'complete';
         $session->save();
 
         $this->cleanupTemp($upload);
 
+        if ($session->target === 'chapter-zip') {
+            return response()->json([
+                'url' => $result['url'],
+                'storage_path' => $result['path'],
+                'upload_id' => $upload,
+            ]);
+        }
+
         // We don't need to keep the row around once we returned the final URL.
         $session->delete();
 
-        return response()->json(['url' => $url]);
+        return response()->json(['url' => $result['url']]);
     }
 
     public function abortChunk(Group $group, Request $request, string $upload)
@@ -454,12 +500,12 @@ class GroupAdminChunkUploadController extends Controller
 
     private function tempDir(string $id): string
     {
-        return storage_path('app/chunk-uploads/' . $id);
+        return storage_path('app/chunk-uploads/'.$id);
     }
 
     private function tempFilePath(string $id): string
     {
-        return $this->tempDir($id) . '/upload.part';
+        return $this->tempDir($id).'/upload.part';
     }
 
     private function cleanupTemp(string $id): void
@@ -470,14 +516,17 @@ class GroupAdminChunkUploadController extends Controller
         }
     }
 
-    private function finalizeUpload(UploadSession $session, string $partPath): string
+    /**
+     * @return array{url: string, path: string}
+     */
+    private function finalizeUpload(UploadSession $session, string $partPath): array
     {
         // Store under the same "mangas" container used by chapter uploads today.
         $container = 'mangas';
 
         $safeOriginal = preg_replace('/[^A-Za-z0-9._-]+/', '_', $session->original_name) ?: 'upload.bin';
-        $finalName = Carbon::now()->timestamp . '_' . $safeOriginal;
-        $finalPath = $container . '/' . $finalName;
+        $finalName = Carbon::now()->timestamp.'_'.$safeOriginal;
+        $finalPath = $container.'/'.$finalName;
 
         $stream = fopen($partPath, 'rb');
         if (! $stream) {
@@ -490,6 +539,33 @@ class GroupAdminChunkUploadController extends Controller
             fclose($stream);
         }
 
-        return Storage::url($finalPath);
+        return [
+            'url' => Storage::url($finalPath),
+            'path' => $finalPath,
+        ];
+    }
+
+    private static function isZipContentType(string $mime): bool
+    {
+        $mime = strtolower(trim($mime));
+
+        return $mime === 'application/zip'
+            || $mime === 'application/x-zip-compressed'
+            || $mime === 'application/octet-stream';
+    }
+
+    private static function fileStartsWithZipMagic(string $path): bool
+    {
+        $fh = fopen($path, 'rb');
+        if (! $fh) {
+            return false;
+        }
+        try {
+            $head = fread($fh, 4);
+
+            return $head !== false && strlen($head) >= 2 && $head[0] === 'P' && $head[1] === 'K';
+        } finally {
+            fclose($fh);
+        }
     }
 }

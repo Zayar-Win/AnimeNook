@@ -295,6 +295,7 @@ const ChunkUploader = ({
     chunkSize = 1024 * 1024,
     disabled = false,
     onUploadingChange,
+    onZipUploadSession = null,
 }) => {
     const reactId = useMemo(
         () => `cu-${Math.random().toString(36).slice(2, 10)}`,
@@ -355,11 +356,20 @@ const ChunkUploader = ({
         [items],
     );
 
+    const onUploadingChangeRef = useRef(onUploadingChange);
+    onUploadingChangeRef.current = onUploadingChange;
+
     useEffect(() => {
         if (typeof onUploadingChange === "function") {
             onUploadingChange(uploadingCount);
         }
     }, [onUploadingChange, uploadingCount]);
+
+    useEffect(() => {
+        return () => {
+            onUploadingChangeRef.current?.(0);
+        };
+    }, []);
 
     const emitValues = (nextItems) => {
         const out = nextItems.map((item) => item.outputValue).filter(Boolean);
@@ -475,7 +485,7 @@ const ChunkUploader = ({
         );
 
         try {
-            const url = await uploadFileInChunks({
+            const payload = await uploadFileInChunks({
                 file,
                 target: chunkTarget,
                 chunkSize,
@@ -489,6 +499,16 @@ const ChunkUploader = ({
                     );
                 },
             });
+            const url = payload?.url ?? payload;
+            const uploadId = payload?.upload_id ?? null;
+
+            if (chunkTarget === "chapter-zip" && uploadId) {
+                try {
+                    await onZipUploadSession?.({ upload_id: uploadId, url });
+                } catch (hookErr) {
+                    throw hookErr;
+                }
+            }
 
             updateItems((prev) =>
                 prev.map((item) =>

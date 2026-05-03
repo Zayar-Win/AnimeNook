@@ -31,7 +31,7 @@ const MangaChapterReader = ({
 
     return (
         <SectionContainer className="min-h-screen bg-white pb-16 text-zinc-900 dark:bg-black dark:text-white">
-            <div className="sticky top-0 z-20 mb-8 border-b border-zinc-200 bg-white/90 py-4 backdrop-blur-md dark:border-white/10 dark:bg-black/90">
+            <div className="sticky top-20 z-40 mb-8 border-b border-zinc-200 bg-white/90 py-4 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-black/90">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                     <Link
                         href={window.route("group.manga.detail", {

@@ -12,19 +12,34 @@ use App\Models\Status;
 use App\Models\Tag;
 use App\Models\Taggable;
 use App\Models\UploadSession;
-use Illuminate\Http\Request;
 use App\Notifications\NewMangaChapterUpload;
 use App\Notifications\SavedContentUpdatedNotification;
+use App\Services\ChapterZipImportRegistrar;
+use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Str;
 
 class GroupAdminMangaController extends Controller
 {
-    public function __construct(private Uploader $uploader) {}
+    public function __construct(
+        private Uploader $uploader,
+        private ChapterZipImportRegistrar $zipImportRegistrar,
+    ) {}
+
+    private function requestZipUploadId(Request $request): ?string
+    {
+        $raw = $request->input('zip_upload_id');
+        if ($raw === null || $raw === '') {
+            return null;
+        }
+        $id = trim((string) $raw);
+
+        return $id !== '' ? $id : null;
+    }
 
     private function resolveChunkUploadToUrl(Group $group, Request $request, string $target, string $maybeId): ?string
     {
@@ -71,6 +86,7 @@ class GroupAdminMangaController extends Controller
         for ($i = 0; $i < $max; $i++) {
             if (is_array($files) && array_key_exists($i, $files) && $files[$i] instanceof UploadedFile) {
                 $out[] = $files[$i];
+
                 continue;
             }
             if (is_array($input) && array_key_exists($i, $input)) {
@@ -96,7 +112,7 @@ class GroupAdminMangaController extends Controller
         $query = $group->mangas();
 
         if (($filters['search'] ?? '') !== '') {
-            $like = '%' . $filters['search'] . '%';
+            $like = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($like) {
                 $q->where('name', 'like', $like)
                     ->orWhere('description', 'like', $like);
@@ -190,7 +206,7 @@ class GroupAdminMangaController extends Controller
 
         if (($seasonValidated['season_search'] ?? '') !== '') {
             $term = $seasonValidated['season_search'];
-            $like = '%' . $term . '%';
+            $like = '%'.$term.'%';
             $seasonQuery->where(function ($q) use ($like, $term) {
                 $q->where('title', 'like', $like);
                 if (ctype_digit($term)) {
@@ -314,7 +330,7 @@ class GroupAdminMangaController extends Controller
 
         if (($filters['season_search'] ?? '') !== '') {
             $term = $filters['season_search'];
-            $like = '%' . $term . '%';
+            $like = '%'.$term.'%';
             $query->where(function ($q) use ($like, $term) {
                 $q->where('title', 'like', $like);
                 if (ctype_digit($term)) {
@@ -363,10 +379,12 @@ class GroupAdminMangaController extends Controller
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable', 'image'],
             'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
+            'zip_upload_id' => ['nullable', 'string', 'uuid'],
         ]);
 
         $request = request();
         $contentMode = $validatedData['content_mode'];
+        $zipUploadId = $this->requestZipUploadId($request);
 
         $pdfInput = $request->file('pdf') instanceof UploadedFile
             ? $request->file('pdf')
@@ -375,6 +393,9 @@ class GroupAdminMangaController extends Controller
         $imagesMixed = $this->mixedArrayInput($request, 'images');
 
         if ($contentMode === 'pdf') {
+            if ($zipUploadId) {
+                throw ValidationException::withMessages(['zip_upload_id' => 'ZIP import applies to image chapters only.']);
+            }
             if (! $pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Upload a PDF file for this chapter.']);
             }
@@ -385,8 +406,12 @@ class GroupAdminMangaController extends Controller
             if ($pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
             }
-            if (empty($imagesMixed)) {
-                throw ValidationException::withMessages(['images' => 'Upload at least one page image.']);
+            if ($zipUploadId) {
+                if (! empty($imagesMixed)) {
+                    throw ValidationException::withMessages(['images' => 'Use either a ZIP archive or individual images, not both.']);
+                }
+            } elseif (empty($imagesMixed)) {
+                throw ValidationException::withMessages(['images' => 'Upload at least one page image or a ZIP of pages.']);
             }
         }
 
@@ -421,7 +446,7 @@ class GroupAdminMangaController extends Controller
             $validatedData['type'] = 'link';
         }
 
-        unset($validatedData['content_mode'], $validatedData['images'], $validatedData['pdf']);
+        unset($validatedData['content_mode'], $validatedData['images'], $validatedData['pdf'], $validatedData['zip_upload_id']);
         $chapter = Chapter::create($validatedData);
 
         $savedUserIds = CollectionItems::query()
@@ -442,33 +467,42 @@ class GroupAdminMangaController extends Controller
         }
 
         if ($contentMode === 'images') {
-            foreach (array_values($imagesMixed) as $index => $image) {
-                $path = null;
+            if ($zipUploadId) {
+                $this->zipImportRegistrar->queueFromUploadSession($group, $request, $chapter, $zipUploadId);
+            } else {
+                foreach (array_values($imagesMixed) as $index => $image) {
+                    $path = null;
 
-                if ($image instanceof UploadedFile) {
-                    Validator::make(['file' => $image], ['file' => ['required', 'image', 'max:20480']])->validate();
-                    $path = $this->uploader->upload($image, 'mangas');
-                } elseif (is_string($image)) {
-                    $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-image', $image);
-                    $path = $resolved ?: trim($image);
-                } elseif (is_array($image) && isset($image['path'])) {
-                    $path = (string) $image['path'];
+                    if ($image instanceof UploadedFile) {
+                        Validator::make(['file' => $image], ['file' => ['required', 'image', 'max:20480']])->validate();
+                        $path = $this->uploader->upload($image, 'mangas');
+                    } elseif (is_string($image)) {
+                        $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-image', $image);
+                        $path = $resolved ?: trim($image);
+                    } elseif (is_array($image) && isset($image['path'])) {
+                        $path = (string) $image['path'];
+                    }
+
+                    $path = is_string($path) ? trim($path) : '';
+                    if ($path === '') {
+                        throw ValidationException::withMessages(['images' => 'One of the uploaded images is invalid.']);
+                    }
+
+                    ChapterImage::create([
+                        'chapter_id' => $chapter->id,
+                        'path' => $path,
+                        'order' => $index,
+                    ]);
                 }
-
-                $path = is_string($path) ? trim($path) : '';
-                if ($path === '') {
-                    throw ValidationException::withMessages(['images' => 'One of the uploaded images is invalid.']);
-                }
-
-                ChapterImage::create([
-                    'chapter_id' => $chapter->id,
-                    'path' => $path,
-                    'order' => $index,
-                ]);
             }
         }
 
-        return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chpater created Successful.');
+        $successMessage = 'Chpater created Successful.';
+        if ($contentMode === 'images' && $zipUploadId) {
+            $successMessage .= ' Chapter pages are being imported from your ZIP in the background.';
+        }
+
+        return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', $successMessage);
     }
 
     public function editChapter(Group $group, Manga $manga, Chapter $chapter, Request $request)
@@ -507,10 +541,12 @@ class GroupAdminMangaController extends Controller
             'images' => ['nullable', 'array'],
             'images.*' => ['nullable'],
             'pdf' => ['nullable'],
+            'zip_upload_id' => ['nullable', 'string', 'uuid'],
         ]);
 
         $request = request();
         $contentMode = $validatedData['content_mode'];
+        $zipUploadId = $this->requestZipUploadId($request);
 
         $pdfInput = $request->file('pdf') instanceof UploadedFile
             ? $request->file('pdf')
@@ -519,6 +555,9 @@ class GroupAdminMangaController extends Controller
         $imagesMixed = $this->mixedArrayInput($request, 'images');
 
         if ($contentMode === 'pdf') {
+            if ($zipUploadId) {
+                throw ValidationException::withMessages(['zip_upload_id' => 'ZIP import applies to image chapters only.']);
+            }
             if (! $pdfInput && ! $chapter->pdf_path) {
                 throw ValidationException::withMessages(['pdf' => 'Upload a PDF file or keep the existing chapter PDF.']);
             }
@@ -529,17 +568,23 @@ class GroupAdminMangaController extends Controller
             if ($pdfInput) {
                 throw ValidationException::withMessages(['pdf' => 'Use either image pages or one PDF, not both.']);
             }
-            $hasExisting = collect($imagesMixed)->contains(fn($i) => is_array($i) && isset($i['id']));
-            $hasNewFiles = collect($imagesMixed)->filter(fn($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
-            if (! $hasExisting && ! $hasNewFiles) {
-                throw ValidationException::withMessages(['images' => 'Add at least one page image.']);
-            }
-            foreach ($imagesMixed as $img) {
-                if ($img instanceof UploadedFile) {
-                    Validator::make(
-                        ['file' => $img],
-                        ['file' => ['required', 'image', 'max:20480']],
-                    )->validate();
+            if ($zipUploadId) {
+                if (! empty($imagesMixed)) {
+                    throw ValidationException::withMessages(['images' => 'Use either a ZIP archive or individual images, not both.']);
+                }
+            } else {
+                $hasExisting = collect($imagesMixed)->contains(fn ($i) => is_array($i) && isset($i['id']));
+                $hasNewFiles = collect($imagesMixed)->filter(fn ($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
+                if (! $hasExisting && ! $hasNewFiles) {
+                    throw ValidationException::withMessages(['images' => 'Add at least one page image or choose a ZIP of pages.']);
+                }
+                foreach ($imagesMixed as $img) {
+                    if ($img instanceof UploadedFile) {
+                        Validator::make(
+                            ['file' => $img],
+                            ['file' => ['required', 'image', 'max:20480']],
+                        )->validate();
+                    }
                 }
             }
         }
@@ -593,50 +638,59 @@ class GroupAdminMangaController extends Controller
             $validatedData['pdf_path'] = null;
         }
 
-        unset($validatedData['content_mode'], $validatedData['images'], $validatedData['pdf']);
+        unset($validatedData['content_mode'], $validatedData['images'], $validatedData['pdf'], $validatedData['zip_upload_id']);
         $chapter->update($validatedData);
 
         if ($contentMode === 'images') {
-            $existingImageIdsInRequest = collect($imagesMixed)->filter(function ($image) {
-                return is_array($image) && isset($image['id']);
-            })->map(function ($image) {
-                return $image['id'];
-            });
+            if ($zipUploadId) {
+                $this->zipImportRegistrar->queueFromUploadSession($group, $request, $chapter, $zipUploadId);
+            } else {
+                $existingImageIdsInRequest = collect($imagesMixed)->filter(function ($image) {
+                    return is_array($image) && isset($image['id']);
+                })->map(function ($image) {
+                    return $image['id'];
+                });
 
-            $chapter->images()->whereNotIn('id', $existingImageIdsInRequest)->each(function ($image) {
-                $this->uploader->remove($image->path);
-                $image->delete();
-            });
+                $chapter->images()->whereNotIn('id', $existingImageIdsInRequest)->each(function ($image) {
+                    $this->uploader->remove($image->path);
+                    $image->delete();
+                });
 
-            foreach ($imagesMixed as $index => $image) {
-                if (is_array($image) && isset($image['id'])) {
-                    ChapterImage::where('id', $image['id'])->update([
-                        'order' => $index,
-                    ]);
-                }
+                foreach ($imagesMixed as $index => $image) {
+                    if (is_array($image) && isset($image['id'])) {
+                        ChapterImage::where('id', $image['id'])->update([
+                            'order' => $index,
+                        ]);
+                    }
 
-                if ($image instanceof UploadedFile) {
-                    $path = $this->uploader->upload($image, 'mangas');
-                    ChapterImage::create([
-                        'chapter_id' => $chapter->id,
-                        'path' => $path,
-                        'order' => $index,
-                    ]);
-                }
+                    if ($image instanceof UploadedFile) {
+                        $path = $this->uploader->upload($image, 'mangas');
+                        ChapterImage::create([
+                            'chapter_id' => $chapter->id,
+                            'path' => $path,
+                            'order' => $index,
+                        ]);
+                    }
 
-                if (is_string($image) && trim($image) !== '') {
-                    $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-image', $image);
-                    $path = $resolved ?: trim($image);
-                    ChapterImage::create([
-                        'chapter_id' => $chapter->id,
-                        'path' => $path,
-                        'order' => $index,
-                    ]);
+                    if (is_string($image) && trim($image) !== '') {
+                        $resolved = $this->resolveChunkUploadToUrl($group, $request, 'chapter-image', $image);
+                        $path = $resolved ?: trim($image);
+                        ChapterImage::create([
+                            'chapter_id' => $chapter->id,
+                            'path' => $path,
+                            'order' => $index,
+                        ]);
+                    }
                 }
             }
         }
 
-        return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', 'Chapter udpated successful.');
+        $successMessage = 'Chapter udpated successful.';
+        if ($contentMode === 'images' && $zipUploadId) {
+            $successMessage .= ' Chapter pages are being imported from your ZIP in the background.';
+        }
+
+        return redirect(route('group.admin.mangas.edit', ['manga' => $manga]))->with('success', $successMessage);
     }
 
     public function deleteChapter(Group $group, Manga $manga, Chapter $chapter)

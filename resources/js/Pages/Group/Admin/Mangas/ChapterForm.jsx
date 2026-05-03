@@ -174,6 +174,7 @@ const ChapterForm = ({
         content_mode: chapter?.pdf_path ? "pdf" : "images",
         pdf: null,
         images: images ?? [],
+        zip_upload_id: null,
     });
     const { data, setData, post, errors, processing } = form;
 
@@ -182,6 +183,8 @@ const ChapterForm = ({
     const [uploadPercent, setUploadPercent] = useState(0);
     const [uploadError, setUploadError] = useState(null);
     const [activeImageUploads, setActiveImageUploads] = useState(0);
+    const [activeZipUploads, setActiveZipUploads] = useState(0);
+    const [zipInputKey, setZipInputKey] = useState(0);
 
     const [search, setSearch] = useState(seasonListFilters?.search ?? "");
     const searchInputRef = useRef(null);
@@ -237,6 +240,20 @@ const ChapterForm = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [search]);
 
+    const handleZipReadyForForm = ({ upload_id: uploadId }) => {
+        if (!uploadId) return;
+        setData((prev) => ({
+            ...prev,
+            content_mode: "zip",
+            zip_upload_id: uploadId,
+            images: [],
+        }));
+        setUploadError(null);
+        // ChunkUploader unmounts once zip_upload_id is set, so it never emits
+        // uploadingCount 0 — clear explicitly so submit is not stuck disabled.
+        setActiveZipUploads(0);
+    };
+
     const hasSeasonSearch = Boolean(search.trim());
 
     const clearSeasonFilters = () => {
@@ -249,10 +266,16 @@ const ChapterForm = ({
     };
 
     const imagesError = firstImagesRelatedError(errors);
-    const contentFileError = imagesError ?? fieldError(errors, "pdf");
+    const contentFileError =
+        imagesError ??
+        fieldError(errors, "pdf") ??
+        fieldError(errors, "zip_upload_id");
 
     const isChapterSubmitting =
-        uploading || processing || activeImageUploads > 0;
+        uploading ||
+        processing ||
+        activeImageUploads > 0 ||
+        activeZipUploads > 0;
 
     const showOffPageSelection = Boolean(data.season_id) && !selectionOnPage;
 
@@ -318,6 +341,16 @@ const ChapterForm = ({
                             return;
                         }
 
+                        if (
+                            data.content_mode === "zip" &&
+                            activeZipUploads > 0
+                        ) {
+                            setUploadError(
+                                "ZIP is still uploading. Please wait until the upload finishes.",
+                            );
+                            return;
+                        }
+
                         const submitUrl =
                             type === "edit"
                                 ? window.route(
@@ -336,17 +369,14 @@ const ChapterForm = ({
 
                             let nextImages = data.images;
                             let nextPdf = data.pdf;
+                            let submitContentMode = data.content_mode;
+                            let nextZipUploadId = null;
 
-                            if (data.content_mode === "images") {
-                                nextImages = Array.isArray(data.images)
-                                    ? data.images
-                                    : [];
-                                nextPdf = null;
-                            } else {
+                            if (data.content_mode === "pdf") {
                                 if (data.pdf instanceof File) {
                                     setUploadLabel("Uploading PDF…");
                                     setUploadPercent(0);
-                                    const url = await uploadFileInChunks({
+                                    const { url } = await uploadFileInChunks({
                                         file: data.pdf,
                                         target: "chapter-pdf",
                                         chunkSize: 1024 * 1024,
@@ -356,6 +386,18 @@ const ChapterForm = ({
                                     nextPdf = url;
                                 }
                                 nextImages = [];
+                            } else if (data.content_mode === "zip") {
+                                submitContentMode = "images";
+                                nextImages = [];
+                                nextPdf = null;
+                                nextZipUploadId = data.zip_upload_id;
+                            } else {
+                                submitContentMode = "images";
+                                nextImages = Array.isArray(data.images)
+                                    ? data.images
+                                    : [];
+                                nextPdf = null;
+                                nextZipUploadId = null;
                             }
 
                             setUploadLabel("Saving chapter…");
@@ -367,12 +409,15 @@ const ChapterForm = ({
                                 ...prev,
                                 images: nextImages,
                                 pdf: nextPdf,
+                                zip_upload_id: nextZipUploadId,
                             }));
 
                             form.transform(() => ({
                                 ...data,
+                                content_mode: submitContentMode,
                                 images: nextImages,
                                 pdf: nextPdf,
+                                zip_upload_id: nextZipUploadId,
                             }));
 
                             post(submitUrl, {
@@ -458,17 +503,20 @@ const ChapterForm = ({
                             </h3>
                         </div>
 
-                        <div className="col-span-1 md:col-span-2 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-3">
+                        <div className="col-span-1 md:col-span-2 grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
                             <button
                                 type="button"
-                                onClick={() =>
+                                onClick={() => {
+                                    setActiveImageUploads(0);
+                                    setActiveZipUploads(0);
                                     setData((prev) => ({
                                         ...prev,
                                         content_mode: "images",
                                         pdf: null,
-                                    }))
-                                }
-                                className={`min-h-[44px] flex-1 rounded-xl border px-4 py-2.5 text-sm font-bold transition-all sm:min-h-0 sm:flex-none sm:px-5 ${
+                                        zip_upload_id: null,
+                                    }));
+                                }}
+                                className={`min-h-[44px] rounded-xl border px-4 py-2.5 text-sm font-bold transition-all ${
                                     data.content_mode === "images"
                                         ? "border-primary bg-primary text-black"
                                         : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20"
@@ -478,14 +526,39 @@ const ChapterForm = ({
                             </button>
                             <button
                                 type="button"
-                                onClick={() =>
+                                onClick={() => {
+                                    setActiveImageUploads(0);
+                                    setActiveZipUploads(0);
+                                    setZipInputKey((k) => k + 1);
+                                    setData((prev) => ({
+                                        ...prev,
+                                        content_mode: "zip",
+                                        pdf: null,
+                                        images: [],
+                                        zip_upload_id: null,
+                                    }));
+                                }}
+                                className={`min-h-[44px] rounded-xl border px-4 py-2.5 text-sm font-bold transition-all ${
+                                    data.content_mode === "zip"
+                                        ? "border-primary bg-primary text-black"
+                                        : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20"
+                                }`}
+                            >
+                                ZIP archive
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setActiveImageUploads(0);
+                                    setActiveZipUploads(0);
                                     setData((prev) => ({
                                         ...prev,
                                         content_mode: "pdf",
                                         images: [],
-                                    }))
-                                }
-                                className={`min-h-[44px] flex-1 rounded-xl border px-4 py-2.5 text-sm font-bold transition-all sm:min-h-0 sm:flex-none sm:px-5 ${
+                                        zip_upload_id: null,
+                                    }));
+                                }}
+                                className={`min-h-[44px] rounded-xl border px-4 py-2.5 text-sm font-bold transition-all ${
                                     data.content_mode === "pdf"
                                         ? "border-primary bg-primary text-black"
                                         : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20"
@@ -710,6 +783,71 @@ const ChapterForm = ({
                             </div>
                         )}
 
+                        {data.content_mode === "zip" && (
+                            <div className="col-span-1 md:col-span-2 mt-2 md:mt-4">
+                                <div className="mb-3 flex flex-col gap-1 border-b border-white/5 pb-2">
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-primary sm:text-sm">
+                                        Chapter pages (ZIP)
+                                    </h3>
+                                    <p className="text-[11px] leading-relaxed text-zinc-500">
+                                        Reading order follows entries inside the
+                                        archive (not file name sorting). Images:
+                                        jpg, jpeg, png, webp. Save the chapter to
+                                        import in the background.
+                                    </p>
+                                </div>
+                                <InputError
+                                    message={contentFileError}
+                                    inline
+                                    className="mb-2"
+                                />
+                                {data.zip_upload_id ? (
+                                    <div className="rounded-xl border border-primary/30 bg-primary/5 p-3 sm:p-4">
+                                        <p className="text-xs font-medium text-zinc-200">
+                                            ZIP ready — save the chapter to
+                                            extract pages.
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setZipInputKey((k) => k + 1);
+                                                setData((prev) => ({
+                                                    ...prev,
+                                                    zip_upload_id: null,
+                                                }));
+                                            }}
+                                            className="mt-3 text-xs font-bold text-primary hover:underline"
+                                        >
+                                            Remove ZIP and upload another
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="rounded-xl border border-white/5 bg-black/20 p-3 sm:p-4">
+                                        <ChunkUploader
+                                            key={zipInputKey}
+                                            photos={null}
+                                            onUpload={() => {}}
+                                            allowMultiple={false}
+                                            allowImagePreview={false}
+                                            acceptedFileTypes={[
+                                                ".zip",
+                                                "application/zip",
+                                                "application/x-zip-compressed",
+                                            ]}
+                                            uploadMode="auto"
+                                            chunkTarget="chapter-zip"
+                                            onUploadingChange={
+                                                setActiveZipUploads
+                                            }
+                                            onZipUploadSession={
+                                                handleZipReadyForForm
+                                            }
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {data.content_mode === "pdf" && (
                             <div className="col-span-1 md:col-span-2 mt-2 space-y-3 md:mt-4">
                                 <InputLabel
@@ -761,11 +899,14 @@ const ChapterForm = ({
 
                     <div className="mt-8 flex flex-col-reverse gap-3 border-t border-white/5 pt-6 sm:mt-10 sm:flex-row sm:justify-end">
                         <Button
-                            type={"submit"}
-                            disabled={isChapterSubmitting}
+                            type="submit"
+                            loading={isChapterSubmitting}
                             text={
                                 isChapterSubmitting
-                                    ? uploadLabel || "Creating chapter..."
+                                    ? uploadLabel ||
+                                      (type === "edit"
+                                          ? "Updating chapter…"
+                                          : "Creating chapter…")
                                     : type === "edit"
                                       ? "Update Chapter"
                                       : "Create Chapter"

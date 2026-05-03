@@ -12,9 +12,10 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\CollectionItemsController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminAdsenseController;
+use App\Http\Controllers\GroupAdminAnimeController;
 use App\Http\Controllers\GroupAdminBannerController;
+use App\Http\Controllers\GroupAdminChapterZipController;
 use App\Http\Controllers\GroupAdminChunkUploadController;
 use App\Http\Controllers\GroupAdminCommentController;
 use App\Http\Controllers\GroupAdminMangaController;
@@ -70,7 +71,7 @@ Route::get('/auth-google-redirect', [AuthController::class, 'redirectGoogle'])->
 Route::get('/auth-google-callback', [AuthController::class, 'callbackGoogle'])->name('callbackGoogle');
 
 if ($isProduction) {
-    Route::domain('{group:subdomain}' . '.' . config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
+    Route::domain('{group:subdomain}'.'.'.config('app.url'))->where(['group' => $groupSubdomainPattern])->middleware(GroupMiddleware::class)->name('group.')->group(function () {
 
         Route::get('/admin/dashboard', function () {})->name('dashboard');
         Route::get('/', function (Group $group) {
@@ -175,6 +176,8 @@ if ($isProduction) {
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/update', [GroupAdminMangaController::class, 'updateChapter'])->name('mangas.chapters.update');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/delete', [GroupAdminMangaController::class, 'deleteChapter'])->name('mangas.chapters.delete');
             Route::post('/admin/mangas/{manga}/chapters/bulk-delete', [GroupAdminMangaController::class, 'bulkDeleteChapters'])->name('mangas.chapters.bulk-delete');
+            Route::post('/admin/mangas/{manga}/chapters/{chapter}/zip-imports', [GroupAdminChapterZipController::class, 'store'])->name('mangas.chapters.zip-imports.store');
+            Route::get('/admin/mangas/{manga}/chapters/{chapter}/zip-imports/{import}', [GroupAdminChapterZipController::class, 'show'])->name('mangas.chapters.zip-imports.show');
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
@@ -339,6 +342,8 @@ if ($isProduction) {
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/update', [GroupAdminMangaController::class, 'updateChapter'])->name('mangas.chapters.update');
             Route::post('/admin/mangas/{manga}/chapters/{chapter}/delete', [GroupAdminMangaController::class, 'deleteChapter'])->name('mangas.chapters.delete');
             Route::post('/admin/mangas/{manga}/chapters/bulk-delete', [GroupAdminMangaController::class, 'bulkDeleteChapters'])->name('mangas.chapters.bulk-delete');
+            Route::post('/admin/mangas/{manga}/chapters/{chapter}/zip-imports', [GroupAdminChapterZipController::class, 'store'])->name('mangas.chapters.zip-imports.store');
+            Route::get('/admin/mangas/{manga}/chapters/{chapter}/zip-imports/{import}', [GroupAdminChapterZipController::class, 'show'])->name('mangas.chapters.zip-imports.show');
             // Comment Route
             Route::get('/admin/comments', [GroupAdminCommentController::class, 'index'])->name('comments');
             Route::post('/admin/comments/{comment}/delete', [GroupAdminCommentController::class, 'delete'])->name('comments.delete');
@@ -474,7 +479,7 @@ Route::get('/', function () {
 
 Route::get('/blogs/{blog:slug}', function (Blog $blog) {
     $blog = Blog::with('tags', 'author')->find($blog->id);
-    $blogKey = 'viewed_blog_' . $blog->id;
+    $blogKey = 'viewed_blog_'.$blog->id;
 
     if (! session()->has($blogKey)) {
         $blog->update(['views' => $blog->views + 1]);
@@ -502,6 +507,5 @@ Route::get('/blogs/{blog:slug}', function (Blog $blog) {
     ]);
 })->name('blogs.show');
 
-
-Route::get('/_test-500', fn() => throw new \Exception('test'));
-require __DIR__ . '/auth.php';
+Route::get('/_test-500', fn () => throw new \Exception('test'));
+require __DIR__.'/auth.php';
