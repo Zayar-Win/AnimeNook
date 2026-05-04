@@ -821,16 +821,16 @@ const Navbar = () => {
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="border-t border-zinc-200 bg-zinc-50/90 p-6 dark:border-white/5 dark:bg-zinc-900/50">
+                    <div className="border-t border-zinc-200 bg-zinc-50/90 p-4 dark:border-white/5 dark:bg-zinc-900/50">
                         {auth.user ? (
-                            <div className="space-y-3">
+                            <div className="space-y-2">
                                 {/* Admin Dashboard */}
                                 {auth?.user?.role?.name === "admin" && (
                                     <Link
                                         href={window.route(
                                             "group.admin.dashboard",
                                         )}
-                                        className="flex items-center gap-3 rounded-xl border border-transparent p-3 font-semibold text-zinc-800 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-primary dark:hover:text-white"
+                                        className="flex items-center gap-2.5 rounded-xl border border-transparent px-3 py-2.5 text-sm font-semibold text-zinc-800 transition-all duration-300 hover:bg-zinc-200 hover:text-zinc-900 dark:bg-white/5 dark:text-zinc-300 dark:hover:bg-primary dark:hover:text-white"
                                     >
                                         <svg
                                             xmlns="http://www.w3.org/2000/svg"
@@ -876,12 +876,12 @@ const Navbar = () => {
                                         setIsOpenMobileNavbar(false);
                                         setLogoutModalOpen(true);
                                     }}
-                                    className="w-full flex items-center gap-3 p-3 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors font-semibold"
+                                    className="w-full flex items-center gap-2.5 rounded-xl bg-red-500 px-3 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-600"
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
-                                        width="20"
-                                        height="20"
+                                        width="18"
+                                        height="18"
                                         viewBox="0 0 24 24"
                                         fill="none"
                                         stroke="currentColor"

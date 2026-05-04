@@ -7,6 +7,19 @@ import GroupAdminLayout from "@/Layouts/GroupAdminLayout";
 import { Link, router } from "@inertiajs/react";
 import React, { useEffect, useRef, useState } from "react";
 
+function htmlToPlainText(html) {
+    if (!html) return "";
+    if (typeof window !== "undefined" && typeof DOMParser !== "undefined") {
+        const doc = new DOMParser().parseFromString(String(html), "text/html");
+        return (doc.body?.textContent || "").replace(/\s+/g, " ").trim();
+    }
+    return String(html)
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 const columns = [
     { field: "Name" },
     { field: "ThumbNail" },
@@ -435,7 +448,7 @@ const Index = ({ mangas, filters = {}, statuses = [] }) => {
                                         {manga.name}
                                     </p>
                                     <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-zinc-400">
-                                        {manga.description}
+                                        {htmlToPlainText(manga.description)}
                                     </p>
                                     <div className="mt-2 flex flex-wrap items-center gap-2">
                                         <StatusPill
@@ -513,7 +526,7 @@ const Index = ({ mangas, filters = {}, statuses = [] }) => {
                         <TableData className="min-w-[300px]">
                             {(manga) => (
                                 <p className="line-clamp-2 text-sm leading-relaxed text-zinc-400">
-                                    {manga.description}
+                                    {htmlToPlainText(manga.description)}
                                 </p>
                             )}
                         </TableData>

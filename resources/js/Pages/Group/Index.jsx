@@ -28,6 +28,19 @@ function bannerChaptersLine(bb) {
     return `${n} ${label}`;
 }
 
+function htmlToPlainText(html) {
+    if (!html) return "";
+    if (typeof window !== "undefined" && typeof DOMParser !== "undefined") {
+        const doc = new DOMParser().parseFromString(String(html), "text/html");
+        return (doc.body?.textContent || "").replace(/\s+/g, " ").trim();
+    }
+    return String(html)
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 function TopMangaSidebarItem({ manga, index }) {
     const [thumbFailed, setThumbFailed] = React.useState(false);
     const thumbOk = Boolean(manga?.thumbnail) && !thumbFailed;
@@ -304,11 +317,11 @@ function Index({
 
                                                             {/* Description */}
                                                             <p className="text-zinc-400 text-sm sm:text-base md:text-lg leading-snug sm:leading-relaxed line-clamp-2 sm:line-clamp-3 max-w-2xl">
-                                                                {
+                                                                {htmlToPlainText(
                                                                     banner
                                                                         ?.bannerable
-                                                                        ?.description
-                                                                }
+                                                                        ?.description,
+                                                                )}
                                                             </p>
 
                                                             {/* Actions — compact, equal visual weight (Button Link is w-full on mobile) */}
@@ -433,17 +446,22 @@ function Index({
                                 </h1>
 
                                 <div className="flex flex-wrap justify-center gap-2 md:justify-start sm:gap-3">
-                                    {(recommendedManga?.tags ?? []).map((tag, i) => (
-                                        <Link
-                                            key={i}
-                                            href={window.route("group.animes", {
-                                                tags: tag.name,
-                                            })}
-                                            className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium transition-all hover:scale-105 hover:bg-white/20 sm:rounded-lg sm:px-4 sm:py-1.5 sm:text-sm"
-                                        >
-                                            #{tag.name}
-                                        </Link>
-                                    ))}
+                                    {(recommendedManga?.tags ?? []).map(
+                                        (tag, i) => (
+                                            <Link
+                                                key={i}
+                                                href={window.route(
+                                                    "group.animes",
+                                                    {
+                                                        tags: tag.name,
+                                                    },
+                                                )}
+                                                className="rounded-md border border-white/10 bg-white/5 px-2.5 py-1 text-xs font-medium transition-all hover:scale-105 hover:bg-white/20 sm:rounded-lg sm:px-4 sm:py-1.5 sm:text-sm"
+                                            >
+                                                #{tag.name}
+                                            </Link>
+                                        ),
+                                    )}
                                 </div>
 
                                 <div className="flex flex-wrap justify-center gap-2 pt-1 sm:gap-3 sm:pt-3 md:justify-start">
@@ -583,7 +601,7 @@ function Index({
                             </span>
                             <div>
                                 <span className="text-lg font-bold text-zinc-900 dark:text-white">
-                                    Latest manga hello
+                                    Latest manga
                                 </span>
                                 <p className="text-xs font-medium text-zinc-600 dark:text-zinc-300 sm:text-sm">
                                     Newest series added to the group
@@ -796,7 +814,9 @@ function Index({
                                 </div>
 
                                 <p className="mx-auto max-w-2xl text-xs leading-snug text-zinc-400 line-clamp-2 sm:text-sm sm:leading-relaxed sm:line-clamp-3 md:text-base md:line-clamp-4 lg:mx-0">
-                                    {recommendedManga?.description}
+                                    {htmlToPlainText(
+                                        recommendedManga?.description,
+                                    )}
                                 </p>
 
                                 <div className="flex flex-wrap items-center justify-center gap-2 pt-0.5 sm:gap-3 sm:pt-2 lg:justify-start">
@@ -1062,7 +1082,8 @@ function Index({
                                                 >
                                                     <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2L9.19 8.63L2 9.24l5.46 4.73L5.82 21z" />
                                                 </svg>
-                                                {featuredNewManga?.rating || "N/A"}
+                                                {featuredNewManga?.rating ||
+                                                    "N/A"}
                                             </span>
                                         </div>
 
@@ -1091,7 +1112,9 @@ function Index({
                                         </div>
 
                                         <p className="text-zinc-400 text-sm md:text-base leading-relaxed line-clamp-3 max-w-2xl">
-                                            {featuredNewManga?.description}
+                                            {htmlToPlainText(
+                                                featuredNewManga?.description,
+                                            )}
                                         </p>
 
                                         <div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 pt-1 md:mx-0 md:max-w-none lg:flex-row lg:flex-wrap lg:gap-3 lg:pt-2">
@@ -1153,18 +1176,18 @@ function Index({
                                     <div className="lg:w-5/12 w-full flex justify-center lg:justify-end relative mt-6 lg:mt-0">
                                         <div className="relative w-48 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-[4px] border-white/10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
                                             <img
-                                                src={featuredNewManga?.thumbnail}
+                                                src={
+                                                    featuredNewManga?.thumbnail
+                                                }
                                                 className="w-full h-full object-cover"
                                                 alt=""
                                             />
                                         </div>
-                                        {featuredNewManga
-                                            ?.transparent_background && (
+                                        {featuredNewManga?.transparent_background && (
                                             <div className="absolute -bottom-6 -right-6 w-56 md:w-96 z-20 pointer-events-none">
                                                 <img
                                                     src={
-                                                        featuredNewManga
-                                                            ?.transparent_background
+                                                        featuredNewManga?.transparent_background
                                                     }
                                                     className="w-full h-full object-contain drop-shadow-2xl"
                                                     alt=""
@@ -1230,19 +1253,21 @@ function Index({
                                         </Link>
 
                                         <div className="flex flex-wrap justify-center gap-2 lg:justify-end">
-                                            {(featuredTrendManga?.tags ?? []).map(
-                                                (tag, i) => (
-                                                    <Tag
-                                                        key={tag.id}
-                                                        className="!bg-white/5 !border-white/10 !text-zinc-300 hover:!bg-white/10 transition-colors"
-                                                        tag={tag}
-                                                    />
-                                                ),
-                                            )}
+                                            {(
+                                                featuredTrendManga?.tags ?? []
+                                            ).map((tag, i) => (
+                                                <Tag
+                                                    key={tag.id}
+                                                    className="!bg-white/5 !border-white/10 !text-zinc-300 hover:!bg-white/10 transition-colors"
+                                                    tag={tag}
+                                                />
+                                            ))}
                                         </div>
 
                                         <p className="mx-auto max-w-2xl text-sm leading-relaxed text-zinc-400 line-clamp-3 md:text-base lg:ml-auto lg:mr-0">
-                                            {featuredTrendManga?.description}
+                                            {htmlToPlainText(
+                                                featuredTrendManga?.description,
+                                            )}
                                         </p>
 
                                         <div className="mx-auto flex w-full max-w-sm flex-col items-stretch gap-2 pt-1 md:max-w-none lg:flex-row lg:flex-wrap lg:justify-end lg:gap-3 lg:pt-2">
@@ -1304,18 +1329,18 @@ function Index({
                                     <div className="lg:w-5/12 w-full flex justify-center lg:justify-start relative mt-6 lg:mt-0">
                                         <div className="relative w-48 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border-[4px] border-white/10 -rotate-3 group-hover:rotate-0 transition-transform duration-500">
                                             <img
-                                                src={featuredTrendManga?.thumbnail}
+                                                src={
+                                                    featuredTrendManga?.thumbnail
+                                                }
                                                 className="w-full h-full object-cover"
                                                 alt=""
                                             />
                                         </div>
-                                        {featuredTrendManga
-                                            ?.transparent_background && (
+                                        {featuredTrendManga?.transparent_background && (
                                             <div className="absolute -bottom-6 -left-6 w-56 md:w-96 z-20 pointer-events-none">
                                                 <img
                                                     src={
-                                                        featuredTrendManga
-                                                            ?.transparent_background
+                                                        featuredTrendManga?.transparent_background
                                                     }
                                                     className="w-full h-full object-contain drop-shadow-2xl"
                                                     alt=""

@@ -17,6 +17,7 @@ class Group extends Model
         static::created(function ($model) {
             $group_setting = GroupSetting::create([
                 'primary_color' => '#F47521',
+                'require_login_for_manga' => false,
                 'social_links' => json_encode([
                     'facebook' => '',
                     'telegram' => '',

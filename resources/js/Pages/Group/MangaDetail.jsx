@@ -22,10 +22,14 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
         auth: { user },
     } = usePage().props;
     const likeManga = () => {
-        router.post(window.route("group.manga.like", { manga }), {
-            preserveScroll: true,
-            preserveState: true,
-        });
+        router.post(
+            window.route("group.manga.like", { manga }),
+            {},
+            {
+                preserveScroll: true,
+                preserveState: true,
+            },
+        );
     };
     const [isSeasonBoxOpen, setIsSeasonBoxOpen] = useState(false);
     const [synopsisExpanded, setSynopsisExpanded] = useState(false);
@@ -149,10 +153,15 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 </span>
                                 <div className="flex items-center gap-1 text-zinc-900 sm:gap-1.5 dark:text-white">
                                     <svg
-                                        className="h-3.5 w-3.5 shrink-0 fill-yellow-500 text-yellow-500 sm:h-5 sm:w-5"
+                                        className="h-3.5 w-3.5 shrink-0 text-amber-500 sm:h-5 sm:w-5"
+                                        fill="none"
                                         viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="1.9"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
                                     >
-                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                        <path d="m12 3.5 2.62 5.31 5.86.85-4.24 4.13 1 5.83L12 16.86l-5.24 2.76 1-5.83-4.24-4.13 5.86-.85z" />
                                     </svg>
                                     <span className="text-sm font-black tabular-nums sm:text-xl">
                                         {manga?.rating}
@@ -170,19 +179,12 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                         fill="none"
                                         viewBox="0 0 24 24"
                                         stroke="currentColor"
+                                        strokeWidth="1.9"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
                                     >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                        />
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                        />
+                                        <path d="M2.75 12S6.25 5.75 12 5.75 21.25 12 21.25 12 17.75 18.25 12 18.25 2.75 12 2.75 12Z" />
+                                        <circle cx="12" cy="12" r="2.75" />
                                     </svg>
                                     <span className="text-sm font-black tabular-nums sm:text-xl">
                                         {manga?.views_count}
@@ -196,10 +198,16 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 </span>
                                 <div className="flex items-center gap-1 text-zinc-900 sm:gap-1.5 dark:text-white">
                                     <svg
-                                        className="h-3.5 w-3.5 shrink-0 fill-pink-500 text-pink-500 sm:h-5 sm:w-5"
+                                        className="h-3.5 w-3.5 shrink-0 text-primary sm:h-5 sm:w-5"
+                                        fill="none"
                                         viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="1.9"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
                                     >
-                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                        <path d="M7.75 21.25h8.54a2.6 2.6 0 0 0 2.54-2.01l1.33-5.58A2.36 2.36 0 0 0 17.9 10.8h-4.15l.48-3.2a2.57 2.57 0 0 0-2.57-2.95L9 11.25v10Z" />
+                                        <path d="M3.75 21.25h2.75v-10H3.75z" />
                                     </svg>
                                     <span className="text-sm font-black tabular-nums sm:text-xl">
                                         {manga?.likes_count}
@@ -211,12 +219,32 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                 <span className="text-[10px] font-bold uppercase tracking-wide text-zinc-500 sm:text-xs">
                                     Uploaded
                                 </span>
-                                <span className="text-center text-[11px] font-bold leading-tight text-zinc-900 sm:text-sm dark:text-white">
-                                    {formateDate(manga?.created_at, {
-                                        month: "short",
-                                        year: "numeric",
-                                    })}
-                                </span>
+                                <div className="flex items-center gap-1 text-zinc-900 sm:gap-1.5 dark:text-white">
+                                    <svg
+                                        className="h-3.5 w-3.5 shrink-0 text-violet-500 sm:h-5 sm:w-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                        strokeWidth="1.9"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <rect
+                                            x="3.75"
+                                            y="5.25"
+                                            width="16.5"
+                                            height="15"
+                                            rx="2.25"
+                                        />
+                                        <path d="M7.5 3.75v3M16.5 3.75v3M3.75 9.75h16.5" />
+                                    </svg>
+                                    <span className="text-center text-[11px] font-bold leading-tight sm:text-sm">
+                                        {formateDate(manga?.created_at, {
+                                            month: "short",
+                                            year: "numeric",
+                                        })}
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
@@ -300,7 +328,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         className={`!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !px-3 !py-3 text-sm !font-semibold transition-all hover:-translate-y-1 sm:!px-8 sm:!py-4 sm:text-base ${
                             manga.isSavedByCurrentUser
                                 ? "!bg-green-600 border border-green-500 text-white shadow-lg shadow-green-600/20"
-                                : "!border !border-zinc-300 !bg-white !text-zinc-900 hover:!bg-zinc-100 dark:!border-white/10 dark:!bg-white/5 dark:!text-white dark:hover:!bg-white dark:hover:!text-black"
+                                : "!border !border-zinc-300 !bg-zinc-100 !text-zinc-900 hover:!bg-zinc-200 dark:!border-white/10 dark:!bg-[#141414] dark:!text-white dark:hover:!bg-[#1f1f1f]"
                         }`}
                         Icon={
                             <svg
@@ -322,8 +350,8 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                         onClick={() => likeManga()}
                         className={`!h-full !min-h-[3rem] w-full !gap-2 !whitespace-nowrap !rounded-xl !px-3 !py-3 text-sm !font-semibold transition-all hover:-translate-y-1 sm:!px-8 sm:!py-4 sm:text-base ${
                             manga.isLikeByCurrentUser
-                                ? "!bg-pink-600 border border-pink-500 text-white shadow-lg shadow-pink-600/20"
-                                : "!border !border-zinc-300 !bg-white !text-zinc-900 hover:!bg-zinc-100 dark:!border-white/10 dark:!bg-white/5 dark:!text-white dark:hover:!bg-white dark:hover:!text-black"
+                                ? "!border !border-primary !bg-primary !text-white shadow-lg shadow-primary/30 dark:!border-primary dark:!bg-primary dark:!text-white"
+                                : "!border !border-zinc-300 !bg-zinc-100 !text-zinc-900 hover:!bg-zinc-200 dark:!border-white/10 dark:!bg-[#141414] dark:!text-white dark:hover:!bg-[#1f1f1f]"
                         }`}
                         Icon={
                             <Liked
@@ -367,18 +395,18 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                         onClick={() =>
                                             setIsSeasonBoxOpen((prev) => !prev)
                                         }
-                                        className="seasonbox-toggle group flex w-full items-center justify-between gap-4 rounded-2xl border border-zinc-200 bg-zinc-50 px-6 py-4 shadow-lg shadow-zinc-900/5 transition-all duration-300 hover:border-primary/50 hover:bg-zinc-100 dark:border-white/10 dark:bg-[#1a1a1a] dark:shadow-black/20 dark:hover:bg-[#252525]"
+                                        className="seasonbox-toggle group flex w-full items-center justify-between gap-3 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 shadow-lg shadow-zinc-900/5 transition-all duration-300 hover:border-primary/50 hover:bg-zinc-100 sm:gap-4 sm:px-6 sm:py-4 dark:border-white/10 dark:bg-[#1a1a1a] dark:shadow-black/20 dark:hover:bg-[#252525]"
                                     >
                                         <div className="flex flex-col items-start gap-1">
                                             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider group-hover:text-zinc-400 transition-colors">
                                                 Select Season
                                             </span>
                                             <div className="flex items-center gap-3 flex-wrap text-left">
-                                                <span className="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white">
+                                                <span className="text-base font-black uppercase tracking-tight text-zinc-900 sm:text-xl dark:text-white">
                                                     {manga?.name}
                                                 </span>
                                                 <span className="hidden h-1.5 w-1.5 rounded-full bg-zinc-300 sm:block dark:bg-zinc-700"></span>
-                                                <span className="text-xl font-bold text-primary">
+                                                <span className="text-lg font-bold text-primary sm:text-xl">
                                                     {manga.chapters.length
                                                         ? manga.chapters[0]
                                                               .season.title
@@ -387,7 +415,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                             </div>
                                         </div>
                                         <div
-                                            className={`shrink-0 rounded-full bg-zinc-200 p-2.5 text-zinc-600 transition-all duration-300 group-hover:bg-primary group-hover:text-white dark:bg-white/5 dark:text-zinc-400 ${
+                                            className={`shrink-0 rounded-full bg-zinc-200 p-2 text-zinc-600 transition-all duration-300 group-hover:bg-primary group-hover:text-white sm:p-2.5 dark:bg-white/5 dark:text-zinc-400 ${
                                                 isSeasonBoxOpen
                                                     ? "rotate-180"
                                                     : ""
@@ -400,7 +428,7 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                     {/* Dropdown Menu */}
                                     <div
                                         ref={seasonBoxRef}
-                                        className={`absolute left-0 top-[calc(100%+10px)] z-30 min-w-[320px] max-w-[90vw] origin-top-left overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl transition-all duration-300 dark:border-white/10 dark:bg-[#1a1a1a] ${
+                                        className={`absolute left-0 top-[calc(100%+10px)] z-30 min-w-[260px] max-w-[90vw] origin-top-left overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-2xl transition-all duration-300 sm:min-w-[320px] dark:border-white/10 dark:bg-[#1a1a1a] ${
                                             isSeasonBoxOpen
                                                 ? "opacity-100 scale-100 visible"
                                                 : "opacity-0 scale-95 invisible"
@@ -428,11 +456,8 @@ const MangaDetail = ({ manga, recommendedMangas, seasons }) => {
                                                                 {manga.name}
                                                             </span>
                                                         </div>
-                                                        <span className="rounded bg-zinc-100 px-2 py-1 text-xs font-bold text-zinc-600 dark:bg-white/5 dark:text-zinc-400">
-                                                            {
-                                                                season.chapters_count
-                                                            }{" "}
-                                                            EPS
+                                                        <span className="inline-flex items-center whitespace-nowrap rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-bold text-zinc-600 sm:px-2 sm:py-1 sm:text-xs dark:bg-white/5 dark:text-zinc-400">
+                                                            {season.chapters_count} EPS
                                                         </span>
                                                     </Link>
                                                 </li>

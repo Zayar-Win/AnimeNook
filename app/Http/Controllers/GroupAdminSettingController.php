@@ -28,9 +28,11 @@ class GroupAdminSettingController extends Controller
                 'name' => 'required',
                 'primary_color' => 'required',
                 'social_links' => 'required',
-                'logo' => 'required'
+                'logo' => 'required',
+                'require_login_for_manga' => 'nullable|boolean',
             ]
         );
+        $requireLoginForManga = request()->boolean('require_login_for_manga');
         if (gettype($validateData['logo']) !== 'string') {
             $validateData['logo'] = $this->uploader->upload($validateData['logo'], 'groups');
         }
@@ -40,7 +42,8 @@ class GroupAdminSettingController extends Controller
         ]);
         $setting->update([
             'primary_color' => $validateData['primary_color'],
-            'social_links' => $validateData['social_links']
+            'social_links' => $validateData['social_links'],
+            'require_login_for_manga' => $requireLoginForManga,
         ]);
         return back()->with('success', 'Group setting updated');
     }

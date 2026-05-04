@@ -11,6 +11,7 @@ class GroupSetting extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'social_links' => 'object'
+        'social_links' => 'object',
+        'require_login_for_manga' => 'boolean',
     ];
 }

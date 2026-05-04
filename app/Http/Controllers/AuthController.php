@@ -44,6 +44,9 @@ class AuthController extends Controller
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
         $data['group_id'] = $group->id;
+        if (empty($data['profile_picture'])) {
+            $data['profile_picture'] = $this->randomDefaultProfilePicture();
+        }
         $user = User::create($data);
         $admins = User::adminsInGroup($group->id)->get();
         if ($admins->isNotEmpty()) {
@@ -120,6 +123,25 @@ class AuthController extends Controller
         $data = $user->id.$salt;
 
         return Hash::make($data);
+    }
+
+    private function randomDefaultProfilePicture(): string
+    {
+        $presetFile = resource_path('js/constants/defaultUserProfilePresets.js');
+        $contents = @file_get_contents($presetFile);
+
+        if ($contents !== false) {
+            preg_match_all('/src:\s*"([^"]+)"/', $contents, $matches);
+            $candidates = $matches[1] ?? [];
+            if (! empty($candidates)) {
+                $index = random_int(0, count($candidates) - 1);
+
+                return $candidates[$index];
+            }
+        }
+
+        // Safe fallback if preset file cannot be read.
+        return 'https://ui-avatars.com/api/?name=User&background=3f3f46&color=fafafa&size=256&bold=true';
     }
 
     public function sendPasswordResetLink(Group $group, Request $request): RedirectResponse

@@ -21,6 +21,9 @@ const Index = ({ group }) => {
         logo: group?.logo || "",
         name: group?.name || "",
         primary_color: group?.group_setting.primary_color || "",
+        require_login_for_manga: Boolean(
+            group?.group_setting?.require_login_for_manga,
+        ),
         social_links:
             typeof group?.group_setting?.social_links === "string"
                 ? JSON.parse(group?.group_setting?.social_links)
@@ -183,15 +186,42 @@ const Index = ({ group }) => {
                             <h3 className="mb-4 border-b border-white/5 pb-2 text-xs font-bold uppercase tracking-wider text-primary sm:mb-6 sm:text-sm">
                                 Group details
                             </h3>
-                            <Input
-                                label="Group name"
-                                errorMessage={groupErrors?.name}
-                                value={groupData.name}
-                                onChange={(e) =>
-                                    setGroupData("name", e.target.value)
-                                }
-                                placeholder="Your group name"
-                            />
+                            <div className="space-y-5">
+                                <Input
+                                    label="Group name"
+                                    errorMessage={groupErrors?.name}
+                                    value={groupData.name}
+                                    onChange={(e) =>
+                                        setGroupData("name", e.target.value)
+                                    }
+                                    placeholder="Your group name"
+                                />
+                                <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/10 bg-black/20 p-3.5 transition hover:border-white/20 sm:p-4">
+                                    <input
+                                        type="checkbox"
+                                        checked={
+                                            groupData.require_login_for_manga
+                                        }
+                                        onChange={(e) =>
+                                            setGroupData(
+                                                "require_login_for_manga",
+                                                e.target.checked,
+                                            )
+                                        }
+                                        className="mt-0.5 h-4 w-4 rounded border-zinc-500 bg-zinc-900 text-primary focus:ring-primary"
+                                    />
+                                    <span className="space-y-1">
+                                        <span className="block text-sm font-semibold text-white">
+                                            Require account for manga pages
+                                        </span>
+                                        <span className="block text-xs text-zinc-400 sm:text-sm">
+                                            Guests will be redirected to
+                                            Register for manga details and
+                                            chapter reader pages.
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
                         </div>
 
                         <div className="md:col-span-2">

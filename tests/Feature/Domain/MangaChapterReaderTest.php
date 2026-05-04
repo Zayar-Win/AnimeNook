@@ -120,3 +120,30 @@ test('manga chapter reader returns not found when chapter is in a different grou
 
     $this->get($url)->assertNotFound();
 });
+
+test('guest is redirected to register for manga chapter reader when setting enabled', function () {
+    extract(createMangaChapterFixture());
+    $group->groupSetting->update([
+        'require_login_for_manga' => true,
+    ]);
+
+    $url = '/'.$group->subdomain.'/mangas/'.$manga->slug.'/chapters/'.$chapter->id;
+
+    $this->get($url)->assertRedirect('/'.$group->subdomain.'/register');
+});
+
+test('authenticated member can access chapter reader when setting enabled', function () {
+    extract(createMangaChapterFixture());
+    $group->groupSetting->update([
+        'require_login_for_manga' => true,
+    ]);
+    $user = \App\Models\User::factory()->create([
+        'group_id' => $group->id,
+    ]);
+
+    $url = '/'.$group->subdomain.'/mangas/'.$manga->slug.'/chapters/'.$chapter->id;
+
+    $this->actingAs($user)
+        ->get($url)
+        ->assertOk();
+});

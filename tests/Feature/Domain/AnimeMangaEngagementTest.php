@@ -60,3 +60,28 @@ test('manga detail returns ok', function () {
 
     $this->get('/'.$group->subdomain.'/mangas/'.$manga->slug)->assertOk();
 });
+
+test('guest is redirected to register for manga detail when setting enabled', function () {
+    $group = Group::factory()->create();
+    $group->groupSetting->update([
+        'require_login_for_manga' => true,
+    ]);
+    $status = Status::factory()->create();
+    $manga = Manga::factory()->create(['group_id' => $group->id, 'status_id' => $status->id]);
+
+    $this->get('/'.$group->subdomain.'/mangas/'.$manga->slug)
+        ->assertRedirect('/'.$group->subdomain.'/register');
+});
+
+test('authenticated member can access manga detail when setting enabled', function () {
+    ['group' => $group, 'user' => $user] = createGroupWithUser();
+    $group->groupSetting->update([
+        'require_login_for_manga' => true,
+    ]);
+    $status = Status::factory()->create();
+    $manga = Manga::factory()->create(['group_id' => $group->id, 'status_id' => $status->id]);
+
+    $this->actingAs($user)
+        ->get('/'.$group->subdomain.'/mangas/'.$manga->slug)
+        ->assertOk();
+});

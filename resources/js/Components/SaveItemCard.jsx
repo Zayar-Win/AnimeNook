@@ -4,6 +4,19 @@ import Tags from "./Tags";
 import Delete from "@/../assets/Delete";
 import { router } from "@inertiajs/react";
 
+function htmlToPlainText(html) {
+    if (!html) return "";
+    if (typeof window !== "undefined" && typeof DOMParser !== "undefined") {
+        const doc = new DOMParser().parseFromString(String(html), "text/html");
+        return (doc.body?.textContent || "").replace(/\s+/g, " ").trim();
+    }
+    return String(html)
+        .replace(/<[^>]*>/g, " ")
+        .replace(/&nbsp;/gi, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
 const SaveItemCard = ({ item, type, itemId, collectionId }) => {
     const removeCollectionItem = () => {
         router.post(
@@ -63,7 +76,7 @@ const SaveItemCard = ({ item, type, itemId, collectionId }) => {
                     </div>
 
                     <p className="line-clamp-1 text-xs leading-snug text-zinc-600 dark:text-zinc-400 sm:line-clamp-2 md:mb-4 md:grow md:text-sm md:line-clamp-2">
-                        {item.description}
+                        {htmlToPlainText(item.description)}
                     </p>
 
                     <div className="mt-auto space-y-1.5 border-t border-zinc-100 pt-2 dark:border-white/5 md:space-y-3 md:pt-3">
