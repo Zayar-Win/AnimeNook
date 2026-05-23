@@ -36,8 +36,8 @@ Route::get('/', function (Group $group) {
     $latestMangas = Manga::with('tags')->where('group_id', $group->id)->withCount(['comments', 'ratings', 'chapters'])->latest()->take(12)->get();
     $today = Carbon::today()->toDateString();
     $yesterday = Carbon::yesterday()->toDateString();
-    $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('chapterable_type', Manga::class)->whereDate('created_at', $today)->take(6)->get();
-    $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('chapterable_type', Manga::class)->whereDate('created_at', $yesterday)->take(6)->get();
+    $todayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('group_id', $group->id)->where('chapterable_type', Manga::class)->whereDate('created_at', $today)->take(6)->get();
+    $yesterdayNewEpisodes = Chapter::with('chapterable', 'chapterable.tags')->where('group_id', $group->id)->where('chapterable_type', Manga::class)->whereDate('created_at', $yesterday)->take(6)->get();
 
     return inertia('Group/Index', [
         'banners' => $banners,
