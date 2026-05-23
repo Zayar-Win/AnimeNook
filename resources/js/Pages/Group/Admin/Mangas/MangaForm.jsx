@@ -44,6 +44,50 @@ const columns = [
     },
 ];
 
+function AdminPagination({ meta }) {
+    if (!meta?.links?.length || (meta?.last_page ?? 1) <= 1) return null;
+
+    return (
+        <nav
+            className="mt-6 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2"
+            aria-label="Pagination"
+        >
+            {meta.links.map((link, i) => {
+                const isDisabled = !link.url;
+                const active = link.active;
+                const content = (
+                    <span
+                        className={`inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-bold sm:min-h-10 sm:min-w-10 sm:px-3 sm:text-sm ${
+                            active
+                                ? "bg-primary text-white shadow-md shadow-primary/20"
+                                : "border border-white/10 bg-[#1a1a1a] text-zinc-300 hover:border-white/20 hover:bg-white/5"
+                        } ${isDisabled ? "pointer-events-none opacity-35" : ""}`}
+                        dangerouslySetInnerHTML={{ __html: link.label }}
+                    />
+                );
+                if (isDisabled) {
+                    return (
+                        <span key={i} className="inline-flex">
+                            {content}
+                        </span>
+                    );
+                }
+                return (
+                    <Link
+                        key={i}
+                        href={link.url}
+                        preserveScroll
+                        preserveState
+                        className="inline-flex"
+                    >
+                        {content}
+                    </Link>
+                );
+            })}
+        </nav>
+    );
+}
+
 function ChapterRowActions({ manga, chapter, onDelete }) {
     return (
         <div className="flex items-center justify-end gap-1 sm:gap-2">
@@ -571,6 +615,7 @@ const MangaForm = ({
                                             </article>
                                         ))
                                     )}
+                                    <AdminPagination meta={chapters} />
                                 </div>
                                 <div className="hidden md:block">
                                     {selectedChapterIds.length > 0 && (
@@ -679,6 +724,7 @@ const MangaForm = ({
                                             )}
                                         </TableData>
                                     </Table>
+                                    <AdminPagination meta={chapters} />
                                 </div>
                                 {isDeleteModalOpen && (
                                     <DeleteModal
