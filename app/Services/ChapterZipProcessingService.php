@@ -13,7 +13,10 @@ use ZipArchive;
 
 class ChapterZipProcessingService
 {
-    public function __construct(private readonly Uploader $uploader) {}
+    public function __construct(
+        private readonly Uploader $uploader,
+        private readonly ImageCompressionService $compressionService
+    ) {}
 
     /**
      * Quick validation before queueing: readable ZIP and non-empty.
@@ -206,10 +209,11 @@ class ChapterZipProcessingService
     {
         $ext = strtolower(ltrim($ext, '.'));
         $safeExt = in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true) ? $ext : 'bin';
-        $filename = 'ch'.$chapterId.'_p'.$order.'_'.Str::uuid().'.'.$safeExt;
+        $payload = $this->compressionService->compressBinary($contents, null, $safeExt);
+        $filename = 'ch'.$chapterId.'_p'.$order.'_'.Str::uuid().'.'.$payload['extension'];
         $path = 'mangas/'.$filename;
 
-        Storage::put($path, $contents);
+        Storage::put($path, $payload['contents']);
 
         return Storage::url($path);
     }

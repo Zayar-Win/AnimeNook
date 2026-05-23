@@ -2,12 +2,21 @@
 
 namespace App\helpers;
 
+use App\Services\ImageCompressionService;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 
 class Uploader
 {
+    private ?ImageCompressionService $compressionService;
+
+    public function __construct(?ImageCompressionService $compressionService = null)
+    {
+        $this->compressionService = $compressionService;
+    }
+
     /**
      * check url is full url or base 64 string
      */
@@ -28,17 +37,33 @@ class Uploader
 
     public function upload($photo, $imgContainer, $customName = null)
     {
-        $customName = $customName ?? $this->getDefaultName($photo);
-        if ($this->_isLink($photo)) {
+        if (is_string($photo) && $this->_isLink($photo)) {
             return $photo;
         }
+        $customName = $customName ?? $this->getDefaultName($photo);
 
         if (App::environment() !== 'testing') {
             if (App::environment() !== 'production' && !$imgContainer) {
                 $imgContainer = App::environment();
             }
+
+            if ($photo instanceof UploadedFile) {
+                $payload = $this->getCompressionService()->compressUploadedFile($photo);
+                if ($payload['compressed']) {
+                    $path = trim((string) $imgContainer, '/');
+                    if ($path !== '') {
+                        $path .= '/';
+                    }
+                    $path .= $customName;
+                    Storage::put($path, $payload['contents']);
+
+                    return Storage::url($path);
+                }
+            }
+
             $path = ($customName) ? $photo->storeAs($imgContainer, $customName) : $photo->store($imgContainer);
             $url = Storage::url($path);
+
             return $url;
         }
     }
@@ -74,5 +99,10 @@ class Uploader
         return
             app()->environment() !== 'production' &&
             $this->getFolderNameByUrl($url) !== app()->environment();
+    }
+
+    private function getCompressionService(): ImageCompressionService
+    {
+        return $this->compressionService ??= app(ImageCompressionService::class);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\helpers\Uploader;
 use App\Models\Group;
 use App\Models\UploadSession;
+use App\Services\ImageCompressionService;
 use Aws\S3\S3Client;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -16,7 +17,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GroupAdminChunkUploadController extends Controller
 {
-    public function __construct(private readonly Uploader $uploader) {}
+    public function __construct(
+        private readonly Uploader $uploader,
+        private readonly ImageCompressionService $compressionService
+    ) {}
 
     public function signSpacesUpload(Group $group, Request $request)
     {
@@ -527,6 +531,20 @@ class GroupAdminChunkUploadController extends Controller
         $safeOriginal = preg_replace('/[^A-Za-z0-9._-]+/', '_', $session->original_name) ?: 'upload.bin';
         $finalName = Carbon::now()->timestamp.'_'.$safeOriginal;
         $finalPath = $container.'/'.$finalName;
+
+        if ($session->target === 'chapter-image') {
+            $payload = $this->compressionService->compressPath(
+                $partPath,
+                $session->mime,
+                pathinfo($safeOriginal, PATHINFO_EXTENSION)
+            );
+            Storage::put($finalPath, $payload['contents']);
+
+            return [
+                'url' => Storage::url($finalPath),
+                'path' => $finalPath,
+            ];
+        }
 
         $stream = fopen($partPath, 'rb');
         if (! $stream) {

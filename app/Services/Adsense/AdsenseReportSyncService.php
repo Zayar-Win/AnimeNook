@@ -56,6 +56,11 @@ class AdsenseReportSyncService
             ];
         }
 
+        $byGroup = [];
+        foreach ($toUpsert as $row) {
+            $byGroup[$row['group_id']] = ($byGroup[$row['group_id']] ?? 0) + 1;
+        }
+
         if (! empty($toUpsert)) {
             DB::table('adsense_reports')->upsert(
                 $toUpsert,
@@ -64,7 +69,7 @@ class AdsenseReportSyncService
             );
         }
 
-        return ['synced' => count($toUpsert), 'skipped' => $skipped];
+        return ['synced' => count($toUpsert), 'skipped' => $skipped, 'by_group' => $byGroup];
     }
 
     private function fetchReportRows(Carbon $startDate, Carbon $endDate): array

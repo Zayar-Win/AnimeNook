@@ -112,7 +112,7 @@ class GroupAdminMangaController extends Controller
         $query = $group->mangas();
 
         if (($filters['search'] ?? '') !== '') {
-            $like = '%'.$filters['search'].'%';
+            $like = '%' . $filters['search'] . '%';
             $query->where(function ($q) use ($like) {
                 $q->where('name', 'like', $like)
                     ->orWhere('description', 'like', $like);
@@ -206,7 +206,7 @@ class GroupAdminMangaController extends Controller
 
         if (($seasonValidated['season_search'] ?? '') !== '') {
             $term = $seasonValidated['season_search'];
-            $like = '%'.$term.'%';
+            $like = '%' . $term . '%';
             $seasonQuery->where(function ($q) use ($like, $term) {
                 $q->where('title', 'like', $like);
                 if (ctype_digit($term)) {
@@ -330,7 +330,7 @@ class GroupAdminMangaController extends Controller
 
         if (($filters['season_search'] ?? '') !== '') {
             $term = $filters['season_search'];
-            $like = '%'.$term.'%';
+            $like = '%' . $term . '%';
             $query->where(function ($q) use ($like, $term) {
                 $q->where('title', 'like', $like);
                 if (ctype_digit($term)) {
@@ -377,7 +377,9 @@ class GroupAdminMangaController extends Controller
             'season_id' => ['required', 'integer'],
             'content_mode' => ['required', Rule::in(['images', 'pdf'])],
             'images' => ['nullable', 'array'],
-            'images.*' => ['nullable', 'image'],
+            // Accept mixed values (UploadedFile, chunk upload id, or resolved URL string).
+            // UploadedFile image validation is enforced in the per-item loop below.
+            'images.*' => ['nullable'],
             'pdf' => ['nullable', 'file', 'mimes:pdf', 'max:51200'],
             'zip_upload_id' => ['nullable', 'string', 'uuid'],
         ]);
@@ -573,8 +575,8 @@ class GroupAdminMangaController extends Controller
                     throw ValidationException::withMessages(['images' => 'Use either a ZIP archive or individual images, not both.']);
                 }
             } else {
-                $hasExisting = collect($imagesMixed)->contains(fn ($i) => is_array($i) && isset($i['id']));
-                $hasNewFiles = collect($imagesMixed)->filter(fn ($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
+                $hasExisting = collect($imagesMixed)->contains(fn($i) => is_array($i) && isset($i['id']));
+                $hasNewFiles = collect($imagesMixed)->filter(fn($i) => $i instanceof UploadedFile || is_string($i))->isNotEmpty();
                 if (! $hasExisting && ! $hasNewFiles) {
                     throw ValidationException::withMessages(['images' => 'Add at least one page image or choose a ZIP of pages.']);
                 }
