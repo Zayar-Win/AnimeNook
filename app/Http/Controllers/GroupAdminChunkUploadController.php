@@ -538,11 +538,16 @@ class GroupAdminChunkUploadController extends Controller
                 $session->mime,
                 pathinfo($safeOriginal, PATHINFO_EXTENSION)
             );
-            Storage::put($finalPath, $payload['contents']);
+
+            // Extension may change (e.g. jpg/png → webp); rebuild the path.
+            $storedName = Carbon::now()->timestamp.'_'.pathinfo($safeOriginal, PATHINFO_FILENAME).'.'.$payload['extension'];
+            $storedPath = $container.'/'.$storedName;
+
+            Storage::put($storedPath, $payload['contents']);
 
             return [
-                'url' => Storage::url($finalPath),
-                'path' => $finalPath,
+                'url' => Storage::url($storedPath),
+                'path' => $storedPath,
             ];
         }
 

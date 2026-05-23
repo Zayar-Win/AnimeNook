@@ -5,7 +5,6 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\EncodedImage;
 use Intervention\Image\ImageManager;
 use Throwable;
 
@@ -65,12 +64,18 @@ class ImageCompressionService
                 height: max(1, (int) config('image-compression.max_height', 2000))
             );
 
-            $encoded = $this->encodeByType($image, $normalized);
+            $quality = max(1, min(100, (int) config('image-compression.webp_quality', 75)));
+            $encodedContents = (string) $image->toWebp(quality: $quality);
+
+            // Only use WebP if it is actually smaller than the original.
+            if (strlen($encodedContents) >= strlen($contents)) {
+                return $fallback;
+            }
 
             return [
-                'contents' => (string) $encoded,
-                'mime' => $this->mimeForType($normalized),
-                'extension' => $normalized,
+                'contents' => $encodedContents,
+                'mime' => 'image/webp',
+                'extension' => 'webp',
                 'compressed' => true,
             ];
         } catch (Throwable $e) {
@@ -86,20 +91,6 @@ class ImageCompressionService
 
             return $fallback;
         }
-    }
-
-    private function encodeByType($image, string $type): EncodedImage
-    {
-        return match ($type) {
-            'jpg' => $image->toJpg(
-                quality: max(1, min(100, (int) config('image-compression.jpeg_quality', 75)))
-            ),
-            'png' => $image->toPng(),
-            'webp' => $image->toWebp(
-                quality: max(1, min(100, (int) config('image-compression.webp_quality', 75)))
-            ),
-            default => $image->toJpg(),
-        };
     }
 
     private function mimeForType(string $type): string

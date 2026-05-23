@@ -50,11 +50,15 @@ class Uploader
             if ($photo instanceof UploadedFile) {
                 $payload = $this->getCompressionService()->compressUploadedFile($photo);
                 if ($payload['compressed']) {
+                    // Extension may change (e.g. jpg/png → webp); keep the base name.
+                    $baseName = pathinfo($customName, PATHINFO_FILENAME);
+                    $storedName = $baseName.'.'.$payload['extension'];
+
                     $path = trim((string) $imgContainer, '/');
                     if ($path !== '') {
                         $path .= '/';
                     }
-                    $path .= $customName;
+                    $path .= $storedName;
                     Storage::put($path, $payload['contents']);
 
                     return Storage::url($path);
