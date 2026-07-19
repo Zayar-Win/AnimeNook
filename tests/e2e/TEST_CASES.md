@@ -30,7 +30,8 @@ Reference for product behavior and Playwright coverage. Paths use the group pref
 | ID      | Scenario                                                                 | Expected | Status  | Notes |
 | ------- | ------------------------------------------------------------------------ | -------- | ------- | ----- |
 | NT-1    | User A comment; User B **replies** to A                                    | A receives **reply** notification (`comment_reply` / `notification_type`) | Planned | Needs two seeded users + bell + notification row |
-| NT-2    | **Mark all read** in bell dropdown                                       | Unread cleared; badge hidden | Planned | `Navbar.jsx` + API `group.notis.read-all` |
+| NT-2    | **Mark all read** in bell dropdown                                       | Unread cleared; badge hidden | Covered | `group-notifications.spec.ts` |
+| NT-2b   | Notification panel opens and closes                                     | Bell opens panel; click outside closes it | Covered | `group-notifications.spec.ts` |
 | NT-3    | **Load more** (infinite scroll) when more than first page                  | Next page appends; no duplicate rows | Partial | Navbar observer + `NotificationController@index` paginate |
 | NT-4    | @mention path (admin opens thread)                                       | Lands on `#comments` with mention text | Covered | `group-comment-mention.spec.ts` |
 
@@ -100,11 +101,56 @@ Separate from `/{group}/...` tenant routes. Use base URL without group prefix.
 
 ---
 
+---
+
+## 9. Auth flows
+
+| ID      | Scenario                                                                 | Expected | Status  | Notes |
+| ------- | ------------------------------------------------------------------------ | -------- | ------- | ----- |
+| AF-1    | Forgot password page loads                                               | Email input + "Send reset link" button visible | Covered | `group-user-auth-flows.spec.ts` |
+| AF-2    | Submit forgot-password with unknown email                                | Generic success (no info leak) | Covered | Same |
+| AF-3    | Login page has link to forgot-password                                   | Navigates to `/{group}/forgot-password` | Covered | Same |
+
+---
+
+## 10. Manga chapter reader
+
+| ID      | Scenario                                                                 | Expected | Status  | Notes |
+| ------- | ------------------------------------------------------------------------ | -------- | ------- | ----- |
+| CR-1    | Authenticated user navigates from manga detail to chapter reader         | URL matches `/mangas/.+/chapters/\d+` | Covered | `group-user-auth-flows.spec.ts` |
+| CR-2    | Chapter reader shows chapter content / selector                          | `#reader-chapter-select` or prev/next links visible | Covered | Same |
+| CR-3    | Guest reads manga chapter                                                | Either redirected to login (require_login setting) or reader loads | Covered | Same |
+
+---
+
+## 11. Group admin CRUD actions
+
+| ID      | Scenario                                                                 | Expected | Status  | Notes |
+| ------- | ------------------------------------------------------------------------ | -------- | ------- | ----- |
+| GA-1    | Create tag via form → success toast + appears in list                    | Tag visible in index; "tag created" toast | Covered | `group-admin-actions.spec.ts` |
+| GA-2    | Duplicate tag name shows validation error                                | "has already been taken" | Covered | Same |
+| GA-3    | Tag search updates URL query param                                       | `?search=` in URL | Covered | Same |
+| GA-4    | Delete tag → confirm modal → success toast                               | Tag removed from list; "tag deleted" toast | Covered | Same |
+| GA-5    | Edit tag → save → success toast                                          | Updated name visible; "tag update" toast | Covered | Same |
+| GA-6    | Admin deletes comment from comments panel                                | "deleted" toast | Covered | Same |
+| GA-7    | Settings form submit → success toast                                     | "setting updated" toast | Covered | Same |
+| GA-8    | require_login_for_manga checkbox is toggleable                           | Checkbox state changes | Covered | Same |
+| GA-9    | Adsense dashboard loads                                                  | "Google AdSense Dashboard" heading | Covered | Same |
+| GA-10   | Admin user management search                                             | Filters list to E2E User | Covered | Same |
+
+---
+
 ## Running tests
 
 ```bash
+# 1. Seed E2E users and fixtures (required before running tests)
 php artisan db:seed --class=E2ESeeder
-PLAYWRIGHT_BASE_URL=http://127.0.0.1:8000 npm run test:e2e
+
+# 2. Run all E2E tests
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:8000 PLAYWRIGHT_SLOW_MO=0 npm run test:e2e
+
+# 3. Run a single spec file
+PLAYWRIGHT_BASE_URL=http://127.0.0.1:8000 PLAYWRIGHT_SLOW_MO=0 npm run test:e2e -- tests/e2e/group-admin-actions.spec.ts
 ```
 
 Use `E2E_GROUP_*`, `E2E_USER_EMAIL`, etc. as documented in `tests/e2e/helpers.ts` and `playwright.config.ts`.

@@ -2,12 +2,20 @@ import { expect, test } from "@playwright/test";
 import { E2E_USER_EMAIL, navigateGroup } from "./helpers";
 
 test.describe("Group register validation", () => {
-    test("invalid email shows validation error", async ({ page }) => {
+    test("invalid email format shows validation error (server-side)", async ({
+        page,
+    }) => {
         await navigateGroup(page, "/register");
         await page.locator("#name").fill("E2E Invalid Email");
         await page.locator("#email").fill("not-a-valid-email");
         await page.locator("#password").fill("password");
+
+        // Disable browser-native email validation so the form reaches the server
+        await page.locator("form").evaluate((f: HTMLFormElement) => {
+            f.noValidate = true;
+        });
         await page.getByRole("button", { name: "Register" }).click();
+
         await expect(
             page.getByText(/must be a valid email address/i),
         ).toBeVisible({ timeout: 15_000 });

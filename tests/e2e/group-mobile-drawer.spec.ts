@@ -24,7 +24,9 @@ test.describe("Group mobile drawer (guest)", () => {
         await expect(
             page.getByRole("link", { name: "Manga List" }),
         ).toBeVisible({ timeout: 15_000 });
-        await page.getByRole("link", { name: "Manga List" }).click();
+        // Use force:true — the drawer's scrollable container can intercept pointer events
+        // while the open animation is still settling.
+        await page.getByRole("link", { name: "Manga List" }).click({ force: true });
         await expect(page).toHaveURL(/\/animes$/);
 
         await hamburger.click();

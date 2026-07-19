@@ -1,7 +1,10 @@
+import AdSenseUnit from "@/Components/AdSenseUnit";
 import SectionContainer from "@/Components/SectionContainer";
 import UserLayout from "@/Layouts/UserLayout";
 import { Link, router } from "@inertiajs/react";
 import React from "react";
+
+const CHAPTER_ENTRY_AD_SLOT = "3791757538";
 
 const MangaChapterReader = ({
     manga,
@@ -114,6 +117,13 @@ const MangaChapterReader = ({
                     />
                 ) : null}
             </div>
+
+            {/* Manual chapter-entry unit; Auto Ads remain global in app.blade.php */}
+            <AdSenseUnit
+                key={`chapter-entry-${chapter.id}`}
+                slot={CHAPTER_ENTRY_AD_SLOT}
+                className="mx-auto mb-6 max-w-4xl min-h-[90px] overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 dark:border-white/10 dark:bg-white/5"
+            />
 
             {!readerMode && (
                 <div className="mx-auto max-w-xl rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-20 text-center dark:border-white/10 dark:bg-white/5">
